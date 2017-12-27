@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Pressure Plate
+  m_Shader: {fileID: 4800000, guid: 3ab3f16795f91a24bb5eca2667c5883d, type: 3}
+  m_ShaderKeywords: _EMISSION
+  m_LightmapFlags: 1
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BumpScale: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _TransAmbient: 0.2
+    - _TransDirect: 1
+    - _TransNormalDistortion: 0.1
+    - _TransScattering: 2
+    - _TransShadow: 0.9
+    - _Translucency: 1
+    - _UVSec: 0
+    - _ZWrite: 1
+    - __dirty: 0
+    - _gradientLength: 0.5
+    - _gradientPositionMultiplier: 1
+    - _gradientStart: -0.1
+    - _shine: 0.4
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_1: {r: 0.35467127, g: 0.60294116, b: 0.44884256, a: 1}
+    - _Color_2: {r: 0.3300714, g: 0.40133563, b: 0.4044118, a: 1}
+    - _Color_3: {r: 0.73830384, g: 0.7941176, b: 0.21604672, a: 1}
+    - _Color_4: {r: 0.44117647, g: 0.35358998, b: 0.35358998, a: 1}
+    - _Color_5: {r: 0.39113316, g: 0.29163063, b: 0.42647058, a: 1}
+    - _Color_6: {r: 0.20728809, g: 0.30063373, b: 0.52205884, a: 1}
+    - _Color_x: {r: 0.28941393, g: 0.74264705, b: 0.7051382, a: 1}
+    - _Color_x2: {r: 0.16235942, g: 0.5661765, b: 0.43249914, a: 1}
+    - _Color_y: {r: 0.039900504, g: 0.8686388, b: 0.9044118, a: 1}
+    - _Color_y2: {r: 0.47715056, g: 0.16435987, b: 0.58823526, a: 1}
+    - _Color_z: {r: 0.24459344, g: 0.6070069, b: 0.6397059, a: 1}
+    - _Color_z2: {r: 0.37629756, g: 0.5093068, b: 0.58823526, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _gradientColor: {r: 0.7058823, g: 0.7058823, b: 0.7058823, a: 1}
+    - _gradientDirection: {r: 0, g: 0, b: 1, a: 0}
+    - _light_1: {r: 1, g: 0, b: 0, a: 0}
+    - _light_2: {r: 0, g: 1, b: 0, a: 0}
+    - _light_3: {r: 0, g: 0, b: 1, a: 0}
+    - _light_4: {r: -1, g: 0, b: 0, a: 0}
+    - _light_5: {r: 0, g: -1, b: 0, a: 0}
+    - _light_6: {r: 0, g: 0, b: -1, a: 0}
