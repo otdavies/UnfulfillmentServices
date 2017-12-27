@@ -244,7 +244,7 @@ namespace AmplifyShaderEditor
 			{
 				m_checkCommentText = true;
 			}
-			if ( m_focusOnTitle && Event.current.type == EventType.keyUp )
+			if ( m_focusOnTitle && Event.current.type == EventType.KeyUp )
 			{
 				m_focusOnTitle = false;
 				EditorGUI.FocusTextInControl( m_focusName );
@@ -352,7 +352,7 @@ namespace AmplifyShaderEditor
 
 				if ( m_isResizingRight )
 				{
-					if ( drawInfo.CurrentEventType == EventType.mouseUp )
+					if ( drawInfo.CurrentEventType == EventType.MouseUp )
 					{
 						m_isResizingRight = false;
 						UIUtils.CurrentWindow.ForceAutoPanDir = false;
@@ -406,7 +406,7 @@ namespace AmplifyShaderEditor
 
 				if ( m_isResizingLeft )
 				{
-					if ( drawInfo.CurrentEventType == EventType.mouseUp )
+					if ( drawInfo.CurrentEventType == EventType.MouseUp )
 					{
 						m_isResizingLeft = false;
 						UIUtils.CurrentWindow.ForceAutoPanDir = false;

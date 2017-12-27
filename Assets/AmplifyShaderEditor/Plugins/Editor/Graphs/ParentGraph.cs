@@ -795,17 +795,17 @@ namespace AmplifyShaderEditor
 					}
 
 					bool restoreMouse = false;
-					if ( Event.current.type == EventType.mouseDown && m_nodes[ i ].UniqueId != m_nodeClicked )
+					if ( Event.current.type == EventType.MouseDown && m_nodes[ i ].UniqueId != m_nodeClicked )
 					{
 						restoreMouse = true;
-						Event.current.type = EventType.ignore;
+						Event.current.type = EventType.Ignore;
 					}
 
 					m_nodes[ i ].Draw( drawInfo );
 
 					if ( restoreMouse )
 					{
-						Event.current.type = EventType.mouseDown;
+						Event.current.type = EventType.MouseDown;
 					}
 
 					m_hasUnConnectedNodes = m_hasUnConnectedNodes ||

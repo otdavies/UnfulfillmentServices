@@ -1002,24 +1002,22 @@ namespace XboxCtrlrInput
 
 		private static bool OnMac()
 		{
-			// All Mac mappings are based off TattieBogle Xbox Controller drivers
-			// http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver
-			// http://wiki.unity3d.com/index.php?title=Xbox360Controller
-			return (Application.platform == RuntimePlatform.OSXEditor || 
-				    Application.platform == RuntimePlatform.OSXPlayer ||
-				    Application.platform == RuntimePlatform.OSXWebPlayer);
+            // All Mac mappings are based off TattieBogle Xbox Controller drivers
+            // http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver
+            // http://wiki.unity3d.com/index.php?title=Xbox360Controller
+            return (Application.platform == RuntimePlatform.OSXEditor ||
+                    Application.platform == RuntimePlatform.OSXPlayer);
 		}
 		
 		private static bool OnWindows()
 		{
-			return (Application.platform == RuntimePlatform.WindowsEditor || 
-				    Application.platform == RuntimePlatform.WindowsPlayer ||
-				    Application.platform == RuntimePlatform.WindowsWebPlayer);
+            return (Application.platform == RuntimePlatform.WindowsEditor ||
+                    Application.platform == RuntimePlatform.WindowsPlayer);
 		}
 		
 		private static bool OnWindowsWebPlayer()
 		{
-			return (Application.platform == RuntimePlatform.WindowsWebPlayer);
+            return false;
 		}
 		
 		private static bool OnWindowsNative()

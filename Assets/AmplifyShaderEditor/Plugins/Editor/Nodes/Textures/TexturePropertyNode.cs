@@ -475,16 +475,16 @@ namespace AmplifyShaderEditor
 					Color temp = GUI.color;
 					GUI.color = Color.clear;
 					bool restoreMouse = false;
-					if ( Event.current.type == EventType.mouseDown && hitRect.Contains( Event.current.mousePosition ) )
+					if ( Event.current.type == EventType.MouseDown && hitRect.Contains( Event.current.mousePosition ) )
 					{
 						restoreMouse = true;
-						Event.current.type = EventType.ignore;
+						Event.current.type = EventType.Ignore;
 					}
 
 					m_materialValue = EditorGUIObjectField( newRect, m_materialValue, m_textureType, false ) as Texture;
 					if ( restoreMouse )
 					{
-						Event.current.type = EventType.mouseDown;
+						Event.current.type = EventType.MouseDown;
 					}
 
 					GUI.color = temp;
@@ -525,16 +525,16 @@ namespace AmplifyShaderEditor
 					Color temp = GUI.color;
 					GUI.color = Color.clear;
 					bool restoreMouse = false;
-					if ( Event.current.type == EventType.mouseDown && hitRect.Contains( Event.current.mousePosition ) )
+					if ( Event.current.type == EventType.MouseDown && hitRect.Contains( Event.current.mousePosition ) )
 					{
 						restoreMouse = true;
-						Event.current.type = EventType.ignore;
+						Event.current.type = EventType.Ignore;
 					}
 
 					m_defaultValue = EditorGUIObjectField( newRect, m_defaultValue, m_textureType, false ) as Texture;
 					if ( restoreMouse )
 					{
-						Event.current.type = EventType.mouseDown;
+						Event.current.type = EventType.MouseDown;
 					}
 
 					GUI.color = temp;
