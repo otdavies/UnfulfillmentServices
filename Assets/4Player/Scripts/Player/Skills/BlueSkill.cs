@@ -65,7 +65,7 @@ public class BlueSkill
                 }
 
                 // Added the forces
-                h.rigidbody.AddForce((pullTarget - h.point).normalized * 20 * (Mathf.Cos(dist * Mathf.PI * 0.5f)));
+                h.rigidbody.AddForce((pullTarget - h.point).normalized * 40 * (Mathf.Cos(dist * Mathf.PI * 0.5f)));
                 h.rigidbody.AddForce((-h.rigidbody.velocity) * Mathf.Sin(dist * Mathf.PI * 0.5f), ForceMode.Impulse);
                 h.rigidbody.AddForce(Vector3.up * 9.78f * 4);
             }

@@ -10,14 +10,12 @@ public class CameraController : MonoBehaviour
     public float cameraSmallestRestingDistance = 30;
     private Player[] players;
     private Vector3 startPosition;
-    private Vector3 moveDirection = Vector3.zero;
     private Bounds trackingBox;
     private Camera camera;
 
     private Vector3 boxCenter;
     private float size = 1;
 
-	// Use this for initialization
 	private void Start ()
     {
         camera = GetComponent<Camera>();
@@ -27,17 +25,17 @@ public class CameraController : MonoBehaviour
         boxCenter = Vector3.zero;
     }
 	
-	// Update is called once per frame
 	private void Update ()
     {
-        moveDirection = Vector3.zero;
-
+        Vector3 moveDirection = Vector3.zero;
+        Vector3 playerCenter = Vector3.zero;
         float maxPlayerSeperation = 0;
 
         foreach (Player p in players)
         {
-            Vector3 playerPosition = ((Vector2)camera.WorldToViewportPoint(p.transform.position));
+            playerCenter += p.transform.position;
 
+            Vector3 playerPosition = ((Vector2)camera.WorldToViewportPoint(p.transform.position));
             if (!trackingBox.Contains(playerPosition))
             {
                 moveDirection += TranslateMovementVector(playerPosition - (trackingBox.ClosestPoint(playerPosition)));
@@ -51,8 +49,10 @@ public class CameraController : MonoBehaviour
             }
         }
 
-        size = Mathf.Clamp(Mathf.Lerp(size, (1 / Mathf.Clamp01(1 - maxPlayerSeperation) - 1) * 0.25f, Time.deltaTime * 3), 1, 3);
-        boxCenter += (moveDirection / players.Length) * cameraTrackBoundsCorrectionStrength * size;
+        size = Mathf.Clamp(Mathf.Lerp(size, (1 / Mathf.Clamp01(1 - maxPlayerSeperation) - 1) * 0.4f, Time.deltaTime * 0.5f), 1, 3);
+
+        boxCenter += (((moveDirection / players.Length) * cameraTrackBoundsCorrectionStrength)) * size;
+        boxCenter = Vector3.Lerp(boxCenter, boxCenter + ((playerCenter / players.Length) - boxCenter), Time.deltaTime * 0.5f);
     }
 
     private void LateUpdate()
