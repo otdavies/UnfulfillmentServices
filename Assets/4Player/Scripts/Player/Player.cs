@@ -170,7 +170,9 @@ public class Player : MonoBehaviour
         previousTime = Time.time;
 
         physicsRigid.MoveRotation(Quaternion.Slerp(thisTransform.rotation, Quaternion.LookRotation(direction), Time.fixedDeltaTime * 12));
+
         if(canMove) physicsRigid.MovePosition(thisTransform.position + (thisTransform.forward * direction.magnitude * (Time.fixedDeltaTime * speed)));
+        //LateUpdateVisualPosition();
     }
 
     private void LateUpdateVisualPosition()

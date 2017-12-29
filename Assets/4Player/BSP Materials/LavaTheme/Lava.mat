@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Glow Berry
+  m_Name: Lava
   m_Shader: {fileID: 4800000, guid: f4810a8a071d04e409aafd2ab7f1c0fa, type: 3}
-  m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 1
+  m_ShaderKeywords: 
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -54,6 +54,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _TextureSample0:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -62,6 +70,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _MaskClipValue: 0.5
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -69,29 +78,38 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TransAmbient: 0.139
-    - _TransDirect: 1
-    - _TransNormalDistortion: 0.185
-    - _TransScattering: 8.4
-    - _TransShadow: 0.912
-    - _Translucency: 6.4
-    - _Transmission: 0
+    - _TransAmbient: 0
+    - _TransDirect: 0
+    - _TransNormalDistortion: 0
+    - _TransScattering: 1
+    - _TransShadow: 0
+    - _Translucency: 0
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
-    - _shine: 0.2
-    - _translucencyStrength: 0.69
-    - _transmissionStrength: -0.1
+    - _gradientLength: 0.5
+    - _gradientStart: 2
+    - _shine: 5.7199554
+    - _translucencyStrength: 0
+    - _transmissionStrength: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_1: {r: 0.6965518, g: 0, b: 1, a: 1}
-    - _Color_2: {r: 0.6911765, g: 1, b: 0.7316429, a: 1}
-    - _Color_3: {r: 0.75608504, g: 1, b: 0.52205884, a: 1}
-    - _Color_4: {r: 1, g: 0.50735295, b: 0.50735295, a: 1}
-    - _Color_5: {r: 0.9036508, g: 0.63235295, b: 1, a: 1}
-    - _Color_6: {r: 1, g: 0.9446248, b: 0.71323526, a: 1}
+    - _Color_1: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_2: {r: 0.9632353, g: 0.27460986, b: 0.021247858, a: 1}
+    - _Color_3: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_4: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_5: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_6: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_x: {r: 0.8088235, g: 0.42225346, b: 0.42225346, a: 1}
+    - _Color_x2: {r: 0.8088235, g: 0.42225346, b: 0.42225346, a: 1}
+    - _Color_y: {r: 1, g: 0.33103448, b: 0, a: 1}
+    - _Color_y2: {r: 0.7099479, g: 0.30730966, b: 0.8529412, a: 1}
+    - _Color_z: {r: 0.37404916, g: 0.625, b: 0.13327205, a: 1}
+    - _Color_z2: {r: 0.37404916, g: 0.625, b: 0.13327205, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _gradientColor: {r: 0, g: 0, b: 0, a: 0}
+    - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}
     - _light_1: {r: 1, g: 0, b: 0, a: 0}
     - _light_2: {r: 0, g: 1, b: 0, a: 0}
     - _light_3: {r: 0, g: 0, b: 1, a: 0}

@@ -53,7 +53,7 @@ Shader "DirectionalLighting"
 		uniform float _gradientLength;
 		uniform float _shine;
 
-		void surf( Input i , inout SurfaceOutput o )
+		void surf( Input i , inout SurfaceOutputStandard o )
 		{
 			float4 temp_output_37_0 = ( ( ( ( _Color_x * clamp( dot( i.worldNormal , float3(1,0,0) ) , 0.0 , 1.0 ) ) + ( _Color_y * clamp( dot( i.worldNormal , float3(0,1,0) ) , 0.0 , 1.0 ) ) ) + ( _Color_z * clamp( dot( i.worldNormal , float3(0,0,1) ) , 0.0 , 1.0 ) ) ) + ( ( ( _Color_x2 * clamp( dot( i.worldNormal , float3(-1,0,0) ) , 0.0 , 1.0 ) ) + ( _Color_y2 * clamp( dot( i.worldNormal , float3(0,-1,0) ) , 0.0 , 1.0 ) ) ) + ( _Color_z2 * clamp( dot( i.worldNormal , float3(0,0,-1) ) , 0.0 , 1.0 ) ) ) );
 			float3 vertexPos = mul( unity_WorldToObject, float4( i.worldPos , 1 ) );
@@ -65,7 +65,7 @@ Shader "DirectionalLighting"
 
 		ENDCG
 		CGPROGRAM
-		#pragma surface surf Lambert keepalpha 
+		#pragma surface surf Standard keepalpha 
 
 		ENDCG
 		Pass
@@ -122,8 +122,8 @@ Shader "DirectionalLighting"
 				fixed3 worldViewDir = normalize( UnityWorldSpaceViewDir( worldPos ) );
 				surfIN.worldPos = worldPos;
 				surfIN.worldNormal = float3( IN.tSpace0.z, IN.tSpace1.z, IN.tSpace2.z );
-				SurfaceOutput o;
-				UNITY_INITIALIZE_OUTPUT( SurfaceOutput, o )
+				SurfaceOutputStandard o;
+				UNITY_INITIALIZE_OUTPUT( SurfaceOutputStandard, o )
 				surf( surfIN, o );
 				#if defined( CAN_SKIP_VPOS )
 				float2 vpos = IN.pos;
@@ -138,7 +138,7 @@ Shader "DirectionalLighting"
 }
 /*ASEBEGIN
 Version=7003
--1913;29;1906;1004;118.4482;-200.2338;1.07234;True;True
+-1913;29;1906;1004;1411.539;389.8409;1.37234;True;True
 Node;AmplifyShaderEditor.Vector3Node;30;-790.1475,1019.037;Float;False;Constant;_light_4;light_4;6;0;-1,0,0;FLOAT3;FLOAT;FLOAT;FLOAT
 Node;AmplifyShaderEditor.Vector3Node;31;-784.3475,1162.137;Float;False;Constant;_light_5;light_5;8;0;0,-1,0;FLOAT3;FLOAT;FLOAT;FLOAT
 Node;AmplifyShaderEditor.WorldNormalVector;9;-1234.378,564.4238;Float;False;0;FLOAT3;0,0,0;False;FLOAT3;FLOAT;FLOAT;FLOAT
@@ -194,7 +194,7 @@ Node;AmplifyShaderEditor.SimpleMultiplyOpNode;58;747.0043,560.8359;Float;False;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;46;404.6253,748.3598;Float;False;0;COLOR;0.0,0,0,0;False;1;FLOAT;0,0,0,0;False;COLOR
 Node;AmplifyShaderEditor.BlendOpsNode;60;781.4153,729.0107;Float;False;Lighten;True;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;COLOR
 Node;AmplifyShaderEditor.BlendOpsNode;61;778.4323,817.0103;Float;False;Lighten;True;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;COLOR
-Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;1394.246,639.1204;Float;False;True;2;Float;ASEMaterialInspector;0;Lambert;DirectionalLighting;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;0;False;0;0;Opaque;0.5;True;True;0;False;Opaque;Geometry;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;False;0;255;255;0;0;0;0;False;0;4;10;25;False;0.5;True;0;Zero;Zero;0;Zero;Zero;Add;Add;0;False;0.04;0,0,0,0;VertexOffset;False;Cylindrical;Relative;0;;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT;0.0;False;4;FLOAT;0.0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0.0;False;9;FLOAT;0.0;False;10;OBJECT;0.0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;13;OBJECT;0.0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False
+Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;1394.246,639.1204;Float;False;True;2;Float;ASEMaterialInspector;0;Standard;DirectionalLighting;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;0;False;0;0;Opaque;0.5;True;True;0;False;Opaque;Geometry;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;False;0;255;255;0;0;0;0;False;0;4;10;25;False;0.5;True;0;SrcAlpha;OneMinusSrcAlpha;0;Zero;Zero;Add;Add;0;False;0.04;0,0,0,0;VertexOffset;False;Cylindrical;Relative;0;;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT;0.0;False;4;FLOAT;0.0;False;5;FLOAT;0.0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0.0;False;9;FLOAT;0.0;False;10;OBJECT;0.0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0,0,0;False;13;OBJECT;0.0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False
 WireConnection;4;0;9;0
 WireConnection;4;1;5;0
 WireConnection;25;0;9;0
@@ -258,4 +258,4 @@ WireConnection;61;1;58;0
 WireConnection;0;0;60;0
 WireConnection;0;2;61;0
 ASEEND*/
-//CHKSM=50B33215DB23EAA1B37E02BC8BEB0AAE7E738BF7
+//CHKSM=39BF1FFB8040B1C39E54D3F707F3554261CFF4C0
