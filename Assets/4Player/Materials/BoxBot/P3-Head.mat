@@ -98,6 +98,6 @@ Material:
     - _GradientColor: {r: 0.35294116, g: 0.35294116, b: 0.35294116, a: 0}
     - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SurfaceColor: {r: 0.875, g: 0.4197515, b: 0.0064338297, a: 0}
+    - _SurfaceColor: {r: 0, g: 0.43534467, b: 0.74264705, a: 0}
     - _gradientColor: {r: 0, g: 0, b: 0, a: 1}
     - _gradientDirection: {r: 0, g: -1, b: 0, a: 0}
