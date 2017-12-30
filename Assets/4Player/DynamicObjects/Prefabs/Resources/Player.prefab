@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4432469658705614}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Shoulder1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,7 +34,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4063371331094764}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Shoulder2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   - component: {fileID: 114603053618274524}
   - component: {fileID: 54800891783136418}
   - component: {fileID: 136011334876576286}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PlayerPhysics
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -69,7 +69,7 @@ GameObject:
   - component: {fileID: 4033370439118434}
   - component: {fileID: 33966463585997618}
   - component: {fileID: 23266715907134960}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Bowl
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 33158521616090306}
   - component: {fileID: 23139112281767610}
   - component: {fileID: 114340855371361872}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4294769808668542}
   - component: {fileID: 114504888614084568}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Hat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,7 +120,7 @@ GameObject:
   - component: {fileID: 4838426996544586}
   - component: {fileID: 33108207950188174}
   - component: {fileID: 23563315442695312}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Arm_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +135,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4376365524720540}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Box Bot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4439890379414822}
   - component: {fileID: 114267713293917486}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: PlayerVisuals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4861633487550630}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 4793992692868124}
   - component: {fileID: 33480976196001184}
   - component: {fileID: 23674277633271766}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 4923181372528708}
   - component: {fileID: 33864968271163056}
   - component: {fileID: 23186572480863682}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Eye_Slit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: 4987565695498816}
   - component: {fileID: 33900957379545624}
   - component: {fileID: 23985758799465202}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Arm_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -232,7 +232,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4480957184965776}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 33064350096966700}
   - component: {fileID: 23071126397328832}
   - component: {fileID: 114699988173999706}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Eyelid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
