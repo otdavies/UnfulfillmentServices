@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Cone Orange
+  m_Name: Top Hat
   m_Shader: {fileID: 4800000, guid: 3ab3f16795f91a24bb5eca2667c5883d, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
@@ -76,18 +76,18 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
-    - _gradientLength: 1
-    - _gradientStart: 0.1
+    - _gradientLength: 5.22
+    - _gradientStart: -1.55
     - _shine: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_x: {r: 0.7960785, g: 0.5019608, b: 0.13333334, a: 1}
-    - _Color_x2: {r: 0.7960785, g: 0.5019608, b: 0.13333334, a: 1}
-    - _Color_y: {r: 0.7960785, g: 0.5019608, b: 0.13333334, a: 1}
-    - _Color_y2: {r: 0.7960785, g: 0.5019608, b: 0.13333334, a: 1}
-    - _Color_z: {r: 0.7960785, g: 0.5019608, b: 0.13333334, a: 1}
-    - _Color_z2: {r: 0.7960785, g: 0.5019608, b: 0.13333334, a: 1}
+    - _Color_x: {r: 0.28808907, g: 0.2596237, b: 0.3602941, a: 1}
+    - _Color_x2: {r: 0.28627452, g: 0.25882354, b: 0.36078432, a: 1}
+    - _Color_y: {r: 0.28627452, g: 0.25882354, b: 0.36078432, a: 1}
+    - _Color_y2: {r: 0.28627452, g: 0.25882354, b: 0.36078432, a: 1}
+    - _Color_z: {r: 0.28627452, g: 0.25882354, b: 0.36078432, a: 1}
+    - _Color_z2: {r: 0.28627452, g: 0.25882354, b: 0.36078432, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _gradientColor: {r: 0.66176474, g: 0.20923445, b: 0.20923445, a: 1}
-    - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}
+    - _gradientColor: {r: 0.5808823, g: 0.41430578, b: 0.41430578, a: 1}
+    - _gradientDirection: {r: 0, g: -1, b: 0, a: 0}
