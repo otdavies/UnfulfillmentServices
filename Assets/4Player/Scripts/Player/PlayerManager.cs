@@ -98,7 +98,7 @@ public class PlayerManager : Observable<Player[]>
 
     private void ControllerListChange(int id, bool state)
     {
-        if (state) connected[id] = new ControllerContainer(id, intToXboxController[id], false);
+        if (state && connected[id] == null) connected[id] = new ControllerContainer(id, intToXboxController[id], false);
     }
 
     private void SpawnPlayer(int i)
