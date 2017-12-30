@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class UpdateBoxVisuals : MonoBehaviour
+public sealed class AntiJitter : MonoBehaviour
 {
     public Transform visualModel;
 
     private Transform thisTransform;
     private Vector3 previousTransformPosition = Vector3.zero;
     private float previousTime = 0;
+
+    public void ResetPosition()
+    {
+        visualModel.position = thisTransform.position;
+        visualModel.rotation = thisTransform.rotation;
+    }
 
     private void OnEnable()
     {

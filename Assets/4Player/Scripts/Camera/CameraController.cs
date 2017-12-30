@@ -13,13 +13,15 @@ public class CameraController : MonoBehaviour
     private Bounds trackingBox;
     private Camera camera;
 
-    private Vector3 boxCenter;
+    private Vector3 boxCenter = Vector3.zero;
     private float size = 1;
 
 	private void Start ()
     {
         camera = GetComponent<Camera>();
         players = FindObjectsOfType<Player>();
+
+        // Setup tracking extent options
         trackingBox.center = Vector3.one * 0.5f;
         trackingBox.extents = Vector3.Scale(new Vector3(0.5f, 0.5f, 0.5f), new Vector3(cameraTrackBoundsPercent, cameraTrackBoundsPercent, 1));
         boxCenter = Vector3.zero;
@@ -27,6 +29,9 @@ public class CameraController : MonoBehaviour
 	
 	private void Update ()
     {
+        if (players.Length < 1) return;
+
+
         Vector3 moveDirection = Vector3.zero;
         Vector3 playerCenter = Vector3.zero;
         float maxPlayerSeperation = 0;

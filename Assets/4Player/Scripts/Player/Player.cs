@@ -40,7 +40,6 @@ public class Player : MonoBehaviour
     private GreenSkill green;
     private BlueSkill blue;
 
-    // Use this for initialization
     private void Start () 
 	{
 		thisTransform = this.transform;
@@ -54,21 +53,23 @@ public class Player : MonoBehaviour
 
         previousTransformPosition = this.transform.position;
     }
-	
-	// Update is called once per frame
-	private void Update () 
+
+    // Update Related ------------------------------------------
+
+    private void Update () 
 	{
         // Gather input
         UpdateInput();
 
         // Movement
-        ProcessMovement();
-        UpdateMovement();
+        UpdateMovementState();
+        UpdateMovementDirection();
+
+        // Anti jitter movement
+        UpdateVisualPosition();
 
         // Abilities
         ProcessSkills();
-
-        // Pickup
     }
 
     private void UpdateInput()
@@ -81,7 +82,7 @@ public class Player : MonoBehaviour
         blueUp = XCI.GetButtonUp(XboxButton.X, controller);
     }
 
-    private void ProcessMovement()
+    private void UpdateMovementState()
     {
         // Movement states
         grounded = Physics.Raycast(thisTransform.position, -thisTransform.up, this.transform.localScale.y + 0.1f, groundedLayer);
@@ -91,7 +92,7 @@ public class Player : MonoBehaviour
         if (grounded) lastGroundedPosition = thisTransform.position;
     }
 
-    private void UpdateMovement()
+    private void UpdateMovementDirection()
     {
         physicsRigid.angularVelocity = Vector3.zero;
 
@@ -100,8 +101,13 @@ public class Player : MonoBehaviour
         {
             direction = (Vector3.right * horizontalInput + Vector3.forward * verticalInput);
         }
+    }
 
-        LateUpdateVisualPosition();
+    private void UpdateVisualPosition()
+    {
+        visualModel.rotation = thisTransform.rotation;
+        Vector3 result = Vector3.Lerp(previousTransformPosition, physicsRigid.transform.position, (Time.time - previousTime) / (Time.fixedDeltaTime));
+        visualModel.position = result;
     }
 
     private void ProcessSkills()
@@ -143,7 +149,6 @@ public class Player : MonoBehaviour
                 {
                     canMove = true;
                 }
-
             }
 
             if(skillState == CharacterSkill.green && green.Completed())
@@ -154,6 +159,8 @@ public class Player : MonoBehaviour
             }
         }
     }
+
+    // FixedUpdate Related -----------------------------------------
 
     private void FixedUpdate()
     {
@@ -170,19 +177,14 @@ public class Player : MonoBehaviour
         if(canMove) physicsRigid.MovePosition(thisTransform.position + (thisTransform.forward * direction.magnitude * (Time.fixedDeltaTime * speed)));
     }
 
-    private void LateUpdateVisualPosition()
-    {
-        visualModel.rotation = thisTransform.rotation;
-        Vector3 result = Vector3.Lerp(previousTransformPosition, physicsRigid.transform.position, (Time.time - previousTime) / (Time.fixedDeltaTime));
-        visualModel.position = result;
-    }
-
     private void FixedUpdateSkills()
     {
         if (skillState == CharacterSkill.green) green.UpdateSkill();
         else if (skillState == CharacterSkill.blue) blue.UpdateSkill();
     }
 
+
+    // MISC State Changes -----------------------------------------
     private void DeathByFalling()
     {
         movementState = CharacterMovement.stationary;

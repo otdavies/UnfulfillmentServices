@@ -78,7 +78,7 @@ Material:
     - __dirty: 0
     - _gradientLength: 4.62
     - _gradientStart: -0.9
-    - _shine: 0.3
+    - _shine: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color_x: {r: 0.8455882, g: 0.8455882, b: 0.8455882, a: 1}

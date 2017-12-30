@@ -3,13 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 using XboxCtrlrInput;
 
-public class PlayerManager : MonoBehaviour 
+public class PlayerManager : MonoBehaviour
 {
-	private Dictionary<XboxController, bool> spawnedPlayers = new Dictionary<XboxController, bool>();
-	
-	// Update is called once per frame
-	private void Update () 
-	{
-		
-	}
+    private bool[] controllersConnected;
+
+    private List<XboxController> connectedButNotPlaying = new List<XboxController>();
+    private List<XboxController> connectedAndPlaying = new List<XboxController>();
+
+    private Dictionary<int, XboxController> intToXboxController = new Dictionary<int, XboxController>();
+
+    private void Start()
+    {
+        controllersConnected = new bool[4];
+        StartCoroutine(UpdateControllerList());
+
+        intToXboxController.Add(0, XboxController.First);
+        intToXboxController.Add(1, XboxController.Second);
+        intToXboxController.Add(2, XboxController.Third);
+        intToXboxController.Add(3, XboxController.Fourth);
+    }
+
+    private void Update()
+    {
+        for (int i = 0; i < connectedButNotPlaying.Count; i++)
+        {
+            XboxController controller = connectedButNotPlaying[i];
+            if (XCI.GetButtonDown(XboxButton.Start, controller))
+            {
+                connectedAndPlaying.Add(controller);
+                connectedButNotPlaying.Remove(controller);
+            }
+        }
+    }
+
+    private IEnumerator UpdateControllerList()
+    {
+        while (true)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                bool recent = XCI.IsPluggedIn(i+1);
+                if (controllersConnected[i] != recent) ControllerListChange(i, recent);
+
+                controllersConnected[i] = recent;
+            }
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    private void ControllerListChange(int id, bool state)
+    {
+        if (state) connectedButNotPlaying.Add(intToXboxController[id]);
+    }
 }

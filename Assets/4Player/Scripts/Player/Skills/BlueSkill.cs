@@ -9,10 +9,11 @@ public class BlueSkill
     private Rigidbody heldRigid;
     private RaycastHit[] hits;
     private Vector3 pullTarget;
-    private float percentCompletion = 0;
     private float distance = 2;
     private bool activated = false;
     private bool holding = false;
+
+    private IUsable usable;
 
     public BlueSkill(Transform player)
     {
@@ -30,6 +31,7 @@ public class BlueSkill
     {
         activated = false;
         holding = false;
+        usable = null;
     }
 
     public void UpdateSkill()
@@ -47,6 +49,16 @@ public class BlueSkill
         return holding;
     }
 
+    public bool Usable()
+    {
+        return usable != null;
+    }
+
+    public void UseHeldObject()
+    {
+        usable.Use(owner);
+    }
+
     private void Pull()
     {
         hits = Physics.SphereCastAll(owner.position, 1, owner.forward, distance, LayerMask.GetMask("dynamic"));
@@ -59,8 +71,16 @@ public class BlueSkill
                 // Switch to holding
                 if (dist > 0.03f)
                 {
-                    holding = true;
-                    heldRigid = h.rigidbody;
+                    usable = h.rigidbody.GetComponent<IUsable>();
+                    if (Usable())
+                    {
+                        UseHeldObject();
+                    }
+                    else
+                    {
+                        holding = true;
+                        heldRigid = h.rigidbody;
+                    }
                     return;
                 }
 

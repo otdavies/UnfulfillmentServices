@@ -7,9 +7,9 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: P1-Head
-  m_Shader: {fileID: 1, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 3ab3f16795f91a24bb5eca2667c5883d, type: 3}
   m_ShaderKeywords: 
-  m_LightmapFlags: 4
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -79,7 +79,7 @@ Material:
     - __dirty: 0
     - _gradientLength: 1
     - _gradientStart: -0.95
-    - _shine: 0.3
+    - _shine: 0
     m_Colors:
     - _Color: {r: 1, g: 0.5586207, b: 0, a: 1}
     - _Color_x: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
@@ -91,5 +91,5 @@ Material:
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
-    - _gradientColor: {r: 1, g: 0, b: 0, a: 1}
+    - _gradientColor: {r: 0, g: 0, b: 0, a: 1}
     - _gradientDirection: {r: 0, g: -1, b: 0, a: 0}
