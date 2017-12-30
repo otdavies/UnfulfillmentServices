@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviour, Observer<Player[]>
 {
     public float cameraTrackBoundsPercent = 1;
     public float cameraFollowLerpSpeed = 20;
@@ -11,15 +11,17 @@ public class CameraController : MonoBehaviour
     private Player[] players;
     private Vector3 startPosition;
     private Bounds trackingBox;
-    private Camera camera;
+    private Camera cam;
 
     private Vector3 boxCenter = Vector3.zero;
     private float size = 1;
 
 	private void Start ()
     {
-        camera = GetComponent<Camera>();
+        cam = GetComponent<Camera>();
         players = FindObjectsOfType<Player>();
+
+        PlayerManager.Instance.AddObserver(this);
 
         // Setup tracking extent options
         trackingBox.center = Vector3.one * 0.5f;
@@ -40,7 +42,7 @@ public class CameraController : MonoBehaviour
         {
             playerCenter += p.transform.position;
 
-            Vector3 playerPosition = ((Vector2)camera.WorldToViewportPoint(p.transform.position));
+            Vector3 playerPosition = ((Vector2)cam.WorldToViewportPoint(p.transform.position));
             if (!trackingBox.Contains(playerPosition))
             {
                 moveDirection += TranslateMovementVector(playerPosition - (trackingBox.ClosestPoint(playerPosition)));
@@ -48,7 +50,7 @@ public class CameraController : MonoBehaviour
 
             foreach (Player p2 in players)
             {
-                Vector3 player2Position = ((Vector2)camera.WorldToViewportPoint(p2.transform.position));
+                Vector3 player2Position = ((Vector2)cam.WorldToViewportPoint(p2.transform.position));
                 float d = Vector2.Distance(player2Position, playerPosition);
                 if (maxPlayerSeperation < d) maxPlayerSeperation = d;
             }
@@ -68,5 +70,10 @@ public class CameraController : MonoBehaviour
     private Vector3 TranslateMovementVector(Vector2 v2)
     {
         return v2.x * transform.right + v2.y * Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+    }
+
+    public void Notified(Player[] data)
+    {
+        players = data;
     }
 }

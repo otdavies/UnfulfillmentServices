@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public LayerMask groundedLayer;
     public Transform visualModel;
 
+
     // Player conidition
     public enum CharacterMovement { stationary, moving }
     public enum CharacterCondition { alive, dead }
@@ -24,6 +25,18 @@ public class Player : MonoBehaviour
     private Vector3 lastGroundedPosition = Vector3.up * 10;
     private Vector3 previousTransformPosition = Vector3.zero;
     private float previousTime = 0;
+
+    public Material PlayerMaterial
+    {
+        set
+        {
+            PlayerColorableParts[] parts = visualModel.GetComponentsInChildren<PlayerColorableParts>();
+            for(int i = 0; i < parts.Length; i++)
+            {
+                parts[i].PartMaterial = value;
+            }
+        }
+    }
 
     // Player input and components
     private PlayerPuppet puppet;
@@ -49,7 +62,6 @@ public class Player : MonoBehaviour
         // Initialize skills
         green = new GreenSkill(thisTransform);
         blue = new BlueSkill(thisTransform);
-
 
         previousTransformPosition = this.transform.position;
     }

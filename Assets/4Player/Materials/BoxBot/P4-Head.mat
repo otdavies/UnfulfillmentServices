@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Eye
-  m_Shader: {fileID: 4800000, guid: 3ab3f16795f91a24bb5eca2667c5883d, type: 3}
-  m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 1
+  m_Name: P4-Head
+  m_Shader: {fileID: 4800000, guid: 346be2293843bec4ba483982fd67f6c4, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -39,7 +39,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: bbde78473e3c32c4a8444168e94b275f, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -64,30 +64,40 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0.69
     - _GlossyReflections: 1
+    - _GradientFallOff: 0.9
+    - _GradientLength: 0.62
+    - _GradientShine: 1.48
+    - _GradientStart: 0.19
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _Shininess: 0.7
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SurfaceShine: 0.2
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
-    - _gradientLength: 0.4
-    - _gradientStart: -0.24
-    - _shine: 2
+    - _gradientLength: 1
+    - _gradientStart: -0.95
+    - _shine: 0
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_x: {r: 0.77205884, g: 0.13624567, b: 0.13624567, a: 1}
-    - _Color_x2: {r: 0.46323532, g: 0.06131056, b: 0.06131056, a: 1}
-    - _Color_y: {r: 0.83823526, g: 0.08012541, b: 0.08012541, a: 1}
-    - _Color_y2: {r: 0.45588237, g: 0.08035736, b: 0.01676037, a: 1}
-    - _Color_z: {r: 0.8455882, g: 0.043522913, b: 0.043522913, a: 1}
-    - _Color_z2: {r: 0.9338235, g: 0.14698723, b: 0.013732712, a: 1}
+    - _Color: {r: 1, g: 0.5586207, b: 0, a: 1}
+    - _Color_x: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
+    - _Color_x2: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
+    - _Color_y: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
+    - _Color_y2: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
+    - _Color_z: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
+    - _Color_z2: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
+    - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _gradientColor: {r: 0.6838235, g: 0.19495219, b: 0.015084357, a: 1}
-    - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}
+    - _GradientColor: {r: 0.44117647, g: 0.44117647, b: 0.44117647, a: 0}
+    - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
+    - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SurfaceColor: {r: 0.2037525, g: 0.7205882, b: 0, a: 0}
+    - _gradientColor: {r: 0, g: 0, b: 0, a: 1}
+    - _gradientDirection: {r: 0, g: -1, b: 0, a: 0}

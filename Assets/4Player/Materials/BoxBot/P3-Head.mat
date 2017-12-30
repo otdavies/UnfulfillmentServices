@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: P2-Head
-  m_Shader: {fileID: 1, guid: 0000000000000000f000000000000000, type: 0}
+  m_Name: P3-Head
+  m_Shader: {fileID: 4800000, guid: 346be2293843bec4ba483982fd67f6c4, type: 3}
   m_ShaderKeywords: 
-  m_LightmapFlags: 4
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -66,6 +66,10 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.69
     - _GlossyReflections: 1
+    - _GradientFallOff: 0.62
+    - _GradientLength: 0.62
+    - _GradientShine: 1.48
+    - _GradientStart: 0.19
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -74,14 +78,15 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SurfaceShine: 0.2
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
     - _gradientLength: 1
     - _gradientStart: -0.95
-    - _shine: 0.3
+    - _shine: 0
     m_Colors:
-    - _Color: {r: 0.65517235, g: 0, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.5586207, b: 0, a: 1}
     - _Color_x: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
     - _Color_x2: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
     - _Color_y: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
@@ -90,6 +95,9 @@ Material:
     - _Color_z2: {r: 0.97794116, g: 0.39990458, b: 0.08628895, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GradientColor: {r: 0.35294116, g: 0.35294116, b: 0.35294116, a: 0}
+    - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
-    - _gradientColor: {r: 1, g: 0, b: 0, a: 1}
+    - _SurfaceColor: {r: 0.875, g: 0.4197515, b: 0.0064338297, a: 0}
+    - _gradientColor: {r: 0, g: 0, b: 0, a: 1}
     - _gradientDirection: {r: 0, g: -1, b: 0, a: 0}
