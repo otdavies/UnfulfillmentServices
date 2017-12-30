@@ -9,18 +9,19 @@ public class PlayerManager : MonoBehaviour
 
     private List<XboxController> connectedButNotPlaying = new List<XboxController>();
     private List<XboxController> connectedAndPlaying = new List<XboxController>();
+    private List<Player> players = new List<Player>();
 
     private Dictionary<int, XboxController> intToXboxController = new Dictionary<int, XboxController>();
 
     private void Start()
     {
         controllersConnected = new bool[4];
-        StartCoroutine(UpdateControllerList());
-
         intToXboxController.Add(0, XboxController.First);
         intToXboxController.Add(1, XboxController.Second);
         intToXboxController.Add(2, XboxController.Third);
         intToXboxController.Add(3, XboxController.Fourth);
+
+        StartCoroutine(UpdateControllerList());
     }
 
     private void Update()
@@ -54,5 +55,10 @@ public class PlayerManager : MonoBehaviour
     private void ControllerListChange(int id, bool state)
     {
         if (state) connectedButNotPlaying.Add(intToXboxController[id]);
+    }
+
+    private void SpawnPlayer()
+    {
+
     }
 }
