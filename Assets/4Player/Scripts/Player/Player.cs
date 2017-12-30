@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
 	public float speed = 5f;
 	public XboxController controller;
     public LayerMask groundedLayer;
-    public Rigidbody visualRigid;
+    public Transform visualModel;
 
     // Player conidition
     public enum CharacterMovement { stationary, moving }
@@ -22,8 +22,8 @@ public class Player : MonoBehaviour
     private bool casting = false;
     private bool canMove = true;
     private Vector3 lastGroundedPosition = Vector3.up * 10;
-    private Vector3 previousTransformPosition;
-    private float previousTime;
+    private Vector3 previousTransformPosition = Vector3.zero;
+    private float previousTime = 0;
 
     // Player input and components
     private PlayerPuppet puppet;
@@ -45,11 +45,12 @@ public class Player : MonoBehaviour
 	{
 		thisTransform = this.transform;
 		physicsRigid = GetComponent<Rigidbody>();
-        puppet = visualRigid.GetComponent<PlayerPuppet>();
+        puppet = visualModel.GetComponent<PlayerPuppet>();
 
         // Initialize skills
         green = new GreenSkill(thisTransform);
         blue = new BlueSkill(thisTransform);
+
 
         previousTransformPosition = this.transform.position;
     }
@@ -68,11 +69,6 @@ public class Player : MonoBehaviour
         ProcessSkills();
 
         // Pickup
-    }
-
-    private void LateUpdate()
-    {
-        //LateUpdateVisualPosition();
     }
 
     private void UpdateInput()
@@ -98,6 +94,7 @@ public class Player : MonoBehaviour
     private void UpdateMovement()
     {
         physicsRigid.angularVelocity = Vector3.zero;
+
         // Apply movement
         if (movementState == CharacterMovement.moving)
         {
@@ -162,25 +159,22 @@ public class Player : MonoBehaviour
     {
         if (movementState == CharacterMovement.moving) FixedUpdatePhysicsPosition();
         if(casting) FixedUpdateSkills();
+
+        previousTransformPosition = thisTransform.position;
+        previousTime = Time.time;
     }
 
     private void FixedUpdatePhysicsPosition()
     {
-        previousTransformPosition = this.transform.position;
-        previousTime = Time.time;
-
         physicsRigid.MoveRotation(Quaternion.Slerp(thisTransform.rotation, Quaternion.LookRotation(direction), Time.fixedDeltaTime * 12));
-
         if(canMove) physicsRigid.MovePosition(thisTransform.position + (thisTransform.forward * direction.magnitude * (Time.fixedDeltaTime * speed)));
-        //LateUpdateVisualPosition();
     }
 
     private void LateUpdateVisualPosition()
     {
-        visualRigid.MoveRotation(thisTransform.rotation);
-        //Vector3 result = Vector3.Lerp(previousTransformPosition, thisTransform.position, (Time.time - previousTime) * (1/Time.fixedDeltaTime));
-        //visualRigid.position = result;
-        visualRigid.MovePosition(thisTransform.position);
+        visualModel.rotation = thisTransform.rotation;
+        Vector3 result = Vector3.Lerp(previousTransformPosition, physicsRigid.transform.position, (Time.time - previousTime) / (Time.fixedDeltaTime));
+        visualModel.position = result;
     }
 
     private void FixedUpdateSkills()
@@ -203,6 +197,6 @@ public class Player : MonoBehaviour
 
     private void Respawn()
     {
-        this.gameObject.SetActive(true);
+        gameObject.SetActive(true);
     }
 }

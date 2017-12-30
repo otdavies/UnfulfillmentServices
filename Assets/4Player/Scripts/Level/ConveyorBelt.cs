@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class ConveyorBelt : MonoBehaviour
 {
+    public bool renderDebug = true;
     public Vector2 extent = Vector3.one;
     public Vector3 forceDirection = Vector3.forward;
     public float strength = 10;
-
-    private List<Rigidbody> rigids = new List<Rigidbody>();
     private BoxCollider triggerZone;
 
     void Start()
@@ -20,27 +19,18 @@ public class ConveyorBelt : MonoBehaviour
         forceDirection = transform.TransformDirection(forceDirection);
     }
 
-    private void OnTriggerEnter(Collider other)
+    Rigidbody body;
+    private void OnTriggerStay(Collider other)
     {
-        rigids.Add(other.attachedRigidbody);
+        body = other.attachedRigidbody;
+        if(body != null) body.velocity = forceDirection * strength;
     }
-
-    private void OnTriggerExit(Collider other)
-    {
-        rigids.Remove(other.attachedRigidbody);
-    }
-	
-	void FixedUpdate ()
-    {
-		for(int i = 0; i < rigids.Count; i++)
-        {
-            rigids[i].velocity = forceDirection * strength;
-        }
-	}
 
     [ExecuteInEditMode]
     private void OnDrawGizmos()
     {
+        if (!renderDebug) return;
+
         Vector3 h, v;
         h = (extent.x * 0.5f * transform.right);
         v = (extent.y * 0.5f * transform.forward);
