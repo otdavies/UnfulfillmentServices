@@ -14,6 +14,7 @@ ModelImporter:
     100012: Label_001
     100014: Curve
     100016: Canister
+    100018: Oil_Icon
     400000: //RootNode
     400002: Oil_Can
     400004: Red_Label
@@ -23,6 +24,7 @@ ModelImporter:
     400012: Label_001
     400014: Curve
     400016: Canister
+    400018: Oil_Icon
     2100000: unnamed
     2300000: Oil_Can
     2300002: Red_Label
@@ -32,6 +34,7 @@ ModelImporter:
     2300010: Label_001
     2300012: Curve
     2300014: Canister
+    2300016: Oil_Icon
     3300000: Oil_Can
     3300002: Red_Label
     3300004: White_Label
@@ -40,6 +43,7 @@ ModelImporter:
     3300010: Label_001
     3300012: Curve
     3300014: Canister
+    3300016: Oil_Icon
     4300000: Red_Label
     4300002: White_Label
     4300004: Oil_Can
@@ -48,6 +52,7 @@ ModelImporter:
     4300010: Circle
     4300012: Curve
     4300014: Canister
+    4300016: Oil_Icon
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}
