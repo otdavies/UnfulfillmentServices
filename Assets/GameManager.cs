@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour, Observer<Player[]>
 
         if (state == GameState.WAITING)
         {
-            RestartGame("Looks like we have enough players!");
+            RestartGame("Looks like wehave enough players");
         }
         else if(state == GameState.PLAYING)
         {
@@ -55,10 +55,10 @@ public class GameManager : MonoBehaviour, Observer<Player[]>
             {
                 if(scores[PlayerToXboxInt(p)] >= winCondiitonAmount)
                 {
-                    TransitionNow(GameState.WINSCREEN, NotifyPlayers, "Looks like we have a winner!");
-                    WaitThenTransition(3, GameState.WINSCREEN, NotifyPlayers, "The " + p.controller + " player wins!");
+                    TransitionNow(GameState.WINSCREEN, NotifyPlayers, "Looks like we have a winner");
+                    WaitThenTransition(3, GameState.WINSCREEN, NotifyPlayers, "The " + p.controller + " player wins");
                     WaitThenTransition(6, GameState.WINSCREEN, NotifyPlayers, "Full rip everyone else");
-                    WaitThenTransition(9, GameState.WINSCREEN, RestartGame, "Next round incoming!");
+                    WaitThenTransition(9, GameState.WINSCREEN, RestartGame, "Next round incoming");
                 }
             }
         }
