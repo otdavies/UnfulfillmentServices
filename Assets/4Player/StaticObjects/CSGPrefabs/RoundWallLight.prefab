@@ -107,6 +107,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1678650755636504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4176767718148946}
+  - component: {fileID: 108492901438071524}
+  m_Layer: 0
+  m_Name: Spot (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1855789855936372
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,6 +139,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4176767718148946
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1678650755636504}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -1.797, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4677782449856364}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!4 &4392325369365848
 Transform:
   m_ObjectHideFlags: 1
@@ -134,7 +163,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4677782449856364}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4429019022959372
 Transform:
@@ -147,7 +176,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4677782449856364}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4439291373880220
 Transform:
@@ -160,7 +189,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4677782449856364}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4486493260900234
 Transform:
@@ -173,7 +202,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4677782449856364}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4493872715937892
 Transform:
@@ -186,7 +215,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4677782449856364}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4677782449856364
 Transform:
@@ -194,10 +223,11 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1095378608222800}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.750004, y: 6.2895017, z: 26.6405}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 38.74, y: 8.164499, z: -20.156498}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 4176767718148946}
   - {fileID: 4392325369365848}
   - {fileID: 4429019022959372}
   - {fileID: 4439291373880220}
@@ -218,8 +248,44 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4677782449856364}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!108 &108492901438071524
+Light:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1678650755636504}
+  m_Enabled: 1
+  serializedVersion: 8
+  m_Type: 0
+  m_Color: {r: 1, g: 0.97302234, b: 0.8602941, a: 1}
+  m_Intensity: 3
+  m_Range: 10
+  m_SpotAngle: 120
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_Lightmapping: 4
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
 --- !u!114 &114341687365264306
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -330,7 +396,7 @@ MonoBehaviour:
       RenderMaterial: {fileID: 2100000, guid: c7601b6695bc6714fa324d93ebbe07fd, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
-    TexGenFlags: 000000000000000000000000000000000000000000000000
+    TexGenFlags: 040000000400000004000000040000000400000004000000
     Materials: []
   ControlMesh:
     Vertices:
@@ -453,7 +519,7 @@ MonoBehaviour:
     - EdgeIndices: 07000000060000000500000004000000
       TexGenIndex: 5
     IsValid: 1
-    Generation: 20
+    Generation: 21
   ContentLayer: 0
   flags: 0
 --- !u!114 &114404131206446248
@@ -566,7 +632,7 @@ MonoBehaviour:
       RenderMaterial: {fileID: 2100000, guid: c7601b6695bc6714fa324d93ebbe07fd, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
-    TexGenFlags: 000000000000000000000000000000000000000000000000
+    TexGenFlags: 040000000400000004000000040000000400000004000000
     Materials: []
   ControlMesh:
     Vertices:
@@ -689,7 +755,7 @@ MonoBehaviour:
     - EdgeIndices: 07000000060000000500000004000000
       TexGenIndex: 5
     IsValid: 1
-    Generation: 22
+    Generation: 23
   ContentLayer: 0
   flags: 0
 --- !u!114 &114690864917461762
@@ -802,7 +868,7 @@ MonoBehaviour:
       RenderMaterial: {fileID: 2100000, guid: c7601b6695bc6714fa324d93ebbe07fd, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
-    TexGenFlags: 000000000000000000000000000000000000000000000000
+    TexGenFlags: 040000000400000004000000040000000400000004000000
     Materials: []
   ControlMesh:
     Vertices:
@@ -925,7 +991,7 @@ MonoBehaviour:
     - EdgeIndices: 07000000060000000500000004000000
       TexGenIndex: 5
     IsValid: 1
-    Generation: 22
+    Generation: 23
   ContentLayer: 0
   flags: 0
 --- !u!114 &114810771175297126
@@ -1116,7 +1182,7 @@ MonoBehaviour:
       RenderMaterial: {fileID: 2100000, guid: c7601b6695bc6714fa324d93ebbe07fd, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
-    TexGenFlags: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+    TexGenFlags: 04000000040000000400000004000000040000000400000004000000040000000400000004000000
     Materials: []
   ControlMesh:
     Vertices:
@@ -1351,7 +1417,7 @@ MonoBehaviour:
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
     IsValid: 1
-    Generation: 26
+    Generation: 27
   ContentLayer: 0
   flags: 0
 --- !u!114 &114852470282305122
@@ -1524,7 +1590,7 @@ MonoBehaviour:
       RenderMaterial: {fileID: 2100000, guid: c7601b6695bc6714fa324d93ebbe07fd, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
-    TexGenFlags: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+    TexGenFlags: 04000000040000000400000004000000040000000400000004000000040000000400000004000000
     Materials: []
   ControlMesh:
     Vertices:
@@ -1759,7 +1825,7 @@ MonoBehaviour:
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
     IsValid: 1
-    Generation: 26
+    Generation: 27
   ContentLayer: 0
   flags: 0
 --- !u!114 &114890064391916156
@@ -1932,7 +1998,7 @@ MonoBehaviour:
       RenderMaterial: {fileID: 2100000, guid: c7601b6695bc6714fa324d93ebbe07fd, type: 2}
       PhysicsMaterial: {fileID: 0}
       SmoothingGroup: 0
-    TexGenFlags: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+    TexGenFlags: 04000000040000000400000004000000040000000400000004000000000000000400000004000000
     Materials: []
   ControlMesh:
     Vertices:
@@ -2167,6 +2233,6 @@ MonoBehaviour:
     - EdgeIndices: 0f0000000e0000000d0000000c0000000b0000000a0000000900000008000000
       TexGenIndex: 9
     IsValid: 1
-    Generation: 86
+    Generation: 87
   ContentLayer: 0
   flags: 0

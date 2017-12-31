@@ -28,6 +28,6 @@ public class BoxSpawner : MonoBehaviour
 
     void SpawnBox()
     {
-        PoolableFactory.Instance.Create<BasicPoolable>("Box", transform.position + Random.insideUnitSphere * 0.5f, Quaternion.identity, this.transform);
+        PoolableFactory.Instance.Create<BasicPoolable>("Box", transform.position + Random.insideUnitSphere * 0.25f, Quaternion.identity, this.transform);
     }
 }

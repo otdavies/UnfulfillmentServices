@@ -6,6 +6,6 @@ public class BoxScalar : MonoBehaviour
 {
 	void OnEnable ()
     {
-        transform.localScale = Vector3.one + Random.onUnitSphere * 0.5f;
+        transform.localScale = Vector3.one + Random.onUnitSphere * 0.25f;
 	}
 }

@@ -89,7 +89,7 @@ Material:
     - __dirty: 0
     - _gradientLength: 0.5
     - _gradientStart: 2
-    - _shine: 5.7199554
+    - _shine: 2
     - _translucencyStrength: 0
     - _transmissionStrength: 0
     m_Colors:

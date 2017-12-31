@@ -148,7 +148,7 @@ QualitySettings:
     excludedTargetPlatforms: []
   - serializedVersion: 2
     name: Fantastic
-    pixelLightCount: 8
+    pixelLightCount: 3
     shadows: 2
     shadowResolution: 2
     shadowProjection: 0

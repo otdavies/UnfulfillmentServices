@@ -202,9 +202,15 @@ public class Player : MonoBehaviour
         movementState = CharacterMovement.stationary;
         skillState = CharacterSkill.none;
         conditionState = CharacterCondition.dead;
+        casting = false;
+        blueDown = false;
+        greenDown = false;
+        blueUp = true;
+        blue.ChannelEnd();
+        puppet.SetHolding(false);
 
         PlayerManager.Instance.DespawnPlayer(controller);
-        Invoke("Respawn", 1);
+        Invoke("Respawn", 2);
     }
 
     private void Respawn()
