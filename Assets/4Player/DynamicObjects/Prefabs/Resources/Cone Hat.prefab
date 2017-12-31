@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 114308236876639238}
   - component: {fileID: 114833008833658284}
   m_Layer: 10
-  m_Name: ConeHat
+  m_Name: Cone Hat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

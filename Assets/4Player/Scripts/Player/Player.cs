@@ -11,6 +11,9 @@ public class Player : MonoBehaviour
     public LayerMask groundedLayer;
     public Transform visualModel;
 
+    public GameObject greenEffect;
+    public GameObject blueEffect;
+
 
     // Player conidition
     public enum CharacterMovement { stationary, moving }
@@ -131,7 +134,8 @@ public class Player : MonoBehaviour
                 skillState = CharacterSkill.green;
                 casting = true;
                 canMove = false;
-                green.Cast(new Vector3(horizontalInput, 0, verticalInput), 0.2f, 10);
+                green.Cast(new Vector3(horizontalInput, 0, verticalInput), 0.4f, 8);
+                greenEffect.SetActive(true);
             }
 
             if (blueDown)
@@ -168,6 +172,7 @@ public class Player : MonoBehaviour
                 skillState = CharacterSkill.none;
                 casting = false;
                 canMove = true;
+                greenEffect.SetActive(false);
             }
         }
     }

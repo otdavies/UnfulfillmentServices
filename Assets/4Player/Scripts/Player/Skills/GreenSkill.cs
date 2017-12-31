@@ -46,8 +46,9 @@ public class GreenSkill
     {
         percentCompletion += (Time.fixedDeltaTime / travelTime);
         float t = percentCompletion;
-        t = t * t * t * (t * (6f * t - 15f) + 10f);
-        rigid.AddForce((initialDirection * 5 * travelDistance) * Mathf.Sin(t * Mathf.PI), ForceMode.Impulse);
+        //t = t * t * t * (t * (6f * t - 15f) + 10f);
+        t = Mathf.Sin(t * Mathf.PI * 0.5f);
+        rigid.AddForce((rigid.transform.forward * 5 * travelDistance) * Mathf.Sin(t * Mathf.PI), ForceMode.Impulse);
         rigid.AddForce(-rigid.velocity * Mathf.Sin(t * Mathf.PI * 0.5f), ForceMode.Impulse);
 
         if (percentCompletion > 1)
