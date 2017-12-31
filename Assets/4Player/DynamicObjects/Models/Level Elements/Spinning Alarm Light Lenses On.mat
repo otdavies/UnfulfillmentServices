@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Spinning Alarm Light Housings
+  m_Name: Spinning Alarm Light Lenses
   m_Shader: {fileID: 4800000, guid: 346be2293843bec4ba483982fd67f6c4, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 0
@@ -73,7 +73,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfaceShine: 1
+    - _SurfaceShine: 3
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
@@ -82,4 +82,4 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GradientColor: {r: 0, g: 0, b: 0, a: 0}
     - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
-    - _SurfaceColor: {r: 0.18382353, g: 0.18382353, b: 0.18382353, a: 0}
+    - _SurfaceColor: {r: 1, g: 0.14705884, b: 0.14705884, a: 0}
