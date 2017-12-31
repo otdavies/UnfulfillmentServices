@@ -29,7 +29,7 @@ public class ActivateRandom : MonoBehaviour
             GameObject lastTarget = activatees[Random.Range(0, activatees.Length)];
             lastTarget.SetActive(true);
             lastTarget.SendMessage("Activated", SendMessageOptions.DontRequireReceiver);
-            StartCoroutine(DisableAfter(2, lastTarget));
+            StartCoroutine(DisableAfter(3, lastTarget));
         }
     }
 

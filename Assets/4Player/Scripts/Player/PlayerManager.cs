@@ -111,6 +111,8 @@ public class PlayerManager : Observable<Player[]>
 
     private void SpawnPlayer(int i)
     {
+        if (connected[i] == null) return;
+
         Transform spawnPoint = playerSpawnPoint[i];
         IPoolable o = PoolableFactory.Instance.Create<PlayerPoolable>(playerResourceId, spawnPoint.position, spawnPoint.rotation, null);
         Player p = (o as MonoBehaviour).gameObject.GetComponentInChildren<Player>();
@@ -139,5 +141,10 @@ public class PlayerManager : Observable<Player[]>
     public void DespawnPlayer(XboxController xboxController)
     {
         RemovePlayer(xboxControllerToInt[xboxController]);
+    }
+
+    public Player GetPlayerByController(XboxController xboxController)
+    {
+        return players[xboxControllerToInt[xboxController]];
     }
 }

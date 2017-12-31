@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
     private GreenSkill green;
     private BlueSkill blue;
 
-    private void Start () 
+    private void OnEnable () 
 	{
 		thisTransform = this.transform;
 		physicsRigid = GetComponent<Rigidbody>();
@@ -69,6 +69,8 @@ public class Player : MonoBehaviour
         previousTransformPosition = this.transform.position;
 
         conditionState = CharacterCondition.alive;
+
+        blueEffect.Stop();
     }
 
     // Update Related ------------------------------------------
@@ -146,6 +148,7 @@ public class Player : MonoBehaviour
                 casting = true;
                 canMove = false;
                 blue.ChannelStart(6);
+                blueEffect.Play();
                 puppet.SetHolding(true);
             }
         }
@@ -160,11 +163,13 @@ public class Player : MonoBehaviour
                     casting = false;
                     canMove = true;
                     blue.ChannelEnd();
+                    blueEffect.Stop();
                     puppet.SetHolding(false);
                 }
 
                 if(blue.Grabbed())
                 {
+                    blueEffect.Stop();
                     canMove = true;
                 }
             }
@@ -232,6 +237,7 @@ public class Player : MonoBehaviour
             blueUp = true;
             blue.ChannelEnd();
             puppet.SetHolding(false);
+            blueEffect.Stop();
 
             PlayerManager.Instance.DespawnPlayer(controller);
         }
