@@ -14,6 +14,8 @@ ModelImporter:
     100012: Head
     100014: Eye_Slit
     100016: Head_Slits
+    100018: Plane
+    100020: Mouth
     400000: Arm_Left
     400002: Arm_Right
     400004: Bowl
@@ -23,6 +25,8 @@ ModelImporter:
     400012: Head
     400014: Eye_Slit
     400016: Head_Slits
+    400018: Plane
+    400020: Mouth
     2100000: unnamed
     2300000: Arm_Left
     2300002: Arm_Right
@@ -32,6 +36,8 @@ ModelImporter:
     2300010: Head
     2300012: Eye_Slit
     2300014: Head_Slits
+    2300016: Plane
+    2300018: Mouth
     3300000: Arm_Left
     3300002: Arm_Right
     3300004: Bowl
@@ -40,6 +46,8 @@ ModelImporter:
     3300010: Head
     3300012: Eye_Slit
     3300014: Head_Slits
+    3300016: Plane
+    3300018: Mouth
     4300000: Bowl
     4300002: Arm_Right
     4300004: Eye
@@ -48,6 +56,8 @@ ModelImporter:
     4300010: Arm_Left
     4300012: Eye_Slit
     4300014: Head_Slits
+    4300016: Plane
+    4300018: Mouth
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}
