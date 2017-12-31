@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicPoolable : MonoBehaviour, IPoolable
+public class PlayerPoolable : MonoBehaviour, IPoolable
 {
+    private Player player;
     private new Rigidbody rigidbody;
     private Transform thisTrans;
+
     private string resourceBase;
 
     public void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        player = GetComponentInChildren<Player>();
+        rigidbody = player.GetComponent<Rigidbody>();
         thisTrans = transform;
     }
 
@@ -18,10 +21,12 @@ public class BasicPoolable : MonoBehaviour, IPoolable
     {
         PoolableFactory.Instance.Reclaim(this);
         gameObject.SetActive(false);
+
     }
 
     public void Instantiate(Vector3 position, Quaternion rotation)
     {
+        ResetFirstOrderChildrenState();
         thisTrans.position = position;
         thisTrans.rotation = rotation;
 
@@ -42,5 +47,18 @@ public class BasicPoolable : MonoBehaviour, IPoolable
     public void SetResourceBase(string resource)
     {
         resourceBase = resource;
+    }
+
+    private void ResetFirstOrderChildrenState()
+    {
+        var children = thisTrans.GetComponentsInChildren<Transform>();
+        foreach (var c in children)
+        {
+            if (c.parent == thisTrans)
+            {
+                c.localPosition = Vector3.zero;
+                c.localRotation = Quaternion.identity;
+            }
+        }
     }
 }

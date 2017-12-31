@@ -68,9 +68,9 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GradientFallOff: 0.26
+    - _GradientFallOff: 0.44
     - _GradientLength: 0.42
-    - _GradientShine: 0.63
+    - _GradientShine: 0.88
     - _GradientStart: -2.02
     - _Metallic: 0
     - _Mode: 0
@@ -79,7 +79,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfaceShine: 0.22
+    - _SurfaceShine: 0.31
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
@@ -98,6 +98,6 @@ Material:
     - _GradientColor: {r: 1, g: 0, b: 0, a: 0}
     - _GradientDirection: {r: 0, g: -1, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _SurfaceColor: {r: 0.29411763, g: 0.08866781, b: 0.08866781, a: 0}
+    - _SurfaceColor: {r: 0.2941176, g: 0.08866779, b: 0.08866779, a: 0}
     - _gradientColor: {r: 1, g: 0, b: 0, a: 1}
     - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}

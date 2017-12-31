@@ -78,12 +78,12 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
-    - _brightness: 1
+    - _brightness: 1.54
     - _gradientLength: 0.5
     - _gradientStart: 2
     - _shine: 0.2
     m_Colors:
-    - _Color: {r: 0.29411757, g: 0.29411757, b: 0.29411757, a: 0}
+    - _Color: {r: 0.2205882, g: 0.19821618, b: 0.1394896, a: 0}
     - _Color_x: {r: 0.8088235, g: 0.42225346, b: 0.42225346, a: 1}
     - _Color_x2: {r: 0.8088235, g: 0.42225346, b: 0.42225346, a: 1}
     - _Color_y: {r: 0.7099479, g: 0.30730966, b: 0.8529412, a: 1}

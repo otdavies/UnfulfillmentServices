@@ -30,6 +30,7 @@ public class PlayerManager : Observable<Player[]>
     private Dictionary<int, Player> players = new Dictionary<int, Player>(4);
 
     private Dictionary<int, XboxController> intToXboxController = new Dictionary<int, XboxController>(4);
+    private Dictionary<XboxController, int> xboxControllerToInt = new Dictionary<XboxController, int>(4);
 
     private static PlayerManager playerManager;
     public static PlayerManager Instance
@@ -50,10 +51,17 @@ public class PlayerManager : Observable<Player[]>
         playerManager = this;
 
         controllersConnected = new bool[4];
+
+        // needed for conversions, this is cancer
         intToXboxController.Add(0, XboxController.First);
         intToXboxController.Add(1, XboxController.Second);
         intToXboxController.Add(2, XboxController.Third);
         intToXboxController.Add(3, XboxController.Fourth);
+        xboxControllerToInt.Add(XboxController.First, 0);
+        xboxControllerToInt.Add(XboxController.Second, 1);
+        xboxControllerToInt.Add(XboxController.Third, 2);
+        xboxControllerToInt.Add(XboxController.Fourth, 3);
+
 
         StartCoroutine(UpdateControllerList());
     }
@@ -104,7 +112,7 @@ public class PlayerManager : Observable<Player[]>
     private void SpawnPlayer(int i)
     {
         Transform spawnPoint = playerSpawnPoint[i];
-        IPoolable o = PoolableFactory.Instance.Create<BasicPoolable>(playerResourceId, spawnPoint.position, spawnPoint.rotation, null);
+        IPoolable o = PoolableFactory.Instance.Create<PlayerPoolable>(playerResourceId, spawnPoint.position, spawnPoint.rotation, null);
         Player p = (o as MonoBehaviour).gameObject.GetComponentInChildren<Player>();
         p.PlayerMaterial = playerMaterials[i];
         p.controller = intToXboxController[i];
@@ -119,5 +127,15 @@ public class PlayerManager : Observable<Player[]>
         players.Remove(i);
 
         NotifyObservers(players.Values.ToArray());
+    }
+
+    public void SpawnPlayer(XboxController xboxController)
+    {
+        SpawnPlayer(xboxControllerToInt[xboxController]);
+    }
+
+    public void DespawnPlayer(XboxController xboxController)
+    {
+        RemovePlayer(xboxControllerToInt[xboxController]);
     }
 }

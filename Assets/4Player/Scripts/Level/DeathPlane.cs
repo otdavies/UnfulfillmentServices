@@ -26,9 +26,5 @@ public class DeathPlane : MonoBehaviour
         {
             other.SendMessage("DeathByFalling", SendMessageOptions.DontRequireReceiver);
         }
-        else if(other.gameObject.layer == LayerMask.NameToLayer("dynamic"))
-        {
-            Destroy(other.gameObject, 3);
-        }
     }
 }

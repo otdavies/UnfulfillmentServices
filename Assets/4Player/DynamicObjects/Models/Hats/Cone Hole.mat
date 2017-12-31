@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Cone Reflector
+  m_Name: Cone Hole
   m_Shader: {fileID: 4800000, guid: 3ab3f16795f91a24bb5eca2667c5883d, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
@@ -66,6 +66,10 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _GradientFallOff: 0.49
+    - _GradientLength: 0.5
+    - _GradientShine: 0
+    - _GradientStart: 2
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -73,6 +77,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SurfaceShine: 0.2
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
@@ -88,6 +93,8 @@ Material:
     - _Color_z: {r: 0.91372555, g: 0.91372555, b: 0.91372555, a: 1}
     - _Color_z2: {r: 0.91372555, g: 0.91372555, b: 0.91372555, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GradientColor: {r: 0, g: 0, b: 0, a: 0}
+    - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _gradientColor: {r: 0.013624581, g: 0.8886975, b: 0.9264706, a: 1}
     - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}

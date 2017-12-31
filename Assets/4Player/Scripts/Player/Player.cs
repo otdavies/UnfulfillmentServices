@@ -202,15 +202,14 @@ public class Player : MonoBehaviour
         movementState = CharacterMovement.stationary;
         skillState = CharacterSkill.none;
         conditionState = CharacterCondition.dead;
-        this.gameObject.SetActive(false);
-        thisTransform.position = lastGroundedPosition;
-        physicsRigid.velocity = Vector3.zero;
 
+        PlayerManager.Instance.DespawnPlayer(controller);
         Invoke("Respawn", 1);
     }
 
     private void Respawn()
     {
-        gameObject.SetActive(true);
+        PlayerManager.Instance.SpawnPlayer(controller);
+        conditionState = CharacterCondition.alive;
     }
 }
