@@ -6,6 +6,19 @@ using XboxCtrlrInput;
 
 public class PlayerManager : Observable<Player[]>
 {
+    private static PlayerManager playerManager;
+    public static PlayerManager Instance
+    {
+        get
+        {
+            if (!playerManager)
+            {
+                playerManager = new GameObject("PlayerManager").AddComponent<PlayerManager>(); ;
+            }
+            return playerManager;
+        }
+    }
+
     public class ControllerContainer
     {
         public ControllerContainer(int intId, XboxController controllerId, bool spawned)
@@ -31,20 +44,6 @@ public class PlayerManager : Observable<Player[]>
 
     private Dictionary<int, XboxController> intToXboxController = new Dictionary<int, XboxController>(4);
     private Dictionary<XboxController, int> xboxControllerToInt = new Dictionary<XboxController, int>(4);
-
-    private static PlayerManager playerManager;
-    public static PlayerManager Instance
-    {
-        get
-        {
-            if (!playerManager)
-            {
-                playerManager = new GameObject("PlayerManager").AddComponent<PlayerManager>(); ;
-            }
-            return playerManager;
-        }
-    }
-
 
     private void Awake()
     {
@@ -77,7 +76,8 @@ public class PlayerManager : Observable<Player[]>
             {
                 if (controller.spawned)
                 {
-                    RemovePlayer(controller.intId);
+                    if (players.ContainsKey(i))
+                        RemovePlayer(controller.intId);
                     controller.spawned = false;
                 }
                 else
@@ -116,7 +116,9 @@ public class PlayerManager : Observable<Player[]>
         Player p = (o as MonoBehaviour).gameObject.GetComponentInChildren<Player>();
         p.PlayerMaterial = playerMaterials[i];
         p.controller = intToXboxController[i];
-        players.Add(i, p);
+
+        if (!players.ContainsKey(i)) players.Add(i, p);
+        else players[i] = p;
 
         NotifyObservers(players.Values.ToArray());
     }

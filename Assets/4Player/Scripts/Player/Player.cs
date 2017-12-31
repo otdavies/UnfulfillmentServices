@@ -11,8 +11,8 @@ public class Player : MonoBehaviour
     public LayerMask groundedLayer;
     public Transform visualModel;
 
-    public GameObject greenEffect;
-    public GameObject blueEffect;
+    public ParticleSystem greenEffect;
+    public ParticleSystem blueEffect;
 
 
     // Player conidition
@@ -67,6 +67,8 @@ public class Player : MonoBehaviour
         blue = new BlueSkill(thisTransform);
 
         previousTransformPosition = this.transform.position;
+
+        conditionState = CharacterCondition.alive;
     }
 
     // Update Related ------------------------------------------
@@ -135,7 +137,7 @@ public class Player : MonoBehaviour
                 casting = true;
                 canMove = false;
                 green.Cast(new Vector3(horizontalInput, 0, verticalInput), 0.4f, 8);
-                greenEffect.SetActive(true);
+                greenEffect.Play();
             }
 
             if (blueDown)
@@ -172,7 +174,6 @@ public class Player : MonoBehaviour
                 skillState = CharacterSkill.none;
                 casting = false;
                 canMove = true;
-                greenEffect.SetActive(false);
             }
         }
     }
@@ -215,12 +216,34 @@ public class Player : MonoBehaviour
         puppet.SetHolding(false);
 
         PlayerManager.Instance.DespawnPlayer(controller);
-        Invoke("Respawn", 2);
+        Invoke("Respawn", 3);
     }
 
-    private void Respawn()
+    public void Despawn()
     {
-        PlayerManager.Instance.SpawnPlayer(controller);
-        conditionState = CharacterCondition.alive;
+        if (conditionState == CharacterCondition.alive)
+        {
+            movementState = CharacterMovement.stationary;
+            skillState = CharacterSkill.none;
+            conditionState = CharacterCondition.dead;
+            casting = false;
+            blueDown = false;
+            greenDown = false;
+            blueUp = true;
+            blue.ChannelEnd();
+            puppet.SetHolding(false);
+
+            PlayerManager.Instance.DespawnPlayer(controller);
+        }
+    }
+
+    public void Respawn()
+    {
+        if (conditionState == CharacterCondition.dead)
+        {
+            PlayerManager.Instance.SpawnPlayer(controller);
+
+            conditionState = CharacterCondition.alive;
+        }
     }
 }

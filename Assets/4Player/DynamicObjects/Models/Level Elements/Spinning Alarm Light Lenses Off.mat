@@ -73,7 +73,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfaceShine: 3
+    - _SurfaceShine: 0.39
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
@@ -82,4 +82,4 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GradientColor: {r: 0, g: 0, b: 0, a: 0}
     - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
-    - _SurfaceColor: {r: 1, g: 0.14705884, b: 0.14705884, a: 0}
+    - _SurfaceColor: {r: 0.6838235, g: 0, b: 0, a: 0}
