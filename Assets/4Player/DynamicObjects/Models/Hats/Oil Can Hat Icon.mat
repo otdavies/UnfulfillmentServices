@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Oil Can Hat Icon
-  m_Shader: {fileID: 4800000, guid: 3ab3f16795f91a24bb5eca2667c5883d, type: 3}
+  m_Name: Oil Can Hat
+  m_Shader: {fileID: 4800000, guid: 346be2293843bec4ba483982fd67f6c4, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 1
@@ -63,13 +63,15 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _FallOff: 0.36
+    - _Falloff: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GradientFallOff: 0.49
-    - _GradientLength: 0.5
-    - _GradientShine: 0
-    - _GradientStart: 2
+    - _GradientFallOff: 0.44
+    - _GradientLength: 0.42
+    - _GradientShine: 0.88
+    - _GradientStart: -2.02
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -77,24 +79,25 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfaceShine: 0.2
+    - _SurfaceShine: 0.31
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
-    - _gradientLength: 3
-    - _gradientStart: -0.2
-    - _shine: 0.1
+    - _gradientLength: 0.15
+    - _gradientStart: 2
+    - _shine: 0
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_x: {r: 0.9117647, g: 0.9117647, b: 0.9117647, a: 1}
-    - _Color_x2: {r: 0.91372555, g: 0.91372555, b: 0.91372555, a: 1}
-    - _Color_y: {r: 0.91372555, g: 0.91372555, b: 0.91372555, a: 1}
-    - _Color_y2: {r: 0.91372555, g: 0.91372555, b: 0.91372555, a: 1}
-    - _Color_z: {r: 0.91372555, g: 0.91372555, b: 0.91372555, a: 1}
-    - _Color_z2: {r: 0.91372555, g: 0.91372555, b: 0.91372555, a: 1}
+    - _Color: {r: 0.46323532, g: 0.09196584, b: 0.09196584, a: 1}
+    - _Color_x: {r: 0.45098042, g: 0.20392159, b: 0.18431373, a: 1}
+    - _Color_x2: {r: 0.45098042, g: 0.20392159, b: 0.18431373, a: 1}
+    - _Color_y: {r: 0.45098042, g: 0.20392159, b: 0.18431373, a: 1}
+    - _Color_y2: {r: 0.45098042, g: 0.20392159, b: 0.18431373, a: 1}
+    - _Color_z: {r: 0.45098042, g: 0.20392159, b: 0.18431373, a: 1}
+    - _Color_z2: {r: 0.45098042, g: 0.20392159, b: 0.18431373, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GradientColor: {r: 0, g: 0, b: 0, a: 0}
-    - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
+    - _GradientColor: {r: 1, g: 0, b: 0, a: 0}
+    - _GradientDirection: {r: 0, g: -1, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _gradientColor: {r: 0.013624581, g: 0.8886975, b: 0.9264706, a: 1}
+    - _SurfaceColor: {r: 0.2941176, g: 0.08866779, b: 0.08866779, a: 0}
+    - _gradientColor: {r: 1, g: 0, b: 0, a: 1}
     - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}
