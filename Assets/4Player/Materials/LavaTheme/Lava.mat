@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Lava
-  m_Shader: {fileID: 4800000, guid: f4810a8a071d04e409aafd2ab7f1c0fa, type: 3}
+  m_Shader: {fileID: 4800000, guid: 346be2293843bec4ba483982fd67f6c4, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
@@ -70,6 +70,10 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _GradientFallOff: 1
+    - _GradientLength: 73.3
+    - _GradientShine: 3
+    - _GradientStart: -54.4
     - _MaskClipValue: 0.5
     - _Metallic: 0
     - _Mode: 0
@@ -78,6 +82,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SurfaceShine: 3
     - _TransAmbient: 0
     - _TransDirect: 0
     - _TransNormalDistortion: 0
@@ -94,12 +99,12 @@ Material:
     - _transmissionStrength: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_1: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_2: {r: 0.9632353, g: 0.27460986, b: 0.021247858, a: 1}
-    - _Color_3: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_4: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_5: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_6: {r: 1, g: 1, b: 1, a: 1}
+    - _Color_1: {r: 0.96470594, g: 0.27450982, b: 0.019607844, a: 1}
+    - _Color_2: {r: 0.96470594, g: 0.27450982, b: 0.019607844, a: 1}
+    - _Color_3: {r: 0.96470594, g: 0.27450982, b: 0.019607844, a: 1}
+    - _Color_4: {r: 0.96470594, g: 0.27450982, b: 0.019607844, a: 1}
+    - _Color_5: {r: 0.96470594, g: 0.27450982, b: 0.019607844, a: 1}
+    - _Color_6: {r: 0.96470594, g: 0.27450982, b: 0.019607844, a: 1}
     - _Color_x: {r: 0.8088235, g: 0.42225346, b: 0.42225346, a: 1}
     - _Color_x2: {r: 0.8088235, g: 0.42225346, b: 0.42225346, a: 1}
     - _Color_y: {r: 1, g: 0.33103448, b: 0, a: 1}
@@ -107,7 +112,10 @@ Material:
     - _Color_z: {r: 0.37404916, g: 0.625, b: 0.13327205, a: 1}
     - _Color_z2: {r: 0.37404916, g: 0.625, b: 0.13327205, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GradientColor: {r: 0.89705884, g: 0.8049875, b: 0.29022494, a: 0}
+    - _GradientDirection: {r: 0, g: 0, b: 1, a: 0}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SurfaceColor: {r: 0.5147059, g: 0.19606845, b: 0.102184266, a: 0}
     - _gradientColor: {r: 0, g: 0, b: 0, a: 0}
     - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}
     - _light_1: {r: 1, g: 0, b: 0, a: 0}
