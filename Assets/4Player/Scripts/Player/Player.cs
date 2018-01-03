@@ -221,7 +221,6 @@ public class Player : MonoBehaviour
         puppet.SetHolding(false);
 
         PlayerManager.Instance.DespawnPlayer(controller);
-        Invoke("Respawn", 3);
     }
 
     public void Despawn()

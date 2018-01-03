@@ -74,13 +74,13 @@ public class PlayerManager : Observable<Player[]>
 
             if (XCI.GetButtonDown(XboxButton.Start, controller.controllerId))
             {
-                if (controller.spawned)
-                {
-                    if (players.ContainsKey(i))
-                        RemovePlayer(controller.intId);
-                    controller.spawned = false;
-                }
-                else
+                if (!controller.spawned)
+                //{
+                //    if (players.ContainsKey(i))
+                //        RemovePlayer(controller.intId);
+                //    controller.spawned = false;
+                //}
+                //else
                 {
                     SpawnPlayer(controller.intId);
                     controller.spawned = true;
@@ -127,10 +127,13 @@ public class PlayerManager : Observable<Player[]>
 
     private void RemovePlayer(int i)
     {
-        players[i].transform.parent.GetComponent<IPoolable>().Destroy();
-        players.Remove(i);
+        if (players.ContainsKey(i))
+        {
+            players[i].transform.parent.GetComponent<IPoolable>().Destroy();
+            players.Remove(i);
 
-        NotifyObservers(players.Values.ToArray());
+            NotifyObservers(players.Values.ToArray());
+        }
     }
 
     public void SpawnPlayer(XboxController xboxController)
