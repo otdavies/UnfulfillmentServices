@@ -74,13 +74,6 @@ public class PlayerManager : Observable<Player[]>
 
             if (XCI.GetButtonDown(XboxButton.Start, controller.controllerId))
             {
-                if (controller.spawned)
-                {
-                    if (players.ContainsKey(i))
-                        RemovePlayer(controller.intId);
-                    controller.spawned = false;
-                }
-                else
                 if (!controller.spawned)
                 //{
                 //    if (players.ContainsKey(i))

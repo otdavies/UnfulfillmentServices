@@ -56,7 +56,6 @@ public class CameraController : MonoBehaviour, Observer<Player[]>
             }
         }
 
-        size = Mathf.Clamp(Mathf.Lerp(size, (1 / Mathf.Clamp01(1 - maxPlayerSeperation) - 1) * 0.4f, Time.deltaTime * 0.5f), 1, 3);
         size = Mathf.Clamp(Mathf.Lerp(size, (1 / Mathf.Clamp01(1 - maxPlayerSeperation) - 1) * 0.25f, Time.deltaTime * 0.5f), 1, 3);
 
         boxCenter += (((moveDirection / players.Length) * cameraTrackBoundsCorrectionStrength)) * size;
