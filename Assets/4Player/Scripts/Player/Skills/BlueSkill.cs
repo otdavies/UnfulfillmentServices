@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlueSkill
+public class BlueSkill : Channelable
 {
     private Transform owner;
     private Rigidbody rigid;
@@ -14,27 +14,27 @@ public class BlueSkill
     private bool holding = false;
 
     private IUsable usable;
+    private Effectors effectors;
 
     public BlueSkill(Transform player)
     {
         owner = player;
         rigid = owner.GetComponent<Rigidbody>();
+        effectors = new Effectors(new StatusEffect[]{ new StatusEffect(false, 0, 0), new StatusEffect(false, 0, 0), new StatusEffect(false, 0, 0) });
     }
 
-    public void ChannelStart(float dist)
+    public void Cast(params object[] cartProperties)
     {
-        distance = dist;
+        distance = (float)cartProperties[0];
         activated = true;
     }
 
-    public void ChannelEnd()
+    public Effectors Effectors()
     {
-        activated = false;
-        holding = false;
-        usable = null;
+        return effectors;
     }
 
-    public void UpdateSkill()
+    public void Channel()
     {
         if (activated)
         {
@@ -42,6 +42,13 @@ public class BlueSkill
             if (!holding) Pull();
             else Hold();
         }
+    }
+
+    public void Stop()
+    {
+        activated = false;
+        holding = false;
+        usable = null;
     }
 
     public bool Grabbed()
@@ -99,5 +106,10 @@ public class BlueSkill
         heldRigid.angularVelocity *= dist;
         heldRigid.MovePosition(Vector3.Lerp(pullTarget, heldRigid.position, dist));
         heldRigid.MoveRotation(Quaternion.Lerp(rigid.rotation, heldRigid.rotation, dist));
+    }
+
+    public bool Completed()
+    {
+        return !activated && !holding;
     }
 }
