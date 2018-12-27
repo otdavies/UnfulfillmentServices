@@ -4,10 +4,19 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour, Observer<Player[]>
 {
+    [Header("Bounds Params")]
     public float cameraTrackBoundsPercent = 1;
-    public float cameraFollowLerpSpeed = 20;
     public float cameraTrackBoundsCorrectionStrength = 4;
     public float cameraSmallestRestingDistance = 30;
+    public float cameraMaxZoomIn = 1;
+    public float cameraMaxZoomOut = 3;
+    public float cameraZoomBoundsPercent = 1;
+
+    [Header("Speed Params")]
+    public float cameraFollowLerpSpeed = 20;
+    public float cameraZoomLerpSpeed = 3;
+    public float cameraBoxCenterLerpSpeed = 1;
+
     private Player[] players;
     private Vector3 startPosition;
     private Bounds trackingBox;
@@ -56,10 +65,9 @@ public class CameraController : MonoBehaviour, Observer<Player[]>
             }
         }
 
-        size = Mathf.Clamp(Mathf.Lerp(size, (1 / Mathf.Clamp01(1 - maxPlayerSeperation) - 1) * 0.25f, Time.deltaTime * 0.5f), 1, 3);
-
-        boxCenter += (((moveDirection / players.Length) * cameraTrackBoundsCorrectionStrength)) * size;
-        boxCenter = Vector3.Lerp(boxCenter, boxCenter + ((playerCenter / players.Length) - boxCenter), Time.deltaTime * 0.5f);
+        size = Mathf.Clamp(Mathf.Lerp(size, (1 / Mathf.Clamp(cameraZoomBoundsPercent - maxPlayerSeperation, 0.01f, 1) - 1), Time.deltaTime * cameraZoomLerpSpeed), cameraMaxZoomIn, cameraMaxZoomOut);
+        boxCenter += moveDirection / players.Length * cameraTrackBoundsCorrectionStrength * size;
+        boxCenter = Vector3.Lerp(boxCenter, boxCenter + ((playerCenter / players.Length) - boxCenter), Time.deltaTime * cameraBoxCenterLerpSpeed);
     }
 
     private void LateUpdate()
