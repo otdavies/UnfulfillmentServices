@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Lava
+  m_Name: Ocean Particles
   m_Shader: {fileID: 4800000, guid: 346be2293843bec4ba483982fd67f6c4, type: 3}
   m_ShaderKeywords: 
-  m_LightmapFlags: 1
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -70,10 +70,10 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GradientFallOff: 0.38
-    - _GradientLength: 10
+    - _GradientFallOff: 1
+    - _GradientLength: 73.3
     - _GradientShine: 3
-    - _GradientStart: -3.48
+    - _GradientStart: -54.4
     - _MaskClipValue: 0.5
     - _Metallic: 0
     - _Mode: 0
@@ -94,7 +94,7 @@ Material:
     - __dirty: 0
     - _gradientLength: 0.5
     - _gradientStart: 2
-    - _shine: 2
+    - _shine: 5.7199554
     - _translucencyStrength: 0
     - _transmissionStrength: 0
     m_Colors:
@@ -112,10 +112,10 @@ Material:
     - _Color_z: {r: 0.37404916, g: 0.625, b: 0.13327205, a: 1}
     - _Color_z2: {r: 0.37404916, g: 0.625, b: 0.13327205, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GradientColor: {r: 0.89705884, g: 0.8049875, b: 0.29022494, a: 0}
+    - _GradientColor: {r: 0.49275517, g: 0.7205882, b: 0.71116066, a: 0}
     - _GradientDirection: {r: 0, g: 0, b: 1, a: 0}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SurfaceColor: {r: 1, g: 0.22758603, b: 0, a: 0}
+    - _SurfaceColor: {r: 0.10218422, g: 0.49763593, b: 0.51470584, a: 0}
     - _gradientColor: {r: 0, g: 0, b: 0, a: 0}
     - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}
     - _light_1: {r: 1, g: 0, b: 0, a: 0}

@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Lava 1
+  m_Name: LavaOld
   m_Shader: {fileID: 4800000, guid: 346be2293843bec4ba483982fd67f6c4, type: 3}
   m_ShaderKeywords: 
-  m_LightmapFlags: 1
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -70,10 +70,10 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GradientFallOff: 0.38
-    - _GradientLength: 10
+    - _GradientFallOff: 1
+    - _GradientLength: 73.3
     - _GradientShine: 3
-    - _GradientStart: -3.48
+    - _GradientStart: -54.4
     - _MaskClipValue: 0.5
     - _Metallic: 0
     - _Mode: 0
@@ -82,7 +82,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfaceShine: 3
+    - _SurfaceShine: 2.89
     - _TransAmbient: 0
     - _TransDirect: 0
     - _TransNormalDistortion: 0
@@ -115,7 +115,7 @@ Material:
     - _GradientColor: {r: 0.89705884, g: 0.8049875, b: 0.29022494, a: 0}
     - _GradientDirection: {r: 0, g: 0, b: 1, a: 0}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SurfaceColor: {r: 1, g: 0.22758603, b: 0, a: 0}
+    - _SurfaceColor: {r: 0.5147059, g: 0.19606845, b: 0.102184266, a: 0}
     - _gradientColor: {r: 0, g: 0, b: 0, a: 0}
     - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}
     - _light_1: {r: 1, g: 0, b: 0, a: 0}
