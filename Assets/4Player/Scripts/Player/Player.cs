@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
 
     private Effectors playerStatusEffects = new Effectors(new StatusEffect[]
     {
-        new Immobilized(), new Motion(), new Muted()
+        new Muted(), new Motion(), new Rotation(), 
     });
 
 
@@ -75,9 +75,11 @@ public class Player : MonoBehaviour
         puppet = visualModel.GetComponent<PlayerPuppet>();
 
         // Initialize skills
-        foreach (Skill skill in skills)
+        for (int index = 0; index < skills.Length; index++)
         {
-            skill.RegisterTo(this);
+            // Copy the scriptable object
+            skills[index] = Instantiate(skills[index]);
+            skills[index].RegisterTo(this);
         }
 
         previousTransformPosition = this.transform.position;

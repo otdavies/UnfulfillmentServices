@@ -9,6 +9,7 @@ public class ObjectToggleFireable : Fireable
     public override void Setup(Player player)
     {
         fireableObject = Instantiate(prefabToToggle);
+        fireableObject.SetActive(false);
         fireableObject.transform.parent = player.transform;
         fireableObject.transform.localPosition = firePoint;
         fireableObject.transform.localEulerAngles = fireDirection;
