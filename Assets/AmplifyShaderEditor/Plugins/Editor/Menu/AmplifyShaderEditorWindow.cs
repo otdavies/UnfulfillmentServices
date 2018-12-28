@@ -2431,7 +2431,7 @@ namespace AmplifyShaderEditor
 						// valid instructions are only between the line after version and the line before the last one ( which contains ShaderBodyEnd ) 
 						for ( int instructionIdx = 3; instructionIdx < instructions.Length - 1; instructionIdx++ )
 						{
-							//TODO: After all is working, convert string parameters to ints in order to speed up reading
+							//TODO: After all is working, convert string parameters to ints in order to moveSpeed up reading
 							string[] parameters = instructions[ instructionIdx ].Split( IOUtils.FIELD_SEPARATOR );
 
 							// All nodes must be created before wiring the connections ... 

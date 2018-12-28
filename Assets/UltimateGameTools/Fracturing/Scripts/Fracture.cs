@@ -647,7 +647,7 @@ namespace UltimateFracturing
 
             MeshData meshDataIn = new MeshData(meshfIn.transform, meshfIn.sharedMesh, aMaterials, fracturedComponent.SourceObject.transform.localToWorldMatrix, false, nSplitCloseSubMesh, true);
 
-            // Precompute space volumes with mesh datas for each volume to speed up cell generation
+            // Precompute space volumes with mesh datas for each volume to moveSpeed up cell generation
 
             SpaceTreeNode spaceTree = fracturedComponent.VoronoiVolumeOptimization ? SpaceTreeNode.BuildSpaceTree(meshDataIn, 8, fracturedComponent, progress) : null;
 

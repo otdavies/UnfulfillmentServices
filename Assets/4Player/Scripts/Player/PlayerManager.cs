@@ -47,6 +47,7 @@ public class PlayerManager : Observable<Player[]>
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
         playerManager = this;
 
         controllersConnected = new bool[4];
@@ -61,7 +62,6 @@ public class PlayerManager : Observable<Player[]>
         xboxControllerToInt.Add(XboxController.Third, 2);
         xboxControllerToInt.Add(XboxController.Fourth, 3);
 
-
         StartCoroutine(UpdateControllerList());
     }
 
@@ -75,15 +75,8 @@ public class PlayerManager : Observable<Player[]>
             if (XCI.GetButtonDown(XboxButton.Start, controller.controllerId))
             {
                 if (!controller.spawned)
-                //{
-                //    if (players.ContainsKey(i))
-                //        RemovePlayer(controller.intId);
-                //    controller.spawned = false;
-                //}
-                //else
                 {
                     SpawnPlayer(controller.intId);
-                    controller.spawned = true;
                 }
             }
         }
@@ -112,7 +105,7 @@ public class PlayerManager : Observable<Player[]>
     private void SpawnPlayer(int i)
     {
         if (connected[i] == null) return;
-
+        connected[i].spawned = true;
         Transform spawnPoint = playerSpawnPoint[i];
         IPoolable o = PoolableFactory.Instance.Create<PlayerPoolable>(playerResourceId, spawnPoint.position, spawnPoint.rotation, null);
         Player p = (o as MonoBehaviour).gameObject.GetComponentInChildren<Player>();

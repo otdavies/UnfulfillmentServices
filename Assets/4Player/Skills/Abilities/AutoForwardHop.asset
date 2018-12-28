@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06b0ee90d6ef93b44a01d7f3da433c89, type: 3}
+  m_Name: AutoForwardHop
+  m_EditorClassIdentifier: 
+  onArtifactStart:
+  - effect: 0
+    time: 0
+    severity: 0
+  onVisualizerStart: []
+  triggerStart: 2
+  travelTime: 0.5
+  forwardTravelDistance: 8
+  verticalTranvelDistance: 0.5
+  recastPercentageComplete: 0.8

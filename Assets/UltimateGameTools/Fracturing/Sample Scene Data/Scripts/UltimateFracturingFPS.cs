@@ -27,7 +27,7 @@ public class UltimateFracturingFPS : MonoBehaviour
     public float             RecoilDuration     = 0.2f;                 // The length of the recoil animation in seconds
     public float             RecoilIntensity    = 0.05f;                // The intensity of the recoil
     public GameObject        ObjectToShoot      = null;                 // In ShootObjects mode, the object to instance when shooting
-    public float             InitialObjectSpeed = 1.0f;                 // In ShootObjects mode, the initial speed of the object
+    public float             InitialObjectSpeed = 1.0f;                 // In ShootObjects mode, the initial moveSpeed of the object
     public float             ObjectScale        = 1.0f;                 // In ShootObjects mode, the object's scale
     public float             ObjectMass         = 1.0f;                 // In ShootObjects mode, the object's mass
     public float             ObjectLife         = 10.0f;                // In ShootObjects mode, the object's life time (seconds until it deletes itself)

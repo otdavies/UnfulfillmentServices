@@ -6,7 +6,7 @@ namespace UltimateFracturing
 {
     public static partial class Fracturer
     {
-        // We use this class to preprocess and subdivide the mesh to speed up Voronoi cells computation
+        // We use this class to preprocess and subdivide the mesh to moveSpeed up Voronoi cells computation
         private class SpaceTreeNode
         {
             public SpaceTreeNode()

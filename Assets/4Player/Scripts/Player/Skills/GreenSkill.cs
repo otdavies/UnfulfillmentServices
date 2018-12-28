@@ -1,15 +1,12 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 using XboxCtrlrInput;
 
-[CreateAssetMenu(fileName = "HopForwardSkill", menuName = "Skill/HopForward", order = 1)]
+[CreateAssetMenu(fileName = "HopSkill", menuName = "Skills/Abilities/Hop", order = 1)]
 public class GreenSkill : Skill
 {
-    [Header("Skill Trigger and Effects")]
+    [Header("Skill Trigger")]
     public XboxButton triggerStart;
-    public AnimationCurve hopVelocityCurve = new AnimationCurve();
-    public OnSkillCastEffects[] castEffects;
 
     [Header("Time and Distance")]
     public float travelTime = 1;
@@ -20,14 +17,6 @@ public class GreenSkill : Skill
     private Transform playerTransform;
     private Rigidbody playerRigidbody;
     private float percentCompletion = 0;
-
-    [Serializable]
-    public class OnSkillCastEffects
-    {
-        public StatusEffects effect;
-        public float time;
-        public float severity;
-    }
 
     public override void RegisterTo(Player player)
     {
@@ -50,13 +39,18 @@ public class GreenSkill : Skill
         {
             activated = true;
         }
+
+        foreach (SkillVisualizers skillVisualizers in onVisualizerStart)
+        {
+            skillVisualizers.Start();
+        }
     }
 
-    public override void Effectors(Player player, ref Effectors playerStatusEffect)
+    public override void ApplyEffectors(ref Effectors playerStatusEffect)
     {
-        foreach (OnSkillCastEffects castEffect in castEffects)
+        foreach (SkillArtifacts castEffect in onArtifactStart)
         {
-            playerStatusEffect.effects[(int)castEffect.effect].ApplyEffect(player, castEffect.time, castEffect.severity);
+            playerStatusEffect.effects[(int)castEffect.effect].ApplyEffect(caster, castEffect.severity, castEffect.time);
         }
     }
 
@@ -74,15 +68,18 @@ public class GreenSkill : Skill
     {
         percentCompletion = 0;
         activated = false;
+
+        foreach (SkillVisualizers skillVisualizers in onVisualizerStart)
+        {
+            skillVisualizers.End();
+        }
     }
 
     private void Dash()
     {
         percentCompletion += (Time.fixedDeltaTime / travelTime);
-        float t = hopVelocityCurve.Evaluate(percentCompletion);
-
         //t = t * t * t * (t * (6f * t - 15f) + 10f);
-        //float t = Mathf.Sin(percentCompletion * Mathf.PI * 0.5f);
+        float t = Mathf.Sin(percentCompletion * Mathf.PI * 0.5f);
 
         // Apply motion forces
         Vector3 verticalForce = playerRigidbody.transform.up * 75 * ((0.5f - t) * 2) * verticalTranvelDistance;
@@ -94,8 +91,7 @@ public class GreenSkill : Skill
 
         if (percentCompletion > recastPercentageComplete)
         {
-            percentCompletion = 0;
-            activated = false;
+            Stop();
         }
     }
 

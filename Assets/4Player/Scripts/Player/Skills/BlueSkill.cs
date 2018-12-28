@@ -32,9 +32,9 @@ public class BlueSkill : Skill
         activated = true;
     }
 
-    public override void Effectors(Player player, ref Effectors playerStatusEffect)
+    public override void ApplyEffectors(ref Effectors playerStatusEffects)
     {
-
+        throw new System.NotImplementedException();
     }
 
     public override void Channel()

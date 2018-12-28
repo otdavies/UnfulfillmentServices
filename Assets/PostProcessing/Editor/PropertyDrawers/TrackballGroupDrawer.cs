@@ -15,7 +15,7 @@ namespace UnityEditor.PostProcessing
 
         bool m_ResetState;
 
-        // Cached trackball computation methods (for speed reasons)
+        // Cached trackball computation methods (for moveSpeed reasons)
         static Dictionary<string, MethodInfo> m_TrackballMethods = new Dictionary<string, MethodInfo>();
 
         internal static int m_Size
