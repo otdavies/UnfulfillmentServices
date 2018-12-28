@@ -877,7 +877,7 @@ public class FracturedObject : MonoBehaviour
             }
             else if(ChunkHorizontalRadiusSupportStrength < 10e15)
             {
-                // Connected to support nodes, but let's check if the horizontal distance is less than the max. permitted distance
+                // Connected to support nodes, but let's check if the horizontal pullDistance is less than the max. permitted pullDistance
                 foreach(FracturedChunk chunkVisited in listChunksVisited)
                 {
                     if(chunkVisited.IsSupportChunk == false)

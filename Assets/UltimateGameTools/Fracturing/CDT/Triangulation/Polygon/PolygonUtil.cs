@@ -1013,7 +1013,7 @@ namespace Poly2Tri
         ///We add our current vertex to the list.
         ///We check the seg from current vertex to next vertex for intersections
         ///  - if no intersections, follow to next vertex and continue
-        ///  - if intersections, pick one with minimum distance
+        ///  - if intersections, pick one with minimum pullDistance
         ///    - if more than one, pick one with "rightest" next point (two possibilities for each)
         ///    
         /// </summary>

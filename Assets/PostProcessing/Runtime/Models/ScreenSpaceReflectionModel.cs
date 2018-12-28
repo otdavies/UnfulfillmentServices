@@ -48,7 +48,7 @@ namespace UnityEngine.PostProcessing
             [Tooltip("Half resolution SSRR is much faster, but less accurate.")]
             public SSRResolution reflectionQuality;
 
-            [Tooltip("Maximum reflection distance in world units.")]
+            [Tooltip("Maximum reflection pullDistance in world units.")]
             [Range(0.1f, 300.0f)]
             public float maxDistance;
 

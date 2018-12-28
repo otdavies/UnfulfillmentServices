@@ -75,7 +75,7 @@ namespace AmplifyShaderEditor
 
 		public static Rect DrawBezier( Vector2 start, Vector2 startTangent, Vector2 end, Vector2 endTangent, Color color, float width, int type = 1 )
 		{
-			int segments = Mathf.FloorToInt( ( start - end ).magnitude / 20 ) * 3; // Three segments per distance of 20
+			int segments = Mathf.FloorToInt( ( start - end ).magnitude / 20 ) * 3; // Three segments per pullDistance of 20
 			return DrawBezier( start, startTangent, end, endTangent, color, width, segments, type );
 		}
 

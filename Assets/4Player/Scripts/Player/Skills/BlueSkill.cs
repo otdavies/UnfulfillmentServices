@@ -1,40 +1,43 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using XboxCtrlrInput;
 
-public class BlueSkill : Channelable
+public class BlueSkill : Skill
 {
+    public float pullDistance = 2;
+
     private Transform owner;
     private Rigidbody rigid;
     private Rigidbody heldRigid;
     private RaycastHit[] hits;
     private Vector3 pullTarget;
-    private float distance = 2;
     private bool activated = false;
     private bool holding = false;
 
     private IUsable usable;
-    private Effectors effectors;
 
-    public BlueSkill(Transform player)
+    public BlueSkill(Player player)
     {
-        owner = player;
+        owner = player.transform;
         rigid = owner.GetComponent<Rigidbody>();
-        effectors = new Effectors(new StatusEffect[]{ new StatusEffect(false, 0, 0), new StatusEffect(false, 0, 0), new StatusEffect(false, 0, 0) });
     }
 
-    public void Cast(params object[] cartProperties)
+    public override bool CanCast(XboxController controller)
     {
-        distance = (float)cartProperties[0];
+        throw new System.NotImplementedException();
+    }
+
+    public override void Cast(params object[] cartProperties)
+    {
+        pullDistance = (float)cartProperties[0];
         activated = true;
     }
 
-    public Effectors Effectors()
+    public override void Effectors(Player player, ref Effectors playerStatusEffect)
     {
-        return effectors;
+
     }
 
-    public void Channel()
+    public override void Channel()
     {
         if (activated)
         {
@@ -44,7 +47,7 @@ public class BlueSkill : Channelable
         }
     }
 
-    public void Stop()
+    public override void Stop()
     {
         activated = false;
         holding = false;
@@ -68,7 +71,7 @@ public class BlueSkill : Channelable
 
     private void Pull()
     {
-        hits = Physics.SphereCastAll(owner.position, 1, owner.forward, distance, LayerMask.GetMask("dynamic"));
+        hits = Physics.SphereCastAll(owner.position, 1, owner.forward, pullDistance, LayerMask.GetMask("dynamic"));
         foreach (RaycastHit h in hits)
         {
             if (h.rigidbody)
@@ -108,7 +111,7 @@ public class BlueSkill : Channelable
         heldRigid.MoveRotation(Quaternion.Lerp(rigid.rotation, heldRigid.rotation, dist));
     }
 
-    public bool Completed()
+    public override bool Completed()
     {
         return !activated && !holding;
     }

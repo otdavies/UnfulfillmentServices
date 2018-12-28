@@ -1,25 +1,48 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using XboxCtrlrInput;
 
-public class Player : MonoBehaviour 
+public class Player : MonoBehaviour
 {
     // Public properties
-	public float speed = 5f;
-	public XboxController controller;
+    public float speed = 5f;
+    public XboxController controller;
     public LayerMask groundedLayer;
     public Transform visualModel;
 
     public ParticleSystem greenEffect;
     public ParticleSystem blueEffect;
 
+    // Player skills
+    public Skill[] skills;
+    private BlueSkill blue;
+
 
     // Player conidition
-    public enum CharacterMovement { stationary, moving }
-    public enum CharacterCondition { alive, dead }
-    public enum CharacterSkill { none, green, red, blue, yellow }
-    private CharacterMovement  movementState;
+    public enum CharacterMovement
+    {
+        stationary,
+        moving
+    }
+
+    public enum CharacterCondition
+    {
+        alive,
+        dead
+    }
+
+    public enum CharacterSkill
+    {
+        none,
+        green,
+        red,
+        blue,
+        yellow
+    }
+
+    private CharacterMovement movementState;
     private CharacterCondition conditionState;
     private CharacterSkill skillState;
     public bool grounded = true;
@@ -41,32 +64,39 @@ public class Player : MonoBehaviour
         }
     }
 
+    public Effectors PlayerStatusEffects
+    {
+        get { return playerStatusEffects; }
+        set { playerStatusEffects = value; }
+    }
+
     // Player input and components
     private PlayerPuppet puppet;
-    private Transform   thisTransform;
-	private Rigidbody   physicsRigid;
-	private Vector3     direction;
-	private float 	    horizontalInput;
-	private float 	    verticalInput;
-    private bool        greenDown = false;
-    private bool        blueDown = false;
-    private bool        blueUp = false;
+    private Transform thisTransform;
+    private Rigidbody physicsRigid;
+    private Vector3 direction;
+    private float horizontalInput;
+    private float verticalInput;
 
-    // Player skills
-    private GreenSkill green;
-    private BlueSkill blue;
+    private Effectors playerStatusEffects = new Effectors(new StatusEffect[]
+    {
+        new Immobilized(), new Motion(), new Muted(), 
+    });
 
-    private Channelable currentChannel;
 
-    private void OnEnable () 
-	{
-		thisTransform = this.transform;
-		physicsRigid = GetComponent<Rigidbody>();
+    private void OnEnable()
+    {
+        thisTransform = this.transform;
+        physicsRigid = GetComponent<Rigidbody>();
         puppet = visualModel.GetComponent<PlayerPuppet>();
 
         // Initialize skills
-        green = new GreenSkill(thisTransform);
-        blue = new BlueSkill(thisTransform);
+        foreach (Skill skill in skills)
+        {
+            skill.RegisterTo(this);
+        }
+
+        blue = new BlueSkill(this);
 
         previousTransformPosition = this.transform.position;
 
@@ -77,8 +107,8 @@ public class Player : MonoBehaviour
 
     // Update Related ------------------------------------------
 
-    private void Update () 
-	{
+    private void Update()
+    {
         // Gather input
         UpdateInput();
 
@@ -98,16 +128,15 @@ public class Player : MonoBehaviour
         // Input layer
         horizontalInput = XCI.GetAxis(XboxAxis.LeftStickX, controller);
         verticalInput = XCI.GetAxis(XboxAxis.LeftStickY, controller);
-        greenDown = XCI.GetButtonDown(XboxButton.A, controller);
-        blueDown = XCI.GetButtonDown(XboxButton.X, controller);
-        blueUp = XCI.GetButtonUp(XboxButton.X, controller);
     }
 
     private void UpdateMovementState()
     {
         // Movement states
-        grounded = Physics.Raycast(thisTransform.position, -thisTransform.up, this.transform.localScale.y + 0.1f, groundedLayer);
-        if (horizontalInput > 0 || horizontalInput < 0 || verticalInput > 0 || verticalInput < 0) movementState = CharacterMovement.moving;
+        grounded = Physics.Raycast(thisTransform.position, -thisTransform.up, this.transform.localScale.y + 0.1f,
+            groundedLayer);
+        if (horizontalInput > 0 || horizontalInput < 0 || verticalInput > 0 || verticalInput < 0)
+            movementState = CharacterMovement.moving;
         else movementState = CharacterMovement.stationary;
 
         if (grounded) lastGroundedPosition = thisTransform.position;
@@ -127,63 +156,75 @@ public class Player : MonoBehaviour
     private void UpdateVisualPosition()
     {
         visualModel.rotation = thisTransform.rotation;
-        Vector3 result = Vector3.Lerp(previousTransformPosition, physicsRigid.transform.position, (Time.time - previousTime) / (Time.fixedDeltaTime));
+        Vector3 result = Vector3.Lerp(previousTransformPosition, physicsRigid.transform.position,
+            (Time.time - previousTime) / (Time.fixedDeltaTime));
         visualModel.position = result;
     }
 
     private void ProcessSkills()
     {
-        if (!casting)
+        //if (!casting)
+        //{
+        //    if (greenDown)
+        //    {
+        //        skillState = CharacterSkill.green;
+        //        casting = true;
+        //        canMove = false;
+        //        green.Cast(new Vector3(horizontalInput, 0, verticalInput), 0.4f, 8f);
+        //        lastCastable = green;
+        //        greenEffect.Play();
+        //    }
+
+        //    if (blueDown)
+        //    {
+        //        skillState = CharacterSkill.blue;
+        //        casting = true;
+        //        canMove = false;
+        //        blue.Cast(6f);
+        //        blueEffect.Play();
+        //        lastCastable = blue;
+        //        puppet.SetHolding(true);
+        //    }
+        //}
+
+        //if (casting)
+        //{
+        //    if (skillState == CharacterSkill.blue)
+        //    {
+        //        if (blueUp)
+        //        {
+        //            skillState = CharacterSkill.none;
+        //            casting = false;
+        //            canMove = true;
+        //            blue.Stop();
+        //            blueEffect.Stop();
+        //            puppet.SetHolding(false);
+        //        }
+
+        //        if (blue.Grabbed())
+        //        {
+        //            blueEffect.Stop();
+        //            canMove = true;
+        //        }
+        //    }
+
+        //    if (skillState == CharacterSkill.green && green.Completed())
+        //    {
+        //        skillState = CharacterSkill.none;
+        //        casting = false;
+        //        canMove = true;
+        //    }
+        //}
+
+        if (!IsStatusEffectActive(StatusEffects.MUTED))
         {
-            if (greenDown)
+            foreach (Skill skill in skills)
             {
-                skillState = CharacterSkill.green;
-                casting = true;
-                canMove = false;
-                green.Cast(new Vector3(horizontalInput, 0, verticalInput), 0.4f, 8f);
-                //Debug.Log(green.Effectors().effects[(int)StatusEffects.IMMOBILIZED].isActive);
-                currentChannel = green;
-                greenEffect.Play();
-            }
-
-            if (blueDown)
-            {
-                skillState = CharacterSkill.blue;
-                casting = true;
-                canMove = false;
-                blue.Cast(6f);
-                blueEffect.Play();
-                currentChannel = blue;
-                puppet.SetHolding(true);
-            }
-        }
-
-        if(casting)
-        {
-            if (skillState == CharacterSkill.blue)
-            {
-                if (blueUp)
+                if (skill.CanCast(controller))
                 {
-                    skillState = CharacterSkill.none;
-                    casting = false;
-                    canMove = true;
-                    blue.Stop();
-                    blueEffect.Stop();
-                    puppet.SetHolding(false);
+                    skill.Cast();
+                    skill.Effectors(this, ref playerStatusEffects);
                 }
-
-                if(blue.Grabbed())
-                {
-                    blueEffect.Stop();
-                    canMove = true;
-                }
-            }
-
-            if(skillState == CharacterSkill.green && green.Completed())
-            {
-                skillState = CharacterSkill.none;
-                casting = false;
-                canMove = true;
             }
         }
     }
@@ -193,7 +234,8 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         if (movementState == CharacterMovement.moving) FixedUpdatePhysicsPosition();
-        if(casting) FixedUpdateSkills();
+
+        FixedUpdateSkills();
 
         previousTransformPosition = thisTransform.position;
         previousTime = Time.time;
@@ -201,32 +243,22 @@ public class Player : MonoBehaviour
 
     private void FixedUpdatePhysicsPosition()
     {
-        physicsRigid.MoveRotation(Quaternion.Slerp(thisTransform.rotation, Quaternion.LookRotation(direction), Time.fixedDeltaTime * 12));
-        if(canMove) physicsRigid.MovePosition(thisTransform.position + (thisTransform.forward * direction.magnitude * (Time.fixedDeltaTime * speed)));
+        physicsRigid.MoveRotation(Quaternion.Slerp(thisTransform.rotation, Quaternion.LookRotation(direction),
+            Time.fixedDeltaTime * 12));
+        if (canMove)
+            physicsRigid.MovePosition(thisTransform.position +
+                                      (thisTransform.forward * direction.magnitude * (Time.fixedDeltaTime * speed)));
     }
 
     private void FixedUpdateSkills()
     {
-        if (!currentChannel.Completed()) currentChannel.Channel();
+        foreach (Skill skill in skills)
+        {
+            if(!skill.Completed()) skill.Channel();
+        }
     }
-
 
     // MISC State Changes -----------------------------------------
-    private void DeathByFalling()
-    {
-        movementState = CharacterMovement.stationary;
-        skillState = CharacterSkill.none;
-        conditionState = CharacterCondition.dead;
-        casting = false;
-        blueDown = false;
-        greenDown = false;
-        blueUp = true;
-        blue.Stop();
-        puppet.SetHolding(false);
-
-        PlayerManager.Instance.DespawnPlayer(controller);
-    }
-
     public void Despawn()
     {
         if (conditionState != CharacterCondition.alive) return;
@@ -235,12 +267,10 @@ public class Player : MonoBehaviour
         skillState = CharacterSkill.none;
         conditionState = CharacterCondition.dead;
         casting = false;
-        blueDown = false;
-        greenDown = false;
-        blueUp = true;
         blue.Stop();
         puppet.SetHolding(false);
         blueEffect.Stop();
+        DeactivateAllEffects();
 
         PlayerManager.Instance.DespawnPlayer(controller);
     }
@@ -252,5 +282,19 @@ public class Player : MonoBehaviour
         PlayerManager.Instance.SpawnPlayer(controller);
 
         conditionState = CharacterCondition.alive;
+    }
+
+    // Effector operations
+    public bool IsStatusEffectActive(StatusEffects effect)
+    {
+        return playerStatusEffects.effects[(int) effect].isActive;
+    }
+
+    public void DeactivateAllEffects()
+    {
+        foreach (StatusEffect statusEffect in playerStatusEffects.effects)
+        {
+            statusEffect.RemoveEffect(this);
+        }
     }
 }

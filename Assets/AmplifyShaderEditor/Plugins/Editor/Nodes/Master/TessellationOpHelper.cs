@@ -41,8 +41,8 @@ namespace AmplifyShaderEditor
 
 		//private GUIContent EnableTessContent = new GUIContent( "Tessellation", "Activates the use of tessellation which subdivides polygons to increase geometry detail using a set of rules\nDefault: OFF" );
 		private GUIContent TessFactorContent = new GUIContent( "Tess", "Tessellation factor\nDefault: 4" );
-		private GUIContent TessMinDistanceContent = new GUIContent( "Min", "Minimum tessellation distance\nDefault: 10" );
-		private GUIContent TessMaxDistanceContent = new GUIContent( "Max", "Maximum tessellation distance\nDefault: 25" );
+		private GUIContent TessMinDistanceContent = new GUIContent( "Min", "Minimum tessellation pullDistance\nDefault: 10" );
+		private GUIContent TessMaxDistanceContent = new GUIContent( "Max", "Maximum tessellation pullDistance\nDefault: 25" );
 
 
 		private readonly int[] TesselationTypeValues = { 0, 1, 2, 3 };

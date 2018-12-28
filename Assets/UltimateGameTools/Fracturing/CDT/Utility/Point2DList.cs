@@ -856,7 +856,7 @@ namespace Poly2Tri
         /// 
         /// </summary>
         /// <param name="polygon">The polygon that needs simplification.</param>
-        /// <param name="bias">The distance bias between points. Points closer than this will be 'joined'.</param>
+        /// <param name="bias">The pullDistance bias between points. Points closer than this will be 'joined'.</param>
         /// <returns>A simplified polygon.</returns>
         public void Simplify(double bias)
         {

@@ -1,61 +1,76 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
+using XboxCtrlrInput;
 
-public class GreenSkill : Channelable
+[CreateAssetMenu(fileName = "HopForwardSkill", menuName = "Skill/HopForward", order = 1)]
+public class GreenSkill : Skill
 {
-    private Transform owner;
-    private Rigidbody rigid;
-    private Vector3 initialPosition;
-    private Vector3 initialDirection;
+    [Header("Skill Trigger and Effects")]
+    public XboxButton triggerStart;
+    public AnimationCurve hopVelocityCurve = new AnimationCurve();
+    public OnSkillCastEffects[] castEffects;
+
+    [Header("Time and Distance")]
+    public float travelTime = 1;
+    public float forwardTravelDistance = 2;
+    public float verticalTranvelDistance = 1;
+    public float recastPercentageComplete = 0.8f;
+
+    private Transform playerTransform;
+    private Rigidbody playerRigidbody;
     private float percentCompletion = 0;
-    private float travelTime = 1;
-    private float travelDistance = 2;
-    private bool activated = false;
-    private bool blocked = false;
-    private Effectors effectors;
 
-    public GreenSkill(Transform player)
+    [Serializable]
+    public class OnSkillCastEffects
     {
-        owner = player;
-        rigid = owner.GetComponent<Rigidbody>();
-        effectors = new Effectors(new StatusEffect[] { new StatusEffect(false, 0, 0), new StatusEffect(false, 0, 0), new StatusEffect(false, 0, 0) });
+        public StatusEffects effect;
+        public float time;
+        public float severity;
     }
-    // Vector3 dir, float time, float dist
-    public void Cast(params object[] castParams)
-    {
-        if (castParams == null) return;
 
-        Vector3 dir = (Vector3)castParams[0];
-        float time = (float)castParams[1];
-        float dist = (float)castParams[2];
+    public override void RegisterTo(Player player)
+    {
+        base.RegisterTo(player);
+        playerTransform = player.transform;
+        playerRigidbody = playerTransform.GetComponent<Rigidbody>();
+    }
+
+    public override bool CanCast(XboxController controller)
+    {
+        return XCI.GetButtonDown(triggerStart, controller);
+    }
+
+    // float time, float dist
+    public override void Cast(params object[] castParams)
+    {
+        //if (castParams == null) return;
 
         if (!activated)
         {
-            travelTime = time;
-            travelDistance = dist;
-            initialPosition = owner.position;
-            initialDirection = dir == Vector3.zero ? owner.forward : dir;
             activated = true;
         }
     }
 
-    public Effectors Effectors()
+    public override void Effectors(Player player, ref Effectors playerStatusEffect)
     {
-        return effectors;
+        foreach (OnSkillCastEffects castEffect in castEffects)
+        {
+            playerStatusEffect.effects[(int)castEffect.effect].ApplyEffect(player, castEffect.time, castEffect.severity);
+        }
     }
 
-    public bool Completed()
+    public override bool Completed()
     {
         return !activated;
     }
 
-    public void Channel()
+    public override void Channel()
     {
         if(activated) Dash();
     }
 
-    public void Stop()
+    public override void Stop()
     {
         percentCompletion = 0;
         activated = false;
@@ -64,14 +79,20 @@ public class GreenSkill : Channelable
     private void Dash()
     {
         percentCompletion += (Time.fixedDeltaTime / travelTime);
-        float t = percentCompletion;
-        //t = t * t * t * (t * (6f * t - 15f) + 10f);
-        t = Mathf.Sin(t * Mathf.PI * 0.5f);
-        Vector3 force = (rigid.transform.up * 75 * ((0.5f - t) * 2) + rigid.transform.forward * 5 * travelDistance);
-        rigid.AddForce(force * Mathf.Sin(t * Mathf.PI), ForceMode.Impulse);
-        rigid.AddForce(-rigid.velocity * Mathf.Sin(t * Mathf.PI * 0.5f), ForceMode.Impulse);
+        float t = hopVelocityCurve.Evaluate(percentCompletion);
 
-        if (percentCompletion > 1)
+        //t = t * t * t * (t * (6f * t - 15f) + 10f);
+        //float t = Mathf.Sin(percentCompletion * Mathf.PI * 0.5f);
+
+        // Apply motion forces
+        Vector3 verticalForce = playerRigidbody.transform.up * 75 * ((0.5f - t) * 2) * verticalTranvelDistance;
+        Vector3 horizontalForce = playerRigidbody.transform.forward * 5 * forwardTravelDistance * Mathf.Sin(t * Mathf.PI);
+        playerRigidbody.AddForce(horizontalForce + verticalForce, ForceMode.Impulse);
+
+        // Apply corrective forces
+        playerRigidbody.AddForce(-playerRigidbody.velocity * Mathf.Sin(t * Mathf.PI * 0.5f), ForceMode.Impulse);
+
+        if (percentCompletion > recastPercentageComplete)
         {
             percentCompletion = 0;
             activated = false;

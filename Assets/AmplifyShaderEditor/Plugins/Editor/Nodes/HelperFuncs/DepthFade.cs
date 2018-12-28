@@ -5,7 +5,7 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Depth Fade", "Generic", "Outputs a 0 - 1 gradient representing the distance between the surface of this object and geometry behind" )]
+	[NodeAttributes( "Depth Fade", "Generic", "Outputs a 0 - 1 gradient representing the pullDistance between the surface of this object and geometry behind" )]
 	public sealed class DepthFade : ParentNode
 	{
 		protected override void CommonInit( int uniqueId )

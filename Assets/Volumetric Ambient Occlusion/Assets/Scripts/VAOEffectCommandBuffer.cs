@@ -93,7 +93,7 @@ namespace Wilberforce.VAO
         public AlgorithmType Algorithm = AlgorithmType.StandardVAO;
 
         /// <summary>
-        /// Mode for distance suppression of AO. Relative mode lets user set distance in units relative to far plane.
+        /// Mode for pullDistance suppression of AO. Relative mode lets user set pullDistance in units relative to far plane.
         /// Absolute mode uses world space units.
         /// </summary>
         public DistanceFalloffModeType DistanceFalloffMode = DistanceFalloffModeType.Off;
@@ -130,7 +130,7 @@ namespace Wilberforce.VAO
         public AdaptiveSamplingType AdaptiveType = AdaptiveSamplingType.EnabledAutomatic;
 
         /// <summary>
-        /// Moves threshold where number of samples starts to decrease due to distance from camera
+        /// Moves threshold where number of samples starts to decrease due to pullDistance from camera
         /// </summary>
         public float AdaptiveQualityCoefficient = 1.0f;
 
@@ -182,7 +182,7 @@ namespace Wilberforce.VAO
         public VAOCameraEventType VaoCameraEvent = VAOCameraEventType.AfterLighting;
 
         /// <summary>
-        /// Where to take far plane distance from. Either from camera property or from Unity's built-in shader variable.
+        /// Where to take far plane pullDistance from. Either from camera property or from Unity's built-in shader variable.
         /// </summary>
         public FarPlaneSourceType FarPlaneSource = FarPlaneSourceType.Camera;
 
@@ -3531,7 +3531,7 @@ new Color(0.103046f, -0.30694f, 0.0666584f, 0.0143229f)
         private readonly GUIContent adaptiveSamplingLabelContent = new GUIContent("Adaptive Sampling:", "Automagically sets progressively lower quality for distant geometry");
         private readonly GUIContent temporalFilteringLabelContent = new GUIContent("Temporal Filtering:", "Uses information from previous frames to improve visual quality and performance.");
         
-        private readonly GUIContent radiusLimitsFoldoutLabelContent = new GUIContent("Near/Far Occlusion Limits:", "Special occlusion behaviour depending on distance from camera");
+        private readonly GUIContent radiusLimitsFoldoutLabelContent = new GUIContent("Near/Far Occlusion Limits:", "Special occlusion behaviour depending on pullDistance from camera");
 
         private readonly GUIContent pipelineLabelContent = new GUIContent("Rendering Pipeline:", "Unity Rendering pipeline options.");
         private readonly GUIContent commandBufferLabelContent = new GUIContent("Command Buffer:", "Insert effect via command buffer (BeforeImageEffectsOpaque event)");
@@ -3555,11 +3555,11 @@ new Color(0.103046f, -0.30694f, 0.0666584f, 0.0143229f)
         private readonly GUIContent ColorBleedSelfOcclusionLabelContent = new GUIContent("Dampen Self-Bleeding:", "Limits casting color on itself");
         private readonly GUIContent backfaceLabelContent = new GUIContent("Skip Backfaces:", "Skips surfaces facing other way");
         private readonly GUIContent screenFormatLabelContent = new GUIContent("Intermediate texture format:", "Texture format to use for mixing VAO with scene. Auto is recommended.");
-        private readonly GUIContent farPlaneSourceLabelContent = new GUIContent("Far plane source:", "Where to take far plane distance from. Camera is needed for post-processing stack temporal AA compatibility. Use Projection Params option for compatibility with other effects.");
+        private readonly GUIContent farPlaneSourceLabelContent = new GUIContent("Far plane source:", "Where to take far plane pullDistance from. Camera is needed for post-processing stack temporal AA compatibility. Use Projection Params option for compatibility with other effects.");
         private readonly GUIContent maxRadiusLabelContent = new GUIContent("Limit Max Radius:", "Maximal radius given as percentage of screen that will be considered for occlusion. Use to avoid performance drop for objects close to camera.");
         private readonly GUIContent maxRadiusSliderContent = new GUIContent("Max Radius:", "Maximal radius given as fraction of the screen that can be considered for occlusion.");
-        private readonly GUIContent distanceFalloffModeLabelContent = new GUIContent("Distance Falloff:", "With this enabled occlusion starts to fall off rapidly at certain distance.");
-        private readonly GUIContent distanceFalloffAbsoluteLabelContent = new GUIContent("Falloff Start:", "Falloff distance set as an absolute value (same as Far Clipping Plane).");
+        private readonly GUIContent distanceFalloffModeLabelContent = new GUIContent("Distance Falloff:", "With this enabled occlusion starts to fall off rapidly at certain pullDistance.");
+        private readonly GUIContent distanceFalloffAbsoluteLabelContent = new GUIContent("Falloff Start:", "Falloff pullDistance set as an absolute value (same as Far Clipping Plane).");
         private readonly GUIContent distanceFalloffRelativeLabelContent = new GUIContent("Falloff Start:", "Falloff start set relative to occlusion area covering one screen pixel.");
         private readonly GUIContent distanceFalloffSpeedLabelContent = new GUIContent("Falloff Speed:", "How fast the occlusion decreases after the falloff border.");
         private readonly GUIContent colorBleedSameHueAttenuationLabelContent = new GUIContent("Same Color Hue Attenuation", "Attenuates colorbleed thrown on surface of the same color.");

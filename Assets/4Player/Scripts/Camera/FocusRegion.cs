@@ -31,10 +31,10 @@ public class FocusRegion : MonoBehaviour
         float distance;
         Vector3 translationVector;
 
-        //First calculate the distance from the point to the plane:
+        //First calculate the pullDistance from the point to the plane:
         distance = SignedDistancePlanePoint(planeNormal, planePoint, point);
 
-        //Reverse the sign of the distance
+        //Reverse the sign of the pullDistance
         distance *= -1;
 
         //Get a translation vector

@@ -5,7 +5,7 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Distance", "Operators", "Euclidean distance between two points" )]
+	[NodeAttributes( "Distance", "Operators", "Euclidean pullDistance between two points" )]
 	public sealed class DistanceOpNode : DynamicTypeNode
 	{
 		protected override void CommonInit( int uniqueId )
@@ -31,7 +31,7 @@ namespace AmplifyShaderEditor
 				case WirePortDataType.FLOAT4:
 				case WirePortDataType.COLOR:
 				{
-					return "distance( " + m_inputA + " , " + m_inputB + " )";
+					return "pullDistance( " + m_inputA + " , " + m_inputB + " )";
 				}
 				case WirePortDataType.FLOAT3x3:
 				case WirePortDataType.FLOAT4x4:

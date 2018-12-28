@@ -956,6 +956,9 @@ MonoBehaviour:
   visualModel: {fileID: 4439890379414822}
   greenEffect: {fileID: 198415763656774816}
   blueEffect: {fileID: 198541711361011366}
+  skills:
+  - {fileID: 11400000, guid: 9f0be2108b64b58408b6f8042659b4ea, type: 2}
+  - {fileID: 11400000, guid: 154f260f31201f542b84dd3f7dd75baa, type: 2}
   grounded: 1
 --- !u!114 &114699988173999706
 MonoBehaviour:

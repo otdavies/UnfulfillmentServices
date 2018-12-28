@@ -1906,7 +1906,7 @@ namespace UltimateFracturing
         {
             float fMargin = fracturedComponent.ChunkIslandConnectionMaxDistance;
 
-            // Vertices and min/max may be in local space. We want distance checks to be in world space
+            // Vertices and min/max may be in local space. We want pullDistance checks to be in world space
 
             Vector3 v3Min1 = meshData1.v3Min; if(bVerticesAreLocal) v3Min1 = Vector3.Scale(v3Min1, meshData1.v3Scale);
             Vector3 v3Max1 = meshData1.v3Max; if(bVerticesAreLocal) v3Max1 = Vector3.Scale(v3Max1, meshData1.v3Scale);
@@ -1969,7 +1969,7 @@ namespace UltimateFracturing
                                 v3Other3 = Vector3.Scale(v3Other3, meshData2.v3Scale);
                             }
 
-                            // Compute distance from face1 to face2
+                            // Compute pullDistance from face1 to face2
 
                             float fDist1 = Mathf.Abs(planeFace1.GetDistanceToPoint(v3Other1)); if(fDist1 > fDistPlaneMax) continue;
                             float fDist2 = Mathf.Abs(planeFace1.GetDistanceToPoint(v3Other2)); if(fDist2 > fDistPlaneMax) continue;

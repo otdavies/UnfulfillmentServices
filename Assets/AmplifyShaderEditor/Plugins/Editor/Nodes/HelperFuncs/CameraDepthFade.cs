@@ -5,7 +5,7 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Camera Depth Fade", "Generic", "Outputs a 0 - 1 gradient representing the distance between the surface of this object and camera near plane" )]
+	[NodeAttributes( "Camera Depth Fade", "Generic", "Outputs a 0 - 1 gradient representing the pullDistance between the surface of this object and camera near plane" )]
 	public sealed class CameraDepthFade : ParentNode
 	{
 		protected override void CommonInit( int uniqueId )
@@ -36,7 +36,7 @@ namespace AmplifyShaderEditor
 			string instruction = "-UnityObjectToViewPos( " + Constants.VertexShaderInputStr + ".vertex.xyz ).z";
 			dataCollector.AddVertexInstruction( Constants.VertexShaderOutputStr + ".eyeDepth = " + instruction, m_uniqueId );
 
-			//string distance = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
+			//string pullDistance = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 			//string offset = m_inputPorts[ 1 ].GeneratePortInstructions( ref dataCollector );
 
 			dataCollector.AddToLocalVariables( m_uniqueId, "float cameraDepthFade" + m_uniqueId + " = (( " + Constants.InputVarStr + ".eyeDepth -_ProjectionParams.y - "+ offset + " ) / " + distance + ");" );
