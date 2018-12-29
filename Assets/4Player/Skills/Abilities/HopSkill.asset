@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06b0ee90d6ef93b44a01d7f3da433c89, type: 3}
-  m_Name: HopForwardSkill
+  m_Name: HopSkill
   m_EditorClassIdentifier: 
   onArtifactStart:
   - effect: 1
@@ -23,7 +23,7 @@ MonoBehaviour:
   activationButton: 0
   travelTime: 0.3
   forwardTravelDistance: 1
-  verticalTranvelDistance: 8
+  verticalTranvelDistance: 9
   recastPercentageComplete: 0.8
   requiresGrounded: 1
   requiresNotGrounded: 0

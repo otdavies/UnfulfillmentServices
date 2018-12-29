@@ -52,6 +52,7 @@ public class Player : MonoBehaviour
     private PlayerPuppet puppet;
     private Transform thisTransform;
     private Rigidbody physicsRigid;
+    private CapsuleCollider physicsCollider;
     private Vector3 direction;
     private float horizontalInput;
     private float verticalInput;
@@ -72,6 +73,7 @@ public class Player : MonoBehaviour
     {
         thisTransform = this.transform;
         physicsRigid = GetComponent<Rigidbody>();
+        physicsCollider = GetComponent<CapsuleCollider>();
         puppet = visualModel.GetComponent<PlayerPuppet>();
         puppet.SetOwner(this);
 
@@ -114,15 +116,25 @@ public class Player : MonoBehaviour
 
     private void UpdateMovementState()
     {
-        RaycastHit hit;
+        float radius = physicsCollider.radius * 0.9f;
+        Vector3 pos = (transform.position + physicsCollider.center) - Vector3.up * (physicsCollider.height - 1) * 0.5f;
+        grounded = Physics.CheckSphere(pos, radius, groundedLayer);
+
         // Movement states
-        grounded = Physics.SphereCast(thisTransform.position, 0.75f,  -thisTransform.up, out hit, this.transform.localScale.y + 0.15f, groundedLayer);
-
-
         if (horizontalInput > 0 || horizontalInput < 0 || verticalInput > 0 || verticalInput < 0)
             movementState = CharacterMovement.moving;
         else movementState = CharacterMovement.stationary;
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    if (physicsCollider == null) return;
+
+    //    Gizmos.color = Color.red;
+    //    float radius = physicsCollider.radius * 0.95f;
+    //    Vector3 pos = (transform.position + physicsCollider.center) - Vector3.up * (physicsCollider.height - 1) * 0.5f;
+    //    Gizmos.DrawSphere(pos, radius);
+    //}
 
     private void UpdateMovementDirection()
     {

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: DashEffect
   m_EditorClassIdentifier: 
   firePoint: {x: 0, y: 0, z: 3}
-  fireDirection: {x: 0, y: 180, z: 0}
+  fireDirection: {x: 10, y: 180, z: 0}
   fireScale: 3
   prefabToToggle: {fileID: 1097198447161478, guid: 97786ae8e944f4c47953c0d63ca0293e,
     type: 2}
