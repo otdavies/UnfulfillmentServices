@@ -34,3 +34,16 @@ sysinfo.txt
 *.unitypackage
 
 PlayMakerActions.unitypackage.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/View/DragAndDrop.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/Utility.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/EditorWindows/GUI/Utility.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/EditorWindows/GUI/SceneViewBottomBarGUI.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/EditorWindows/GUI/HierarchyWindowItemGUI.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/EditorWindows/GUI/EditorWindow.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/EditorWindows/GUI/EditModeGUI.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/EditorWindows/GUI/ComponentEditorWindows.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/Data/Hierarchy.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/Control.meta
+Assets/Plugins/RealtimeCSG/Editor/Scripts/__Obsolete.meta
+ProjectSettings/ProjectSettings.asset
+ProjectSettings/UnityConnectSettings.asset

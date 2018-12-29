@@ -1,17 +1,34 @@
 fileFormatVersion: 2
-guid: e99d5e52271ba724eb4ffe25459b2868
+guid: c8eab0d1cea3a9f41bcaf97485eb9b5a
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
+    100000: BezierCurve.005
+    100002: Circle.010
+    100004: Cube
+    100006: Cube.001
+    100008: //RootNode
+    400000: BezierCurve.005
+    400002: Circle.010
+    400004: Cube
+    400006: Cube.001
+    400008: //RootNode
     2100000: No Name
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Circle.009
+    2300000: BezierCurve.005
+    2300002: Circle.010
+    2300004: Cube
+    2300006: Cube.001
+    3300000: BezierCurve.005
+    3300002: Circle.010
+    3300004: Cube
+    3300006: Cube.001
+    4300000: Circle.010
+    4300002: Cube
+    4300004: BezierCurve.005
+    4300006: Cube.001
   externalObjects: {}
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -64,7 +81,7 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
-  importAnimation: 0
+  importAnimation: 1
   copyAvatar: 0
   humanDescription:
     serializedVersion: 2
