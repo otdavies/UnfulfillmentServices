@@ -23,5 +23,7 @@ MonoBehaviour:
   activationButton: 0
   travelTime: 0.3
   forwardTravelDistance: 1
-  verticalTranvelDistance: 7
-  recastPercentageComplete: 0.9
+  verticalTranvelDistance: 8
+  recastPercentageComplete: 0.8
+  requiresGrounded: 1
+  requiresNotGrounded: 0

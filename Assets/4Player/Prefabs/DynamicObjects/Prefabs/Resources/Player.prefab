@@ -915,6 +915,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arm1: {fileID: 1028288737532756}
   arm2: {fileID: 1067394630237322}
+  body: {fileID: 1421003029278290}
+  head: {fileID: 1577564245211582}
 --- !u!114 &114340855371361872
 MonoBehaviour:
   m_ObjectHideFlags: 1

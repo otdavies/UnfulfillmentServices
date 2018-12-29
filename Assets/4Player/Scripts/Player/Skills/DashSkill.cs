@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using XboxCtrlrInput;
 
 [CreateAssetMenu(fileName = "DashSkill", menuName = "Skills/Abilities/Dash", order = 1)]
 public class DashSkill : Skill
@@ -8,6 +9,8 @@ public class DashSkill : Skill
     public float forwardTravelDistance = 2;
     public float verticalTranvelDistance = 1;
     public float recastPercentageComplete = 0.8f;
+    public bool requiresGrounded = false;
+    public bool requiresNotGrounded = false;
 
     private Transform playerTransform;
     private Rigidbody playerRigidbody;
@@ -18,6 +21,12 @@ public class DashSkill : Skill
         base.RegisterTo(player);
         playerTransform = player.transform;
         playerRigidbody = playerTransform.GetComponent<Rigidbody>();
+    }
+
+    public override bool CanCast(XboxController controller)
+    {
+        bool canCast = base.CanCast(controller);
+        return requiresGrounded ? canCast && caster.grounded : requiresNotGrounded ? canCast && !caster.grounded : canCast;
     }
 
     public override void Cast()

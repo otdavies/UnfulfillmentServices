@@ -20,7 +20,7 @@ public class ForceBlastSkill : Skill
     public override void Cast()
     {
         base.Cast();
-        casterRigidbody.AddExplosionForce(70, caster.transform.position + caster.transform.forward * 2, 4, 0, ForceMode.Impulse);
+        casterRigidbody.AddExplosionForce(50, caster.transform.position + caster.transform.forward * 2, 4, 0, ForceMode.Impulse);
     }
 
     public override void Channel()

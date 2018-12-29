@@ -73,6 +73,7 @@ public class Player : MonoBehaviour
         thisTransform = this.transform;
         physicsRigid = GetComponent<Rigidbody>();
         puppet = visualModel.GetComponent<PlayerPuppet>();
+        puppet.SetOwner(this);
 
         // Initialize skills
         for (int index = 0; index < skills.Length; index++)
@@ -83,7 +84,6 @@ public class Player : MonoBehaviour
         }
 
         previousTransformPosition = this.transform.position;
-
         conditionState = CharacterCondition.alive;
     }
 
@@ -114,8 +114,10 @@ public class Player : MonoBehaviour
 
     private void UpdateMovementState()
     {
+        RaycastHit hit;
         // Movement states
-        grounded = Physics.Raycast(thisTransform.position, -thisTransform.up, this.transform.localScale.y + 0.1f, groundedLayer);
+        grounded = Physics.SphereCast(thisTransform.position, 0.75f,  -thisTransform.up, out hit, this.transform.localScale.y + 0.15f, groundedLayer);
+
 
         if (horizontalInput > 0 || horizontalInput < 0 || verticalInput > 0 || verticalInput < 0)
             movementState = CharacterMovement.moving;

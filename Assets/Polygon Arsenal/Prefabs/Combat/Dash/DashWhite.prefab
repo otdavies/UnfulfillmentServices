@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 198472046996112406}
   - component: {fileID: 199679928903007726}
   m_Layer: 0
-  m_Name: DashGreen
+  m_Name: DashWhite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,8 +68,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1097198447161478}
-  m_LocalRotation: {x: -0.0000009089707, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.38, y: 9.66, z: 7.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4804840129086944}
@@ -163,7 +163,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 1395481042
+  randomSeed: 250959180
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -1146,8 +1146,8 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 0, g: 0.92660546, b: 0, a: 0}
-        key1: {r: 0.13333333, g: 1, b: 0, a: 0.92783505}
+        key0: {r: 0.8602941, g: 1, b: 0.97687626, a: 0}
+        key1: {r: 0.7941176, g: 1, b: 0.9403651, a: 0.92783505}
         key2: {r: 1, g: 0.141, b: 0.13333334, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -3605,7 +3605,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1585637519
+  randomSeed: 818119858
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3613,7 +3613,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.6
-      minScalar: 0.3
+      minScalar: 0.4
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4571,8 +4571,8 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 0.48965526, g: 1, b: 0, a: 1}
-        key2: {r: 0, g: 1, b: 0, a: 0}
+        key1: {r: 0.7941176, g: 0.7941176, b: 0.7941176, a: 1}
+        key2: {r: 1, g: 1, b: 1, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
@@ -5233,7 +5233,7 @@ ParticleSystem:
     inWorldSpace: 0
     multiplyDragByParticleSize: 1
     multiplyDragByParticleVelocity: 1
-    dampen: 0.35
+    dampen: 0.25
     drag:
       serializedVersion: 2
       minMaxState: 0
@@ -7029,7 +7029,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1780563187
+  randomSeed: 518517296
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -7983,8 +7983,8 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
-        key1: {r: 0.48965526, g: 1, b: 0, a: 1}
-        key2: {r: 0, g: 1, b: 0, a: 0}
+        key1: {r: 0.85294116, g: 0.85294116, b: 0.85294116, a: 1}
+        key2: {r: 1, g: 1, b: 1, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}

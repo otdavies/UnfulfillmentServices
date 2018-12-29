@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06b0ee90d6ef93b44a01d7f3da433c89, type: 3}
-  m_Name: ForwardDash
+  m_Name: AirDash
   m_EditorClassIdentifier: 
   onArtifactStart:
   - effect: 2
@@ -17,8 +17,10 @@ MonoBehaviour:
     severity: 0.1
   onVisualizerStart:
   - fireable: {fileID: 11400000, guid: 72486dfc4a9adef429852b374d418333, type: 2}
-  activationButton: 2
+  activationButton: 0
   travelTime: 0.1
-  forwardTravelDistance: 5
+  forwardTravelDistance: 4
   verticalTranvelDistance: 3
-  recastPercentageComplete: 2
+  recastPercentageComplete: 1
+  requiresGrounded: 0
+  requiresNotGrounded: 1
