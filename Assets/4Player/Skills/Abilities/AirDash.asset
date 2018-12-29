@@ -17,10 +17,12 @@ MonoBehaviour:
     severity: 0.1
   onVisualizerStart:
   - fireable: {fileID: 11400000, guid: 72486dfc4a9adef429852b374d418333, type: 2}
+  - fireable: {fileID: 11400000, guid: 74434ff946ba8b94fbf4ad75203d6f1d, type: 2}
   activationButton: 0
   travelTime: 0.1
   forwardTravelDistance: 4
-  verticalTranvelDistance: 4
+  verticalTranvelDistance: 6
   recastPercentageComplete: 1
   requiresGrounded: 0
   requiresNotGrounded: 1
+  numberOfCastsBeforeNeedGround: 1

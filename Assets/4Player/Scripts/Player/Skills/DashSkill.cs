@@ -11,10 +11,12 @@ public class DashSkill : Skill
     public float recastPercentageComplete = 0.8f;
     public bool requiresGrounded = false;
     public bool requiresNotGrounded = false;
+    public int numberOfCastsBeforeNeedGround = 1;
 
     private Transform playerTransform;
     private Rigidbody playerRigidbody;
     private float percentCompletion = 0;
+    private int airCastCount = 0;
 
     public override void RegisterTo(Player player)
     {
@@ -25,8 +27,11 @@ public class DashSkill : Skill
 
     public override bool CanCast(XboxController controller)
     {
+        if (caster.grounded) airCastCount = 0;
+
         bool canCast = base.CanCast(controller);
-        return requiresGrounded ? canCast && caster.grounded : requiresNotGrounded ? canCast && !caster.grounded : canCast;
+        // "Readable"
+        return requiresGrounded ? canCast && caster.grounded : requiresNotGrounded ? numberOfCastsBeforeNeedGround > airCastCount && canCast && !caster.grounded : numberOfCastsBeforeNeedGround > airCastCount && canCast;
     }
 
     public override void Cast()
@@ -34,6 +39,7 @@ public class DashSkill : Skill
         base.Cast();
         Vector3 verticalForce = playerRigidbody.transform.up * verticalTranvelDistance;
         playerRigidbody.AddForce(verticalForce * 10, ForceMode.Impulse);
+        airCastCount++;
     }
 
     public override void Channel()

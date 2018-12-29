@@ -126,16 +126,6 @@ public class Player : MonoBehaviour
         else movementState = CharacterMovement.stationary;
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    if (physicsCollider == null) return;
-
-    //    Gizmos.color = Color.red;
-    //    float radius = physicsCollider.radius * 0.95f;
-    //    Vector3 pos = (transform.position + physicsCollider.center) - Vector3.up * (physicsCollider.height - 1) * 0.5f;
-    //    Gizmos.DrawSphere(pos, radius);
-    //}
-
     private void UpdateMovementDirection()
     {
         physicsRigid.angularVelocity = Vector3.zero;
