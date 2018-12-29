@@ -8,27 +8,32 @@ ModelImporter:
     100004: Cube
     100006: Cube.001
     100008: //RootNode
+    100010: Circle.004
     400000: BezierCurve.005
     400002: Circle.010
     400004: Cube
     400006: Cube.001
     400008: //RootNode
+    400010: Circle.004
     2100000: No Name
     2300000: BezierCurve.005
     2300002: Circle.010
     2300004: Cube
     2300006: Cube.001
+    2300008: Circle.004
     3300000: BezierCurve.005
     3300002: Circle.010
     3300004: Cube
     3300006: Cube.001
+    3300008: Circle.004
     4300000: Circle.010
     4300002: Cube
     4300004: BezierCurve.005
     4300006: Cube.001
+    4300008: Circle.004
   externalObjects: {}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -81,7 +86,7 @@ ModelImporter:
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     serializedVersion: 2
