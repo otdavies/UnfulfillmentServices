@@ -163,7 +163,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 235480622
+  randomSeed: -868639073
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -2745,7 +2745,7 @@ ParticleSystem:
       type: 0
       properties: 0
   LightsModule:
-    enabled: 1
+    enabled: 0
     ratio: 0.5
     light: {fileID: 108943164253918692, guid: faeb88c246231cb4aafcb2bc5b5b0427, type: 2}
     randomDistribution: 1
@@ -3587,7 +3587,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: 816708277
+  randomSeed: -1751434339
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -6242,7 +6242,7 @@ ParticleSystem:
         m_RotationOrder: 4
     maxLights: 1
   TrailModule:
-    enabled: 1
+    enabled: 0
     mode: 0
     ratio: 0.4
     lifetime:
@@ -6993,7 +6993,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
-  randomSeed: -1137488762
+  randomSeed: -215289155
   InitialModule:
     serializedVersion: 3
     enabled: 1

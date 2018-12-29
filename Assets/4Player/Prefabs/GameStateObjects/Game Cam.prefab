@@ -24,7 +24,6 @@ GameObject:
   - component: {fileID: 81097026199840006}
   - component: {fileID: 114038532347166698}
   - component: {fileID: 114979981059113996}
-  - component: {fileID: 114306917124930900}
   m_Layer: 0
   m_Name: Game Cam
   m_TagString: MainCamera
@@ -38,13 +37,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1372410463940830}
-  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0.30070576, y: 0, z: 0, w: 0.953717}
   m_LocalPosition: {x: 0, y: 21.26, z: -21.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 35, y: 0, z: 0}
 --- !u!20 &20119494443570364
 Camera:
   m_ObjectHideFlags: 1
@@ -100,94 +99,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   profile: {fileID: 11400000, guid: 2cb55229a647f2a40b7df6341bdac96b, type: 2}
---- !u!114 &114306917124930900
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1372410463940830}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 397896519574fb942aca0716c520160b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Radius: 0.5
-  Power: 1
-  Presence: 0.6
-  Thickness: 0.25
-  BordersIntensity: 0.3
-  DetailAmountVAO: 1
-  DetailQuality: 1
-  DetailAmountRaycast: 0
-  Quality: 4
-  SSAOBias: 0.005
-  MaxRadiusEnabled: 1
-  MaxRadius: 0.5
-  Algorithm: 1
-  DistanceFalloffMode: 2
-  DistanceFalloffStartAbsolute: 100
-  DistanceFalloffStartRelative: 0.2
-  DistanceFalloffSpeedAbsolute: 30
-  DistanceFalloffSpeedRelative: 0.2
-  AdaptiveType: 1
-  AdaptiveQualityCoefficient: 1
-  CullingPrepassMode: 2
-  Downsampling: 1
-  HierarchicalBufferState: 2
-  CommandBufferEnabled: 1
-  UseGBuffer: 1
-  UsePreciseDepthBuffer: 1
-  EnableTemporalFiltering: 1
-  VaoCameraEvent: 0
-  FarPlaneSource: 1
-  IsLumaSensitive: 0
-  LuminanceMode: 1
-  LumaThreshold: 0.7
-  LumaKneeWidth: 0.3
-  LumaKneeLinearity: 3
-  Mode: 2
-  ColorTint: {r: 0.24264705, g: 0.23083462, b: 0.2158845, a: 1}
-  ColorBleedPower: 5
-  ColorBleedPresence: 1
-  IntermediateScreenTextureFormat: 0
-  ColorbleedHueSuppresionEnabled: 0
-  ColorBleedHueSuppresionThreshold: 7
-  ColorBleedHueSuppresionWidth: 2
-  ColorBleedHueSuppresionSaturationThreshold: 0.5
-  ColorBleedHueSuppresionSaturationWidth: 0.2
-  ColorBleedHueSuppresionBrightness: 0
-  ColorBleedQuality: 2
-  ColorBleedSelfOcclusionFixLevel: 2
-  GiBackfaces: 0
-  BlurQuality: 0
-  BlurMode: 1
-  EnhancedBlurSize: 5
-  EnhancedBlurDeviation: 1.3
-  OutputAOOnly: 0
-  NormalsSource: 1
-  HierarchicalBufferPixelsPerLevel: 150
-  lumaFoldout: 1
-  colorBleedFoldout: 0
-  optimizationFoldout: 1
-  radiusLimitsFoldout: 0
-  pipelineFoldout: 1
-  blurFoldout: 1
-  aboutFoldout: 0
-  vaoMainShader: {fileID: 4800000, guid: d8e4aa2549aa08c4ebdebbcee932d057, type: 3}
-  vaoMainColorbleedShader: {fileID: 4800000, guid: 56b4b5f5d5debc24ea4d246b0dce7b22,
-    type: 3}
-  raycastMainShader: {fileID: 4800000, guid: 0f1aa41fedb1bda49b066f97cc60fd42, type: 3}
-  raycastMainColorbleedShader: {fileID: 4800000, guid: 1e33ef721a4526a44a62bfdd2c3c1d97,
-    type: 3}
-  vaoFinalPassShader: {fileID: 4800000, guid: 6eab60abf9715e44eb40b25217dc8bc2, type: 3}
-  vaoBeforeReflectionsBlendShader: {fileID: 4800000, guid: 282be4e660d726c458cbbb3458f01aa5,
-    type: 3}
-  ForcedSwitchPerformed: 0
-  ForcedSwitchPerformedSinglePassStereo: 0
-  ForcedSwitchPerformedSinglePassStereoGBuffer: 0
-  isSPSR: 0
-  isMPSR: 0
-  historyReady: 1
 --- !u!114 &114979981059113996
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -202,7 +113,7 @@ MonoBehaviour:
   cameraTrackBoundsPercent: 0.3
   cameraTrackBoundsCorrectionStrength: 5
   cameraSmallestRestingDistance: 50
-  cameraMaxZoomIn: 1
+  cameraMaxZoomIn: 1.5
   cameraMaxZoomOut: 5
   cameraZoomBoundsPercent: 1
   cameraFollowLerpSpeed: 10
