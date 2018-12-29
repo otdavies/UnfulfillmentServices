@@ -25,4 +25,5 @@ MonoBehaviour:
   recastPercentageComplete: 1
   requiresGrounded: 0
   requiresNotGrounded: 1
+  cancelVerticalVelocityOnCast: 1
   numberOfCastsBeforeNeedGround: 1

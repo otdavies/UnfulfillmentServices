@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: DarkSandStone
+  m_Name: Rope
   m_Shader: {fileID: 4800000, guid: 3ab3f16795f91a24bb5eca2667c5883d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 0
@@ -55,6 +55,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _ASEOutlineWidth: 0.17
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -62,10 +63,11 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GradientFallOff: 1
-    - _GradientLength: 15.5
-    - _GradientShine: 0
-    - _GradientStart: 3.33
+    - _GradientFallOff: 1.009
+    - _GradientLength: 0.94
+    - _GradientShine: 1
+    - _GradientStart: -20.53
+    - _MaskClipValue: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -73,18 +75,28 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _SurfaceShine: 0.2
+    - _SurfaceShine: 0.3
+    - _TessMax: 25
+    - _TessMin: 10
+    - _TessValue: 4
+    - _Transparency: 1
     - _UVSec: 0
     - _ZWrite: 1
     - __dirty: 0
+    - _gradientLength: 0.73
+    - _gradientStart: -0.72
+    - _shine: 0
     m_Colors:
+    - _ASEOutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color_x: {r: 0.1397059, g: 0.1249135, b: 0.102724895, a: 1}
-    - _Color_x2: {r: 0.1544118, g: 0.14005472, b: 0.12262113, a: 1}
-    - _Color_y: {r: 0.18382353, g: 0.13574883, b: 0.07028547, a: 1}
-    - _Color_y2: {r: 0.28676468, g: 0.22772492, b: 0.09277681, a: 1}
-    - _Color_z: {r: 0.38235295, g: 0.31362942, b: 0.19679932, a: 1}
-    - _Color_z2: {r: 0.20588237, g: 0.18329749, b: 0.13624568, a: 1}
+    - _Color_x: {r: 0.61764705, g: 0.51460165, b: 0.45869377, a: 1}
+    - _Color_x2: {r: 0.5441177, g: 0.35047534, b: 0.06001258, a: 1}
+    - _Color_y: {r: 0.6102941, g: 0.6102941, b: 0.6102941, a: 1}
+    - _Color_y2: {r: 0.9485294, g: 0.45136917, b: 0, a: 1}
+    - _Color_z: {r: 0.5808823, g: 0.46494147, b: 0.375865, a: 1}
+    - _Color_z2: {r: 0.26470536, g: 0.18201834, b: 0.15765521, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GradientColor: {r: 0.7058823, g: 0.5955614, b: 0.35813147, a: 0}
-    - _GradientDirection: {r: 0, g: 1, b: 0, a: 0}
+    - _GradientColor: {r: 0.45588237, g: 0.32004225, b: 0.077097744, a: 0}
+    - _GradientDirection: {r: 0, g: -1, b: 0, a: 0}
+    - _gradientColor: {r: 0.8235294, g: 0.46396607, b: 0.18771625, a: 1}
+    - _gradientDirection: {r: 0, g: 1, b: 0, a: 0}

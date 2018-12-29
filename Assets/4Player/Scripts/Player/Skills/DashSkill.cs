@@ -11,6 +11,7 @@ public class DashSkill : Skill
     public float recastPercentageComplete = 0.8f;
     public bool requiresGrounded = false;
     public bool requiresNotGrounded = false;
+    public bool cancelVerticalVelocityOnCast = false;
     public int numberOfCastsBeforeNeedGround = 1;
 
     private Transform playerTransform;
@@ -38,6 +39,7 @@ public class DashSkill : Skill
     {
         base.Cast();
         Vector3 verticalForce = playerRigidbody.transform.up * verticalTranvelDistance;
+        if(cancelVerticalVelocityOnCast) playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x,  0, playerRigidbody.velocity.z);
         playerRigidbody.AddForce(verticalForce * 10, ForceMode.Impulse);
         airCastCount++;
     }
