@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/4Player/Levels/Random/Pvp1.unity
-    guid: c9e2a6150e4f5444e84adc75932f91b9
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/4Player/Levels/FFC/FCC1.unity
-    guid: bd917261faaec3a4fa8a52a302e52178
+    path: Assets/4Player/Scenes/Hexi-build-boilerplate.unity
+    guid: a89a7b9fd7be8a54f8fc9ab28e7e21e0
