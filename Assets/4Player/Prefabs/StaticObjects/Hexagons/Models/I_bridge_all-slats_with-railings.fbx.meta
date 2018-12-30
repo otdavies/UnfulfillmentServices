@@ -1,36 +1,31 @@
 fileFormatVersion: 2
-guid: c8eab0d1cea3a9f41bcaf97485eb9b5a
+guid: 2e0b626f8e4cc544aa0e4724c8b06e48
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: BezierCurve.005
-    100002: Circle.010
-    100004: Cube
-    100006: Cube.001
-    100008: //RootNode
-    100010: Circle.004
-    400000: BezierCurve.005
-    400002: Circle.010
-    400004: Cube
-    400006: Cube.001
-    400008: //RootNode
-    400010: Circle.004
+    100000: Ground_I_bridge_all-slats_with-railings
+    100002: Hexagon_I_bridge_all-slats_with-railings
+    100004: //RootNode
+    100006: Ropes_I_bridge_all-slats_with-railings
+    100008: Wood_I_bridge_all-slats_with-railings
+    400000: Ground_I_bridge_all-slats_with-railings
+    400002: Hexagon_I_bridge_all-slats_with-railings
+    400004: //RootNode
+    400006: Ropes_I_bridge_all-slats_with-railings
+    400008: Wood_I_bridge_all-slats_with-railings
     2100000: No Name
-    2300000: BezierCurve.005
-    2300002: Circle.010
-    2300004: Cube
-    2300006: Cube.001
-    2300008: Circle.004
-    3300000: BezierCurve.005
-    3300002: Circle.010
-    3300004: Cube
-    3300006: Cube.001
-    3300008: Circle.004
-    4300000: Circle.010
-    4300002: Cube
-    4300004: BezierCurve.005
-    4300006: Cube.001
-    4300008: Circle.004
+    2300000: Ground_I_bridge_all-slats_with-railings
+    2300002: Hexagon_I_bridge_all-slats_with-railings
+    2300004: Ropes_I_bridge_all-slats_with-railings
+    2300006: Wood_I_bridge_all-slats_with-railings
+    3300000: Ground_I_bridge_all-slats_with-railings
+    3300002: Hexagon_I_bridge_all-slats_with-railings
+    3300004: Ropes_I_bridge_all-slats_with-railings
+    3300006: Wood_I_bridge_all-slats_with-railings
+    4300000: Ropes_I_bridge_all-slats_with-railings
+    4300002: Hexagon_I_bridge_all-slats_with-railings
+    4300004: Ground_I_bridge_all-slats_with-railings
+    4300006: Wood_I_bridge_all-slats_with-railings
   externalObjects: {}
   materials:
     importMaterials: 0
