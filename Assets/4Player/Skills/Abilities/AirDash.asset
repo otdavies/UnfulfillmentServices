@@ -26,4 +26,4 @@ MonoBehaviour:
   requiresGrounded: 0
   requiresNotGrounded: 1
   cancelVerticalVelocityOnCast: 1
-  numberOfCastsBeforeNeedGround: 1
+  numberOfCastsBeforeNeedGround: 2
