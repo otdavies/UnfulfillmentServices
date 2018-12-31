@@ -8,24 +8,74 @@ ModelImporter:
     100004: Hexagon_1-1-I_bridge_all-slats_with-railings
     100006: Ropes_1-1-I_bridge_all-slats_with-railings
     100008: Wood_1-1-I_bridge_all-slats_with-railings
+    100010: BezierCurve.000
+    100012: BezierCurve.001
+    100014: BezierCurve.002
+    100016: BezierCurve.003
+    100018: BezierCurve.004
+    100020: BezierCurve.006
+    100022: BezierCurve.047
+    100024: BezierCurve.048
+    100026: Cube.007
+    100028: Sphere.001
     400000: //RootNode
     400002: Ground_1-1-I_bridge_all-slats_with-railings
     400004: Hexagon_1-1-I_bridge_all-slats_with-railings
     400006: Ropes_1-1-I_bridge_all-slats_with-railings
     400008: Wood_1-1-I_bridge_all-slats_with-railings
+    400010: BezierCurve.000
+    400012: BezierCurve.001
+    400014: BezierCurve.002
+    400016: BezierCurve.003
+    400018: BezierCurve.004
+    400020: BezierCurve.006
+    400022: BezierCurve.047
+    400024: BezierCurve.048
+    400026: Cube.007
+    400028: Sphere.001
     2100000: No Name
     2300000: Ground_1-1-I_bridge_all-slats_with-railings
     2300002: Hexagon_1-1-I_bridge_all-slats_with-railings
     2300004: Ropes_1-1-I_bridge_all-slats_with-railings
     2300006: Wood_1-1-I_bridge_all-slats_with-railings
+    2300008: BezierCurve.000
+    2300010: BezierCurve.001
+    2300012: BezierCurve.002
+    2300014: BezierCurve.003
+    2300016: BezierCurve.004
+    2300018: BezierCurve.006
+    2300020: BezierCurve.047
+    2300022: BezierCurve.048
+    2300024: Cube.007
+    2300026: Sphere.001
     3300000: Ground_1-1-I_bridge_all-slats_with-railings
     3300002: Hexagon_1-1-I_bridge_all-slats_with-railings
     3300004: Ropes_1-1-I_bridge_all-slats_with-railings
     3300006: Wood_1-1-I_bridge_all-slats_with-railings
+    3300008: BezierCurve.000
+    3300010: BezierCurve.001
+    3300012: BezierCurve.002
+    3300014: BezierCurve.003
+    3300016: BezierCurve.004
+    3300018: BezierCurve.006
+    3300020: BezierCurve.047
+    3300022: BezierCurve.048
+    3300024: Cube.007
+    3300026: Sphere.001
     4300000: Ropes_1-1-I_bridge_all-slats_with-railings
     4300002: Hexagon_1-1-I_bridge_all-slats_with-railings
     4300004: Ground_1-1-I_bridge_all-slats_with-railings
     4300006: Wood_1-1-I_bridge_all-slats_with-railings
+    4300008: BezierCurve.048
+    4300010: BezierCurve.047
+    4300012: BezierCurve.006
+    4300014: BezierCurve.004
+    4300016: BezierCurve.003
+    4300018: BezierCurve.002
+    4300020: BezierCurve.001
+    4300022: BezierCurve.000
+    4300024: Cube.007
+    4300026: Sphere.001
   externalObjects: {}
   materials:
     importMaterials: 0

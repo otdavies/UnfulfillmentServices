@@ -1,23 +1,21 @@
 fileFormatVersion: 2
-guid: 4a2d87c7a09305c42b0eaf7ad30a6f30
+guid: fc21cf9fe8d1b9e4292b5c345ee762c1
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
-    100002: Ground_1-1-I_base_slope
-    100004: Hexagon_1-1-I_base_slope
+    100002: Ground_2-2-X_base_slope
+    100004: Hexagon_2-2-X_base_slope
     400000: //RootNode
-    400002: Ground_1-1-I_base_slope
-    400004: Hexagon_1-1-I_base_slope
+    400002: Ground_2-2-X_base_slope
+    400004: Hexagon_2-2-X_base_slope
     2100000: No Name
-    2300000: //RootNode
-    2300002: Ground_1-1-I_base_slope
-    2300004: Hexagon_1-1-I_base_slope
-    3300000: //RootNode
-    3300002: Ground_1-1-I_base_slope
-    3300004: Hexagon_1-1-I_base_slope
-    4300000: Ground_1-1-I_base_slope
-    4300002: Hexagon_1-1-I_base_slope
+    2300000: Ground_2-2-X_base_slope
+    2300002: Hexagon_2-2-X_base_slope
+    3300000: Ground_2-2-X_base_slope
+    3300002: Hexagon_2-2-X_base_slope
+    4300000: Hexagon_2-2-X_base_slope
+    4300002: Ground_2-2-X_base_slope
   externalObjects: {}
   materials:
     importMaterials: 0
