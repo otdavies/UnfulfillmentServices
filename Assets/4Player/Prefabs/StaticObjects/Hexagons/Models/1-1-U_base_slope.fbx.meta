@@ -1,31 +1,21 @@
 fileFormatVersion: 2
-guid: 2e0b626f8e4cc544aa0e4724c8b06e48
+guid: 71af0711f5d14de47a4796dda490c20c
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Ground_I_bridge_all-slats_with-railings
-    100002: Hexagon_I_bridge_all-slats_with-railings
-    100004: //RootNode
-    100006: Ropes_I_bridge_all-slats_with-railings
-    100008: Wood_I_bridge_all-slats_with-railings
-    400000: Ground_I_bridge_all-slats_with-railings
-    400002: Hexagon_I_bridge_all-slats_with-railings
-    400004: //RootNode
-    400006: Ropes_I_bridge_all-slats_with-railings
-    400008: Wood_I_bridge_all-slats_with-railings
+    100000: //RootNode
+    100002: Ground_1-1-U_base_slope
+    100004: Hexagon_1-1-U_base_slope
+    400000: //RootNode
+    400002: Ground_1-1-U_base_slope
+    400004: Hexagon_1-1-U_base_slope
     2100000: No Name
-    2300000: Ground_I_bridge_all-slats_with-railings
-    2300002: Hexagon_I_bridge_all-slats_with-railings
-    2300004: Ropes_I_bridge_all-slats_with-railings
-    2300006: Wood_I_bridge_all-slats_with-railings
-    3300000: Ground_I_bridge_all-slats_with-railings
-    3300002: Hexagon_I_bridge_all-slats_with-railings
-    3300004: Ropes_I_bridge_all-slats_with-railings
-    3300006: Wood_I_bridge_all-slats_with-railings
-    4300000: Ropes_I_bridge_all-slats_with-railings
-    4300002: Hexagon_I_bridge_all-slats_with-railings
-    4300004: Ground_I_bridge_all-slats_with-railings
-    4300006: Wood_I_bridge_all-slats_with-railings
+    2300000: Ground_1-1-U_base_slope
+    2300002: Hexagon_1-1-U_base_slope
+    3300000: Ground_1-1-U_base_slope
+    3300002: Hexagon_1-1-U_base_slope
+    4300000: Hexagon_1-1-U_base_slope
+    4300002: Ground_1-1-U_base_slope
   externalObjects: {}
   materials:
     importMaterials: 0

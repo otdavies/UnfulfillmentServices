@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: d4a4c370488f81e4da1e87efcb2799eb
+guid: 3bb9c073e78469849b1d21ae451d775b
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Ground_Y_bridge_with-railings
-    100002: Hexagon_Y_bridge_with-railings
-    100004: Ropes_Y_bridge_with-railings
-    100006: Wood_Y_bridge_with-railings
-    100008: //RootNode
-    400000: Ground_Y_bridge_with-railings
-    400002: Hexagon_Y_bridge_with-railings
-    400004: Ropes_Y_bridge_with-railings
-    400006: Wood_Y_bridge_with-railings
-    400008: //RootNode
+    100000: //RootNode
+    100002: Ground_1-1-I_bridge_all-slats_with-railings
+    100004: Hexagon_1-1-I_bridge_all-slats_with-railings
+    100006: Ropes_1-1-I_bridge_all-slats_with-railings
+    100008: Wood_1-1-I_bridge_all-slats_with-railings
+    400000: //RootNode
+    400002: Ground_1-1-I_bridge_all-slats_with-railings
+    400004: Hexagon_1-1-I_bridge_all-slats_with-railings
+    400006: Ropes_1-1-I_bridge_all-slats_with-railings
+    400008: Wood_1-1-I_bridge_all-slats_with-railings
     2100000: No Name
-    2300000: Ground_Y_bridge_with-railings
-    2300002: Hexagon_Y_bridge_with-railings
-    2300004: Ropes_Y_bridge_with-railings
-    2300006: Wood_Y_bridge_with-railings
-    3300000: Ground_Y_bridge_with-railings
-    3300002: Hexagon_Y_bridge_with-railings
-    3300004: Ropes_Y_bridge_with-railings
-    3300006: Wood_Y_bridge_with-railings
-    4300000: Ropes_Y_bridge_with-railings
-    4300002: Ground_Y_bridge_with-railings
-    4300004: Hexagon_Y_bridge_with-railings
-    4300006: Wood_Y_bridge_with-railings
+    2300000: Ground_1-1-I_bridge_all-slats_with-railings
+    2300002: Hexagon_1-1-I_bridge_all-slats_with-railings
+    2300004: Ropes_1-1-I_bridge_all-slats_with-railings
+    2300006: Wood_1-1-I_bridge_all-slats_with-railings
+    3300000: Ground_1-1-I_bridge_all-slats_with-railings
+    3300002: Hexagon_1-1-I_bridge_all-slats_with-railings
+    3300004: Ropes_1-1-I_bridge_all-slats_with-railings
+    3300006: Wood_1-1-I_bridge_all-slats_with-railings
+    4300000: Ropes_1-1-I_bridge_all-slats_with-railings
+    4300002: Hexagon_1-1-I_bridge_all-slats_with-railings
+    4300004: Ground_1-1-I_bridge_all-slats_with-railings
+    4300006: Wood_1-1-I_bridge_all-slats_with-railings
   externalObjects: {}
   materials:
     importMaterials: 0
