@@ -9,23 +9,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06b0ee90d6ef93b44a01d7f3da433c89, type: 3}
-  m_Name: HopSkill
+  m_Name: DoubleJump
   m_EditorClassIdentifier: 
   onArtifactStart:
-  - effect: 1
-    time: 0.3
-    severity: 1.3
   - effect: 2
     time: 0.3
-    severity: 0.5
+    severity: 0.7
   onVisualizerStart:
   - fireable: {fileID: 11400000, guid: 01ed7409d06da02429e4bf634866b6de, type: 2}
   activationButton: 0
   travelTime: 0.3
-  forwardTravelDistance: 1
-  verticalTranvelDistance: 11
-  recastPercentageComplete: 0.8
-  requiresGrounded: 1
-  requiresNotGrounded: 0
-  cancelVerticalVelocityOnCast: 0
+  forwardTravelDistance: 0
+  verticalTranvelDistance: 9
+  recastPercentageComplete: 1
+  requiresGrounded: 0
+  requiresNotGrounded: 1
+  cancelVerticalVelocityOnCast: 1
   numberOfCastsBeforeNeedGround: 1

@@ -958,7 +958,7 @@ MonoBehaviour:
     m_Bits: 256
   visualModel: {fileID: 4439890379414822}
   skills:
-  - {fileID: 11400000, guid: 9f0be2108b64b58408b6f8042659b4ea, type: 2}
+  - {fileID: 11400000, guid: d0d5035cb0c547f439384d8cec793241, type: 2}
   - {fileID: 11400000, guid: 154f260f31201f542b84dd3f7dd75baa, type: 2}
   - {fileID: 11400000, guid: 6335bd01cada36a4b84c5b3841318a1d, type: 2}
   grounded: 1
