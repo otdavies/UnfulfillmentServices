@@ -1,4 +1,4 @@
-﻿Shader "Hidden/CeilOpNode"
+Shader "Hidden/CeilOpNode"
 {
 	Properties
 	{

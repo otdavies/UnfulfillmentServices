@@ -94,6 +94,12 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
+        name: _texcoord
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
         name: null
       second:
         m_Texture: {fileID: 0}
@@ -189,14 +195,14 @@ Material:
       second: 0
     - first:
         name: __dirty
-      second: 0
+      second: 1
     - first:
         name: temp3
       second: 1
     m_Colors:
     - first:
         name: EmberColorTint
-      second: {r: 0.966, g: 0.10625189, b: 0.004325263, a: 1}
+      second: {r: 0.966, g: 0.10625186, b: 0.004325263, a: 1}
     - first:
         name: _EmberColorTint1551673
       second: {r: 0.6901961, g: 0.2588228, b: 0.06274459, a: 1}

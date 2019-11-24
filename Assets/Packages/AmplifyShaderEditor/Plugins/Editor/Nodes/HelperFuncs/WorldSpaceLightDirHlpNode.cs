@@ -2,41 +2,77 @@
 // Copyright (c) Amplify Creations, Lda <info@amplify.pt>
 
 using System;
+using UnityEngine;
+using UnityEditor;
+
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "World Space Light Dir", "Forward Render", "Computes world space direction (not normalized) to light, given object space vertex position" )]
+	[NodeAttributes( "World Space Light Dir", "Light", "Computes normalized world space light direction" )]
 	public sealed class WorldSpaceLightDirHlpNode : HelperParentNode
 	{
+		private const string NormalizeOptionStr = "Safe Normalize";
+
+		[SerializeField]
+		private bool m_safeNormalize = false;
+
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
 			m_funcType = "UnityWorldSpaceLightDir";
-			//m_inputPorts[ 0 ].ChangeType( WirePortDataType.FLOAT4, false );
 			m_inputPorts[ 0 ].Visible = false;
 			m_outputPorts[ 0 ].ChangeType( WirePortDataType.FLOAT3, false );
 			m_outputPorts[ 0 ].Name = "XYZ";
+
+			AddOutputPort( WirePortDataType.FLOAT, "X" );
+			AddOutputPort( WirePortDataType.FLOAT, "Y" );
+			AddOutputPort( WirePortDataType.FLOAT, "Z" );
+
 			m_useInternalPortData = false;
 			m_drawPreviewAsSphere = true;
+			m_autoWrapProperties = true;
+			m_textLabelWidth = 120;
 			m_previewShaderGUID = "2e8dc46eb6fb2124d9f0007caf9567e3";
+		}
+
+		public override void PropagateNodeData( NodeData nodeData, ref MasterNodeDataCollector dataCollector )
+		{
+			base.PropagateNodeData( nodeData, ref dataCollector );
+			if( m_safeNormalize )
+				dataCollector.SafeNormalizeLightDir = true;
+		}
+
+		public override void DrawProperties()
+		{
+			base.DrawProperties();
+			m_safeNormalize = EditorGUILayoutToggle( NormalizeOptionStr, m_safeNormalize );
+			EditorGUILayout.HelpBox( "Having safe normalize ON makes sure your light vector is not zero even if there's no lights in your scene.", MessageType.None );
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
-			dataCollector.AddToIncludes( m_uniqueId, Constants.UnityCgLibFuncs );
-			string result = string.Empty;
-			//if ( m_inputPorts[ 0 ].IsConnected )
-			//{
-			//	result = m_inputPorts[ 0 ].GenerateShaderForOutput( ref dataCollector, WirePortDataType.FLOAT4, ignoreLocalvar, 0, true );
-			//}
-			//else
-			//{
-				string input = UIUtils.GetInputDeclarationFromType( m_currentPrecisionType, AvailableSurfaceInputs.WORLD_POS );
-				dataCollector.AddToInput( m_uniqueId, input, true );
-				result = Constants.InputVarStr + "." + UIUtils.GetInputValueFromType( AvailableSurfaceInputs.WORLD_POS );
-			//}
-			result = m_funcType + "( " + result + " )";
-			return CreateOutputLocalVariable( 0, result, ref dataCollector );
+			if( dataCollector.IsTemplate )
+				return GetOutputVectorItem( 0, outputId, dataCollector.TemplateDataCollectorInstance.GetWorldSpaceLightDir( CurrentPrecisionType ) ); ;
+
+			dataCollector.AddToIncludes( UniqueId, Constants.UnityCgLibFuncs );
+			dataCollector.AddToInput( UniqueId, SurfaceInputs.WORLD_POS );
+
+			return GetOutputVectorItem( 0, outputId, GeneratorUtils.GenerateWorldLightDirection( ref dataCollector, UniqueId, CurrentPrecisionType ) );
+		}
+
+		public override void ReadFromString( ref string[] nodeParams )
+		{
+			base.ReadFromString( ref nodeParams );
+			if( UIUtils.CurrentShaderVersion() > 15201 )
+			{
+				m_safeNormalize = Convert.ToBoolean( GetCurrentParam( ref nodeParams ) );
+			}
+		}
+
+		public override void WriteToString( ref string nodeInfo, ref string connectionsInfo )
+		{
+			base.WriteToString( ref nodeInfo, ref connectionsInfo );
+			IOUtils.AddFieldValueToString( ref nodeInfo, m_safeNormalize );
 		}
 	}
 }

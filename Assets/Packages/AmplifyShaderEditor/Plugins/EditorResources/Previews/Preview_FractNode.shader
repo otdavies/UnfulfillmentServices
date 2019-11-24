@@ -1,4 +1,4 @@
-﻿Shader "Hidden/FractNode"
+Shader "Hidden/FractNode"
 {
 	Properties
 	{

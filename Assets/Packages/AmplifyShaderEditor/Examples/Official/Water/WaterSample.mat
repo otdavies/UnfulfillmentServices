@@ -51,6 +51,12 @@ Material:
         m_Texture: {fileID: 2800000, guid: dd2fd2df93418444c8e280f1d34deeb5, type: 3}
         m_Scale: {x: 20, y: 20}
         m_Offset: {x: 0, y: 0}
+    - first:
+        name: _texcoord
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - first:
         name: _Depth
@@ -127,7 +133,7 @@ Material:
       second: {r: 0, g: 0.048731543, b: 0.22794023, a: 0}
     - first:
         name: _DeepColor
-      second: {r: 0, g: 0.0431017, b: 0.24999827, a: 0}
+      second: {r: 0, g: 0.04310166, b: 0.24999821, a: 0}
     - first:
         name: _ShalowColor
       second: {r: 0, g: 0.80882317, b: 0.8088235, a: 0}

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ATan2OpNode"
+Shader "Hidden/ATan2OpNode"
 {
 	Properties
 	{

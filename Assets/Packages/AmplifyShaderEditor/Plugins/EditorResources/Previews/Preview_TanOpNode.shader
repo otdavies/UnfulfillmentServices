@@ -1,4 +1,4 @@
-﻿Shader "Hidden/TanOpNode"
+Shader "Hidden/TanOpNode"
 {
 	Properties
 	{

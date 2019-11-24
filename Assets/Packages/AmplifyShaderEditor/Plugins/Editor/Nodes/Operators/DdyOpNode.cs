@@ -4,7 +4,7 @@
 namespace AmplifyShaderEditor
 {
 	[System.Serializable]
-	[NodeAttributes( "DDY", "Operators", "Approximate partial derivative with respect to window-space Y" )]
+	[NodeAttributes( "DDY", "Math Operators", "Approximate partial derivative with respect to window-space Y" )]
 	public sealed class DdyOpNode : SingleInputOp
 	{
 		protected override void CommonInit( int uniqueId )
@@ -19,6 +19,14 @@ namespace AmplifyShaderEditor
 														WirePortDataType.FLOAT4,
 														WirePortDataType.COLOR,
 														WirePortDataType.INT );
+		}
+
+		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
+		{
+			if( dataCollector.IsFragmentCategory )
+				return base.GenerateShaderForOutput( outputId, ref dataCollector, ignoreLocalvar );
+			else
+				return m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 		}
 	}
 }

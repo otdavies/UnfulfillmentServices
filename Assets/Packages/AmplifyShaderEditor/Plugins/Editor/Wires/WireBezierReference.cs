@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace AmplifyShaderEditor
 {
+	[System.Serializable]
 	public class WireBezierReference
 	{
 		private Rect m_boundingBox;
@@ -40,7 +41,7 @@ namespace AmplifyShaderEditor
 
 		public void DebugDraw()
 		{
-			GUI.Box( m_boundingBox, string.Empty, UIUtils.GetCustomStyle( CustomStyle.MainCanvasTitle ));
+			GUI.Label( m_boundingBox, string.Empty, UIUtils.GetCustomStyle( CustomStyle.MainCanvasTitle ));
 		}
 
 		public override string ToString()

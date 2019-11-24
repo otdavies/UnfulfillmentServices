@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SignOpNode"
+Shader "Hidden/SignOpNode"
 {
 	Properties
 	{

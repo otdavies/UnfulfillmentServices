@@ -1,4 +1,4 @@
-﻿Shader "Hidden/DotProductOpNode"
+Shader "Hidden/DotProductOpNode"
 {
 	Properties
 	{

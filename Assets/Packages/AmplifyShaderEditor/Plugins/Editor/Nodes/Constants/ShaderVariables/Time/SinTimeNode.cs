@@ -21,6 +21,17 @@ namespace AmplifyShaderEditor
 			ChangeOutputName( 4, "t" );
 			m_value = "_SinTime";
 			m_previewShaderGUID = "e4ba809e0badeb94994170b2cbbbba10";
+			m_continuousPreviewRefresh = true;
+		}
+
+		public override void RefreshExternalReferences()
+		{
+			base.RefreshExternalReferences();
+			if( !m_outputPorts[ 0 ].IsConnected )
+			{
+				m_outputPorts[ 0 ].Visible = false;
+				m_sizeIsDirty = true;
+			}
 		}
 	}
 }

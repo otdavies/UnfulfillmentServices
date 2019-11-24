@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SqrtOpNode"
+Shader "Hidden/SqrtOpNode"
 {
 	Properties
 	{

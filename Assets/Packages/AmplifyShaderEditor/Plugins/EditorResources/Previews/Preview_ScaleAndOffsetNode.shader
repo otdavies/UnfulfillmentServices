@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ScaleAndOffsetNode"
+Shader "Hidden/ScaleAndOffsetNode"
 {
 	Properties
 	{

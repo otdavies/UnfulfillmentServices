@@ -1,4 +1,4 @@
-﻿Shader "Hidden/DeltaTime"
+Shader "Hidden/DeltaTime"
 {
 	SubShader
 	{

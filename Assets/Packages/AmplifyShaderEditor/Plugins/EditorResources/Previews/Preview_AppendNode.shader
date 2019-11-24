@@ -1,4 +1,4 @@
-﻿Shader "Hidden/AppendNode"
+Shader "Hidden/AppendNode"
 {
 	Properties
 	{

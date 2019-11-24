@@ -2,19 +2,20 @@
 // Copyright (c) Amplify Creations, Lda <info@amplify.pt>
 
 using UnityEngine;
+using UnityEditor;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEditor;
+using System.Reflection;
 
 namespace AmplifyShaderEditor
 {
 	public class ShortcutKeyData
 	{
 		public bool IsPressed;
-		public Type NodeType;
+		public System.Type NodeType;
 		public string Name;
-		public ShortcutKeyData( Type type , string name )
+		public ShortcutKeyData( System.Type type, string name )
 		{
 			NodeType = type;
 			Name = name;
@@ -25,42 +26,60 @@ namespace AmplifyShaderEditor
 	public class GraphContextMenu
 	{
 		private List<ContextMenuItem> m_items;
-		private Dictionary<Type, NodeAttributes> m_itemsDict;
-		private Dictionary<Type, NodeAttributes> m_deprecatedItemsDict;
-		private Dictionary<Type, Type> m_castTypes;
+		private List<ContextMenuItem> m_itemFunctions;
+		private Dictionary<System.Type, NodeAttributes> m_itemsDict;
+		private Dictionary<System.Type, NodeAttributes> m_deprecatedItemsDict;
+		private Dictionary<System.Type, System.Type> m_castTypes;
 		private Dictionary<KeyCode, ShortcutKeyData> m_shortcutTypes;
-		private GenericMenu m_menu;
-		private Vector2 m_scaledClickedPos;
+
 		private KeyCode m_lastKeyPressed;
+		private ParentGraph m_currentGraph;
+		private bool m_correctlyLoaded = false;
 
 		public GraphContextMenu( ParentGraph currentGraph )
 		{
-			RefreshNodes( currentGraph );
+			m_currentGraph = currentGraph;
+			m_correctlyLoaded = RefreshNodes( currentGraph );
 		}
 
-		public void RefreshNodes( ParentGraph currentGraph )
+		private Type[] GetTypesInNamespace( Assembly assembly, string nameSpace )
 		{
-			if ( m_items != null )
+			return assembly.GetTypes().Where( t => String.Equals( t.Namespace, nameSpace, StringComparison.Ordinal ) ).ToArray();
+		}
+
+		public bool RefreshNodes( ParentGraph currentGraph )
+		{
+			if( m_items != null )
+			{
 				m_items.Clear();
+				m_items = null;
+			}
+
+			if( m_itemFunctions != null )
+			{
+				m_itemFunctions.Clear();
+				m_itemFunctions = null;
+			}
 
 			m_items = new List<ContextMenuItem>();
+			m_itemFunctions = new List<ContextMenuItem>();
 
-			if ( m_itemsDict != null )
+			if( m_itemsDict != null )
 				m_itemsDict.Clear();
 
-			m_itemsDict = new Dictionary<Type, NodeAttributes>();
+			m_itemsDict = new Dictionary<System.Type, NodeAttributes>();
 
-			if ( m_deprecatedItemsDict != null )
+			if( m_deprecatedItemsDict != null )
 				m_deprecatedItemsDict.Clear();
 
-			m_deprecatedItemsDict = new Dictionary<Type, NodeAttributes>();
+			m_deprecatedItemsDict = new Dictionary<System.Type, NodeAttributes>();
 
-			if ( m_castTypes != null )
+			if( m_castTypes != null )
 				m_castTypes.Clear();
 
-			m_castTypes = new Dictionary<Type, Type>();
+			m_castTypes = new Dictionary<System.Type, System.Type>();
 
-			if ( m_shortcutTypes != null )
+			if( m_shortcutTypes != null )
 				m_shortcutTypes.Clear();
 
 			m_shortcutTypes = new Dictionary<KeyCode, ShortcutKeyData>();
@@ -68,104 +87,127 @@ namespace AmplifyShaderEditor
 			m_lastKeyPressed = KeyCode.None;
 
 			// Fetch all available nodes by their attributes
-			IEnumerable<Type> availableTypes = AppDomain.CurrentDomain.GetAssemblies().ToList().SelectMany( type => type.GetTypes() );
-			foreach ( Type type in availableTypes )
+			try
 			{
-				foreach ( NodeAttributes attribute in Attribute.GetCustomAttributes( type ).OfType<NodeAttributes>() )
+				//IEnumerable<System.Type> availableTypes = AppDomain.CurrentDomain.GetAssemblies().ToList().SelectMany( type => type.GetTypes() );
+				Type[] availableTypes = GetTypesInNamespace( Assembly.GetExecutingAssembly(), "AmplifyShaderEditor" );
+				foreach( System.Type type in availableTypes )
 				{
-					if ( attribute.Available && !attribute.Deprecated )
+					foreach( NodeAttributes attribute in Attribute.GetCustomAttributes( type ).OfType<NodeAttributes>() )
 					{
-						if ( !UIUtils.HasColorCategory( attribute.Category ) )
+						if( attribute.Available && !attribute.Deprecated )
 						{
-							if ( !String.IsNullOrEmpty( attribute.CustomCategoryColor ) )
-							{
-								try
-								{
-									Color color = new Color();
-									ColorUtility.TryParseHtmlString( attribute.CustomCategoryColor, out color );
-									UIUtils.AddColorCategory( attribute.Category, color );
-								}
-								catch ( Exception e )
-								{
-									Debug.LogException( e );
-									UIUtils.AddColorCategory( attribute.Category, Constants.DefaultCategoryColor );
-								}
-							}
-							else
-							{
-								UIUtils.AddColorCategory( attribute.Category, Constants.DefaultCategoryColor );
-							}
-						}
+							//if ( !UIUtils.CurrentWindow.IsShaderFunctionWindow && attribute.AvailableInFunctionsOnly )
+							//	continue;
 
-						if ( attribute.CastType != null && attribute.CastType.Length > 0 && type != null )
-						{
-							for ( int i = 0; i < attribute.CastType.Length; i++ )
+							if( !UIUtils.HasColorCategory( attribute.Category ) )
 							{
-								m_castTypes.Add( attribute.CastType[ i ], type );
-							}
-						}
-
-						if ( attribute.ShortcutKey != KeyCode.None && type != null )
-							m_shortcutTypes.Add( attribute.ShortcutKey, new ShortcutKeyData( type, attribute.Name ) );
-
-						m_itemsDict.Add( type, attribute );
-						m_items.Add( new ContextMenuItem( attribute, type, attribute.Name, attribute.Category, attribute.Description, attribute.ShortcutKey, ( Type newType, Vector2 position ) =>
-						{
-							ParentNode newNode = ( ParentNode ) ScriptableObject.CreateInstance( newType );
-							if ( newNode != null )
-							{
-								newNode.Vec2Position = position;
-								currentGraph.AddNode( newNode, true );
-								if ( UIUtils.InputPortReference.IsValid )
+								if( !String.IsNullOrEmpty( attribute.CustomCategoryColor ) )
 								{
-									OutputPort port = newNode.GetFirstOutputPortOfType( UIUtils.InputPortReference.DataType, true );
-									if ( port != null )
+									try
 									{
-										port.ConnectTo( UIUtils.InputPortReference.NodeId, UIUtils.InputPortReference.PortId, UIUtils.InputPortReference.DataType, UIUtils.InputPortReference.TypeLocked );
-										UIUtils.GetNode( UIUtils.InputPortReference.NodeId ).GetInputPortByUniqueId( UIUtils.InputPortReference.PortId ).ConnectTo( port.NodeId, port.PortId, port.DataType, UIUtils.InputPortReference.TypeLocked );
+										Color color = new Color();
+										ColorUtility.TryParseHtmlString( attribute.CustomCategoryColor, out color );
+										UIUtils.AddColorCategory( attribute.Category, color );
+									}
+									catch( Exception e )
+									{
+										Debug.LogException( e );
+										UIUtils.AddColorCategory( attribute.Category, Constants.DefaultCategoryColor );
 									}
 								}
-								if ( UIUtils.OutputPortReference.IsValid )
-								{
-									InputPort port = newNode.GetFirstInputPortOfType( UIUtils.OutputPortReference.DataType, true );
-									if ( port != null )
-									{
-										port.ConnectTo( UIUtils.OutputPortReference.NodeId, UIUtils.OutputPortReference.PortId, UIUtils.OutputPortReference.DataType, port.TypeLocked );
-										UIUtils.GetNode( UIUtils.OutputPortReference.NodeId ).GetOutputPortByUniqueId( UIUtils.OutputPortReference.PortId ).ConnectTo( port.NodeId, port.PortId, port.DataType, port.TypeLocked );
-									}
-								}
-								UIUtils.InvalidateReferences();
+								//else
+								//{
+								//	UIUtils.AddColorCategory( attribute.Category, Constants.DefaultCategoryColor );
+								//}
 							}
-							return newNode;
-						} ) );
+
+							if( attribute.CastType != null && attribute.CastType.Length > 0 && type != null )
+							{
+								for( int i = 0; i < attribute.CastType.Length; i++ )
+								{
+									m_castTypes.Add( attribute.CastType[ i ], type );
+								}
+							}
+
+							if( attribute.ShortcutKey != KeyCode.None && type != null )
+								m_shortcutTypes.Add( attribute.ShortcutKey, new ShortcutKeyData( type, attribute.Name ) );
+
+							ContextMenuItem newItem = new ContextMenuItem( attribute, type, attribute.Name, attribute.Tags, attribute.Category, attribute.Description, null, attribute.ShortcutKey );
+							if( UIUtils.GetNodeAvailabilityInBitArray( attribute.NodeAvailabilityFlags, NodeAvailability.SurfaceShader ) )
+								m_items.Add( newItem );
+							else if( UIUtils.GetNodeAvailabilityInBitArray( attribute.NodeAvailabilityFlags, currentGraph.ParentWindow.CurrentNodeAvailability ) )
+								m_items.Add( newItem );
+							else if( UIUtils.GetNodeAvailabilityInBitArray( attribute.NodeAvailabilityFlags, currentGraph.CurrentCanvasMode ) )
+								m_items.Add( newItem );
+
+							m_itemsDict.Add( type, attribute );
+							m_itemFunctions.Add( newItem );
+						}
+						else
+						{
+							m_deprecatedItemsDict.Add( type, attribute );
+						}
 					}
-					else
-					{
-						m_deprecatedItemsDict.Add( type, attribute );
-					}
+				}
+			}
+			catch( ReflectionTypeLoadException exception )
+			{
+				Debug.LogException( exception );
+				return false;
+			}
+
+			string[] guids = AssetDatabase.FindAssets( "t:AmplifyShaderFunction" );
+			List<AmplifyShaderFunction> allFunctions = new List<AmplifyShaderFunction>();
+
+			for( int i = 0; i < guids.Length; i++ )
+			{
+				allFunctions.Add( AssetDatabase.LoadAssetAtPath<AmplifyShaderFunction>( AssetDatabase.GUIDToAssetPath( guids[ i ] ) ) );
+			}
+
+			int functionCount = allFunctions.Count;
+			if( functionCount > 0 )
+			{
+				m_castTypes.Add( typeof( AmplifyShaderFunction ), typeof( FunctionNode ) );
+			}
+
+			for( int i = 0; i < functionCount; i++ )
+			{
+				if( !allFunctions[ i ].Hidden )
+				{
+					NodeAttributes attribute = new NodeAttributes( allFunctions[ i ].FunctionName, allFunctions[ i ].CustomNodeCategory, allFunctions[ i ].Description, KeyCode.None, true, 0, int.MaxValue, typeof( AmplifyShaderFunction ) );
+					System.Type type = typeof( FunctionNode );
+
+					ContextMenuItem newItem = new ContextMenuItem( attribute, type, attribute.Name, attribute.Tags, attribute.Category, attribute.Description, allFunctions[ i ], attribute.ShortcutKey );
+					m_items.Add( newItem );
+					m_itemFunctions.Add( newItem );
 				}
 			}
 
 			//Sort out the final list by name
-			m_items.Sort( ( ContextMenuItem item0, ContextMenuItem item1 ) => { return item0.Name.CompareTo( item1.Name ); } );
-
-			// Add them to the context menu
-			m_menu = new GenericMenu();
-			foreach ( ContextMenuItem item in m_items )
-			{
-				//The / on the GUIContent creates categories on the context menu
-				m_menu.AddItem( new GUIContent( item.Category + "/" + item.Name, item.Description ), false, OnItemSelected, item );
-			}
+			m_items.Sort( ( x, y ) => x.Category.CompareTo( y.Category ) );
+			m_itemFunctions.Sort( ( x, y ) => x.Category.CompareTo( y.Category ) );
+			return true;
 		}
 
 		public void Destroy()
 		{
-			for ( int i = 0; i < m_items.Count; i++ )
+			for( int i = 0; i < m_items.Count; i++ )
 			{
 				m_items[ i ].Destroy();
 			}
+
+			for( int i = 0; i < m_itemFunctions.Count; i++ )
+			{
+				if( m_itemFunctions[ i ] != null )
+					m_itemFunctions[ i ].Destroy();
+			}
+
 			m_items.Clear();
 			m_items = null;
+
+			m_itemFunctions.Clear();
+			m_itemFunctions = null;
 
 			m_itemsDict.Clear();
 			m_itemsDict = null;
@@ -179,36 +221,35 @@ namespace AmplifyShaderEditor
 			m_shortcutTypes.Clear();
 			m_shortcutTypes = null;
 
-			m_menu = null;
 		}
 
-		public NodeAttributes GetNodeAttributesForType( Type type )
+		public NodeAttributes GetNodeAttributesForType( System.Type type )
 		{
-			if ( type == null )
+			if( type == null )
 			{
 				Debug.LogError( "Invalid type detected" );
 				return null;
 			}
 
-			if ( m_itemsDict.ContainsKey( type ) )
+			if( m_itemsDict.ContainsKey( type ) )
 				return m_itemsDict[ type ];
 			return null;
 		}
 
-		public NodeAttributes GetDeprecatedNodeAttributesForType( Type type )
+		public NodeAttributes GetDeprecatedNodeAttributesForType( System.Type type )
 		{
-			if ( m_deprecatedItemsDict.ContainsKey( type ) )
+			if( m_deprecatedItemsDict.ContainsKey( type ) )
 				return m_deprecatedItemsDict[ type ];
 			return null;
 		}
 
 		public void UpdateKeyPress( KeyCode key )
 		{
-			if ( key == KeyCode.None )
+			if( key == KeyCode.None )
 				return;
 
 			m_lastKeyPressed = key;
-			if ( m_shortcutTypes.ContainsKey( key ) )
+			if( m_shortcutTypes.ContainsKey( key ) )
 			{
 				m_shortcutTypes[ key ].IsPressed = true;
 			}
@@ -216,46 +257,42 @@ namespace AmplifyShaderEditor
 
 		public void UpdateKeyReleased( KeyCode key )
 		{
-			if ( key == KeyCode.None )
+			if( key == KeyCode.None )
 				return;
 
-			if ( m_shortcutTypes.ContainsKey( key ) )
+			if( m_shortcutTypes.ContainsKey( key ) )
 			{
 				m_shortcutTypes[ key ].IsPressed = false;
 			}
 		}
 
-		public ParentNode CreateNodeFromCastType( Type type )
+		public void ResetShortcutKeyStates()
 		{
-			if ( m_castTypes.ContainsKey( type ) )
+			foreach( KeyValuePair<KeyCode, ShortcutKeyData> kvp in m_shortcutTypes )
 			{
-				ParentNode newNode = ( ParentNode ) ScriptableObject.CreateInstance( m_castTypes[ type ] );
+				kvp.Value.IsPressed = false;
+			}
+		}
+
+		public ParentNode CreateNodeFromCastType( System.Type type )
+		{
+			if( m_castTypes.ContainsKey( type ) )
+			{
+				ParentNode newNode = (ParentNode)ScriptableObject.CreateInstance( m_castTypes[ type ] );
 				return newNode;
 			}
 			return null;
 		}
 
-		public ParentNode CreateNodeFromShortcut( KeyCode key )
-		{
-			if ( key == KeyCode.None )
-				return null;
-
-			if ( m_shortcutTypes.ContainsKey( key ) )
-			{
-				ParentNode newNode = ( ParentNode ) ScriptableObject.CreateInstance( m_shortcutTypes[ key ].NodeType );
-				return newNode;
-			}
-			return null;
-		}
 
 		public ParentNode CreateNodeFromShortcutKey()
 		{
-			if ( m_lastKeyPressed == KeyCode.None )
+			if( m_lastKeyPressed == KeyCode.None )
 				return null;
 
-			if ( m_shortcutTypes.ContainsKey( m_lastKeyPressed ) && m_shortcutTypes[ m_lastKeyPressed ].IsPressed )
+			if( m_shortcutTypes.ContainsKey( m_lastKeyPressed ) && m_shortcutTypes[ m_lastKeyPressed ].IsPressed )
 			{
-				ParentNode newNode = ( ParentNode ) ScriptableObject.CreateInstance( m_shortcutTypes[ m_lastKeyPressed ].NodeType );
+				ParentNode newNode = (ParentNode)ScriptableObject.CreateInstance( m_shortcutTypes[ m_lastKeyPressed ].NodeType );
 				return newNode;
 			}
 			return null;
@@ -263,39 +300,34 @@ namespace AmplifyShaderEditor
 
 		public bool CheckShortcutKey()
 		{
-			if ( m_lastKeyPressed == KeyCode.None )
+			if( m_lastKeyPressed == KeyCode.None )
 				return false;
 
-			if ( m_shortcutTypes.ContainsKey( m_lastKeyPressed ) && m_shortcutTypes[ m_lastKeyPressed ].IsPressed )
+			if( m_shortcutTypes.ContainsKey( m_lastKeyPressed ) && m_shortcutTypes[ m_lastKeyPressed ].IsPressed )
 			{
 				return true;
 			}
 			return false;
 		}
 
-		void OnItemSelected( object args )
-		{
-			ContextMenuItem item = ( ContextMenuItem ) args;
-			if ( item != null )
-				item.CreateNodeFuncPtr( item.NodeType, m_scaledClickedPos );
-		}
-
-		public void Show( Vector2 globalClickedPos, Vector2 cameraOffset, float cameraZoom )
-		{
-			m_scaledClickedPos = globalClickedPos * cameraZoom - cameraOffset;
-			m_menu.ShowAsContext();
-		}
-
 		public List<ContextMenuItem> MenuItems
 		{
-			get { return m_items; }
+			get
+			{
+				if( m_currentGraph.ParentWindow.IsShaderFunctionWindow )
+					return m_itemFunctions;
+				else
+					return m_items;
+			}
 		}
 
+		public List<ContextMenuItem> ItemFunctions { get { return m_itemFunctions; } }
 		public KeyCode LastKeyPressed
 		{
 			get { return m_lastKeyPressed; }
 		}
 
 		public Dictionary<KeyCode, ShortcutKeyData> NodeShortcuts { get { return m_shortcutTypes; } }
+		public bool CorrectlyLoaded { get { return m_correctlyLoaded; } }
 	}
 }

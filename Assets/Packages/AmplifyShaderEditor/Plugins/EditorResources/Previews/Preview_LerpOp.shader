@@ -1,4 +1,4 @@
-﻿Shader "Hidden/LerpOp"
+Shader "Hidden/LerpOp"
 {
 	Properties
 	{

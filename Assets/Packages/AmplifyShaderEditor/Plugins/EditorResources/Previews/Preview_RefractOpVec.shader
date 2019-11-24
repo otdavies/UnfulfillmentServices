@@ -1,4 +1,4 @@
-﻿Shader "Hidden/RefractOpVec"
+Shader "Hidden/RefractOpVec"
 {
 	Properties
 	{

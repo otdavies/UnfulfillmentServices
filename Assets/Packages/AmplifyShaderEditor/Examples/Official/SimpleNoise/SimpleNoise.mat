@@ -29,11 +29,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - first:
+        name: _Cutoff
+      second: 0.28
+    - first:
+        name: _MaskClipValue
+      second: 0.28
+    - first:
         name: _Strength
       second: 0.01
     - first:
         name: __dirty
-      second: 1
+      second: 0
     m_Colors:
     - first:
         name: _Size

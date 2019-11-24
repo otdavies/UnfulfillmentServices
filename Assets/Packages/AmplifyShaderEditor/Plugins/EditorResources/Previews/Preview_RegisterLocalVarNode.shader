@@ -1,4 +1,4 @@
-﻿Shader "Hidden/RegisterLocalVarNode"
+Shader "Hidden/RegisterLocalVarNode"
 {
 	Properties
 	{

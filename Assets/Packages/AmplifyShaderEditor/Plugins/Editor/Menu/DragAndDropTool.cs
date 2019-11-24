@@ -8,7 +8,7 @@ namespace AmplifyShaderEditor
 {
     public class DragAndDropTool
     {
-        public delegate void OnValidDropObject(params Object[] draggedObjs );
+        public delegate void OnValidDropObject(params UnityEngine.Object[] draggedObjs );
         public event OnValidDropObject OnValidDropObjectEvt;
 
         public void Destroy()

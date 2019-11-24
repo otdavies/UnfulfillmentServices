@@ -80,7 +80,7 @@ namespace AmplifyShaderEditor
 				GUILayout.Space( 5 );
 				GUILayout.Label( "Invalid/Legacy Data was found on your previous ASE folder which needs to be removed in order for it to work correctly." , labelStyle, GUILayout.ExpandWidth( true ) );
 				GUILayout.Space( 5 );
-				GUILayout.Label( "Bellow are the detected files/folders which require to be removed.", labelStyle, GUILayout.ExpandWidth( true ) );
+				GUILayout.Label( "Below are the detected files/folders which require to be removed.", labelStyle, GUILayout.ExpandWidth( true ) );
 				GUILayout.Space( 5 );
 
 				m_scrollPosition = GUILayout.BeginScrollView( m_scrollPosition ,GUILayout.Height(85));
@@ -89,7 +89,7 @@ namespace AmplifyShaderEditor
 				GUILayout.EndScrollView();
 
 
-				GUILayout.Label( "VERY IMPORTANT: If you have assets of yours inside these folders you need to move them to another location before hitting the button bellow or they will be PERMANENTLY DELETED", labelStyle, GUILayout.ExpandWidth( true ) );
+				GUILayout.Label( "VERY IMPORTANT: If you have assets of yours inside these folders you need to move them to another location before hitting the button below or they will be PERMANENTLY DELETED", labelStyle, GUILayout.ExpandWidth( true ) );
 				GUILayout.Space( 5 );
 
 				GUILayout.BeginHorizontal();

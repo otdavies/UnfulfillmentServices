@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ScaleNode"
+Shader "Hidden/ScaleNode"
 {
 	Properties
 	{

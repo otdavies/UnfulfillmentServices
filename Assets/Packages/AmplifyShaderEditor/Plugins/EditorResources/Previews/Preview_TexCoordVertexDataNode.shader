@@ -1,4 +1,4 @@
-﻿Shader "Hidden/TexCoordVertexDataNode"
+Shader "Hidden/TexCoordVertexDataNode"
 {
 	SubShader
 	{

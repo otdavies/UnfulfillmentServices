@@ -1,4 +1,4 @@
-﻿Shader "Hidden/OneMinusNode"
+Shader "Hidden/OneMinusNode"
 {
 	Properties
 	{

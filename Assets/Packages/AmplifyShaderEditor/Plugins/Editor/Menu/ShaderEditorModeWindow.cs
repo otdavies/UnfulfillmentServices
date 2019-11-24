@@ -8,29 +8,37 @@ namespace AmplifyShaderEditor
 {
 	public sealed class ShaderEditorModeWindow : MenuParent
 	{
-		private readonly Color OverallColorOn = new Color( 1f, 1f, 1f, 0.9f );
-		private readonly Color OverallColorOff = new Color( 1f, 1f, 1f, 0.3f );
-		private readonly Color FontColorOff = new Color( 1f, 1f, 1f, 0.4f );
-		private const float _deltaY = 15;
-		private const float _deltaX = 10;
+		private static readonly Color OverallColorOn = new Color( 1f, 1f, 1f, 0.9f );
+		private static readonly Color OverallColorOff = new Color( 1f, 1f, 1f, 0.3f );
+		private static readonly Color FontColorOff = new Color( 1f, 1f, 1f, 0.4f );
+		private const float DeltaY = 15;
+		private const float DeltaX = 10;
 
 		private const float CollSizeX = 180;
 		private const float CollSizeY = 70;
 
-		private const string m_currMatStr = "MATERIAL";
-		private const string m_currShaderStr = "SHADER";
+		//private static string MatFormat = "<size=20>MATERIAL</size>\n{0}";
+		//private static string ShaderFormat = "<size=20>SHADER</size>\n{0}";
+		//private const string CurrMatStr = "MATERIAL";
+		//private const string CurrShaderStr = "SHADER";
 
-		private const string m_noMaterialStr = "No Material";
-		private const string m_noShaderStr = "No Shader";
+		private const string NoMaterialStr = "No Material";
+		private const string NoShaderStr = "No Shader";
 
 		private bool m_init = true;
-		private GUIStyle m_materialLabelStyle;
-		private GUIStyle m_shaderLabelStyle;
+		private string m_previousShaderName = string.Empty;
+		private string m_previousMaterialName = string.Empty;
+		private string m_previousShaderFunctionName = string.Empty;
 
-		private GUIContent m_materialContent;
-		private GUIContent m_shaderContent;
+		private Vector2 m_auxVector2;
+		private GUIContent m_leftAuxContent = new GUIContent();
+		private GUIContent m_rightAuxContent = new GUIContent();
+		private GUIStyle m_leftButtonStyle = null;
+		private GUIStyle m_rightButtonStyle = null;
+		private Rect m_leftButtonRect;
+		private Rect m_rightButtonRect;
 
-		public ShaderEditorModeWindow() : base( 0, 0, 0, 0, "ShaderEditorModeWindow", MenuAnchor.BOTTOM_CENTER, MenuAutoSize.NONE ) { }
+		public ShaderEditorModeWindow( AmplifyShaderEditorWindow parentWindow ) : base( parentWindow, 0, 0, 0, 0, "ShaderEditorModeWindow", MenuAnchor.BOTTOM_CENTER, MenuAutoSize.NONE ) { }
 
 		public void ConfigStyle( GUIStyle style )
 		{
@@ -46,8 +54,13 @@ namespace AmplifyShaderEditor
 		}
 
 
-		public void Draw( Rect _graphArea, Vector2 mousePos, Shader currentShader, Material currentMaterial, float usableArea, float leftPos, float rightPos )
+		public void Draw( Rect graphArea, Vector2 mousePos, Shader currentShader, Material currentMaterial, float usableArea, float leftPos, float rightPos /*, bool showLastSelection*/ )
 		{
+			EventType currentEventType = Event.current.type;
+
+			if( !( currentEventType == EventType.Repaint || currentEventType == EventType.MouseDown || currentEventType == EventType.MouseMove ) )
+				return;
+
 			if ( m_init )
 			{
 				m_init = false;
@@ -60,73 +73,107 @@ namespace AmplifyShaderEditor
 				ConfigStyle( shaderModeNoShader );
 				ConfigStyle( materialModeTitle );
 				ConfigStyle( shaderNoMaterialModeTitle );
-
-				m_materialLabelStyle = new GUIStyle( shaderNoMaterialModeTitle );
-				m_materialLabelStyle.contentOffset = new Vector2( m_materialLabelStyle.contentOffset.x, -m_materialLabelStyle.contentOffset.y );
-				m_materialLabelStyle.fontSize += 6;
-
-				m_shaderLabelStyle = new GUIStyle( shaderModeTitle );
-				m_shaderLabelStyle.contentOffset = new Vector2( m_shaderLabelStyle.contentOffset.x, -m_shaderLabelStyle.contentOffset.y );
-				m_shaderLabelStyle.fontSize += 6;
-
-				m_materialContent = new GUIContent( m_currMatStr, "Select current material on Project view" );
-				m_shaderContent = new GUIContent( m_currShaderStr, "Select current shader on Project view" );
 			}
 			Color buffereredColor = GUI.color;
-			//Shader Mode
-			{
-				GUIStyle style = UIUtils.GetCustomStyle( currentShader == null ? CustomStyle.ShaderModeNoShader : CustomStyle.ShaderModeTitle );
-				Texture2D shaderTex = style.active.background;
-				Rect shaderPos = _graphArea;
-				float deltaMat = _deltaX + leftPos;
-				shaderPos.x = deltaMat;
-				shaderPos.y += shaderPos.height - shaderTex.height - _deltaY;
-				shaderPos.width = shaderTex.width;
-				shaderPos.height = shaderTex.height;
 
-				Rect collArea = _graphArea;
-				collArea.x = leftPos;
-				collArea.y += collArea.height - CollSizeY;
-				collArea.width = CollSizeX;
-				collArea.height = CollSizeY;
-				
-				string shaderName = ( currentShader != null ) ? ( currentShader.name ) : m_noShaderStr;
-				GUI.color = collArea.Contains( mousePos ) ? OverallColorOn : OverallColorOff;
-				GUI.Box( shaderPos, m_shaderContent, m_shaderLabelStyle );
-				GUI.Box( shaderPos, shaderName, style );
-				if ( GUI.Button( collArea, string.Empty, m_empty ) && currentShader != null )
+			MasterNode currentMasterNode = ParentWindow.CurrentGraph.CurrentMasterNode;
+			// Shader Mode
+			if ( currentMasterNode != null )
+			{
+				m_leftButtonStyle = UIUtils.GetCustomStyle( currentShader == null ? CustomStyle.ShaderModeNoShader : CustomStyle.ShaderModeTitle );
+				m_leftButtonRect = graphArea;
+				m_leftButtonRect.x = 10 + leftPos;
+				m_leftButtonRect.y += m_leftButtonRect.height - 38 - 15;
+				string shaderName = ( currentShader != null ) ? ( currentShader.name ) : NoShaderStr;
+
+				if ( m_previousShaderName != shaderName )
 				{
+					m_previousShaderName = shaderName;
+					m_leftAuxContent.text = "<size=20>SHADER</size>\n" + shaderName;
+				}
+
+				m_auxVector2 = m_leftButtonStyle.CalcSize( m_leftAuxContent );
+				m_leftButtonRect.width = m_auxVector2.x + 30 + 4;
+				m_leftButtonRect.height = 38;
+
+				bool mouseOnTop = m_leftButtonRect.Contains( mousePos );
+				GUI.color = mouseOnTop ? OverallColorOn : OverallColorOff;
+				GUI.Label( m_leftButtonRect, m_leftAuxContent, m_leftButtonStyle );
+
+				if( currentEventType == EventType.MouseMove && mouseOnTop )
+					m_parentWindow.MarkToRepaint();
+
+				if ( currentEventType == EventType.MouseDown && mouseOnTop && currentShader != null )
+				{
+					Event.current.Use();
 					Selection.activeObject = currentShader;
+					EditorGUIUtility.PingObject( Selection.activeObject );
+				}
+
+				// Material Mode
+				if ( currentMaterial != null )
+				{
+					m_rightButtonStyle = UIUtils.GetCustomStyle( CustomStyle.MaterialModeTitle );
+					m_rightButtonRect = graphArea;
+					string matName = ( currentMaterial != null ) ? ( currentMaterial.name ) : NoMaterialStr;
+
+					if ( m_previousMaterialName != matName )
+					{
+						m_previousMaterialName = matName;
+						m_rightAuxContent.text = "<size=20>MATERIAL</size>\n" + matName;
+					}
+
+					m_auxVector2 = m_rightButtonStyle.CalcSize( m_rightAuxContent );
+					m_rightButtonRect.width = m_auxVector2.x + 30 + 4;
+					m_rightButtonRect.height = 38;
+
+					m_rightButtonRect.x = graphArea.xMax - m_rightButtonRect.width - rightPos - 10;
+					m_rightButtonRect.y = graphArea.yMax - 38 - 15;
+
+					bool mouseOnTopRight = m_rightButtonRect.Contains( mousePos );
+					GUI.color = mouseOnTopRight ? OverallColorOn : OverallColorOff;
+					GUI.Label( m_rightButtonRect, m_rightAuxContent, m_rightButtonStyle );
+
+					if( currentEventType == EventType.MouseMove && mouseOnTopRight )
+						m_parentWindow.MarkToRepaint();
+
+					if ( currentEventType == EventType.MouseDown && mouseOnTopRight )
+					{
+						Event.current.Use();
+						Selection.activeObject = currentMaterial;
+						EditorGUIUtility.PingObject( Selection.activeObject );
+					}
 				}
 			}
 
-			// Material Mode
+			// Shader Function
+			else if ( currentMasterNode == null && ParentWindow.CurrentGraph.CurrentOutputNode != null )
 			{
-				GUIStyle style = UIUtils.GetCustomStyle( currentMaterial == null ? CustomStyle.ShaderNoMaterialModeTitle : CustomStyle.MaterialModeTitle );
-				Texture2D shaderTex = style.normal.background;
+				m_leftButtonStyle = UIUtils.GetCustomStyle( CustomStyle.ShaderFunctionMode );
+				m_leftButtonRect = graphArea;
+				m_leftButtonRect.x = 10 + leftPos;
+				m_leftButtonRect.y += m_leftButtonRect.height - 38 - 15;
+				string functionName = ( ParentWindow.CurrentGraph.CurrentShaderFunction != null ) ? ( ParentWindow.CurrentGraph.CurrentShaderFunction.name ) : "No Shader Function";
 
-				Rect materialPos = _graphArea;
-				float deltaShader = _deltaX + rightPos;
-				materialPos.x += materialPos.width - shaderTex.width - deltaShader;
-				materialPos.y += materialPos.height - shaderTex.height - _deltaY;
-				materialPos.width = shaderTex.width;
-				materialPos.height = shaderTex.height;
-				
-				Rect collArea = _graphArea;
-				collArea.x += collArea.width - rightPos - CollSizeX;
-				collArea.y += collArea.height - CollSizeY;
-				collArea.width = CollSizeX;
-				collArea.height = CollSizeY;
-
-				GUI.color = collArea.Contains( mousePos ) ? OverallColorOn : OverallColorOff;
-				
-				string matName = ( currentMaterial != null ) ? ( currentMaterial.name ) : m_noMaterialStr;
-				GUI.Box( materialPos, m_materialContent, m_materialLabelStyle );
-				GUI.Box( materialPos, matName, style );
-				
-				if ( GUI.Button( collArea, string.Empty, m_empty ) && currentMaterial != null )
+				if ( m_previousShaderFunctionName != functionName )
 				{
-					Selection.activeObject = currentMaterial;
+					m_previousShaderFunctionName = functionName;
+					m_leftAuxContent.text = "<size=20>SHADER FUNCTION</size>\n" + functionName;
+				}
+
+				m_auxVector2 = m_leftButtonStyle.CalcSize( m_leftAuxContent );
+				m_leftButtonRect.width = m_auxVector2.x + 30 + 4;
+				m_leftButtonRect.height = 38;
+
+				bool mouseOnTop = m_leftButtonRect.Contains( mousePos );
+				GUI.color = mouseOnTop ? OverallColorOn : OverallColorOff;
+				GUI.Label( m_leftButtonRect, m_leftAuxContent, m_leftButtonStyle );
+
+				if ( currentEventType == EventType.MouseDown && mouseOnTop && ParentWindow.CurrentGraph.CurrentShaderFunction != null )
+				{
+					Event.current.Use();
+					Selection.activeObject = ParentWindow.CurrentGraph.CurrentShaderFunction;
+					EditorGUIUtility.PingObject( Selection.activeObject );
 				}
 			}
 
@@ -136,8 +183,10 @@ namespace AmplifyShaderEditor
 		public override void Destroy()
 		{
 			base.Destroy();
-			m_materialLabelStyle = null;
-			m_shaderLabelStyle = null;
+			m_leftAuxContent = null;
+			m_rightAuxContent = null;
+			m_leftButtonStyle = null;
+			m_rightButtonStyle = null;
 		}
 	}
 }

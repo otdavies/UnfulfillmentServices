@@ -1,4 +1,4 @@
-﻿Shader "Hidden/DistanceOpNode"
+Shader "Hidden/DistanceOpNode"
 {
 	Properties
 	{

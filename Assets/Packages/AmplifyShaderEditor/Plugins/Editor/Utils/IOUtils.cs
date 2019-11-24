@@ -8,12 +8,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Threading;
+using UnityEditor.VersionControl;
 
 namespace AmplifyShaderEditor
 {
 	public enum ShaderLoadResult
 	{
 		LOADED,
+		TEMPLATE_LOADED,
 		FILE_NOT_FOUND,
 		ASE_INFO_NOT_FOUND,
 		UNITY_NATIVE_PATHS
@@ -60,7 +62,7 @@ namespace AmplifyShaderEditor
 
 	public static class IOUtils
 	{
-		
+
 		public static readonly string ShaderCopywriteMessage = "// Made with Amplify Shader Editor\n// Available at the Unity Asset Store - http://u3d.as/y3X \n";
 		public static readonly string GrabPassEmpty = "\t\tGrabPass{ }\n";
 		public static readonly string GrabPassBegin = "\t\tGrabPass{ \"";
@@ -68,16 +70,31 @@ namespace AmplifyShaderEditor
 		public static readonly string PropertiesBegin = "\tProperties\n\t{\n";
 		public static readonly string PropertiesEnd = "\t}\n";
 		public static readonly string PropertiesElement = "\t\t{0}\n";
+		public static readonly string PropertiesElementsRaw = "{0}\n";
 
 		public static readonly string PragmaTargetHeader = "\t\t#pragma target {0}\n";
-		public static readonly string InstancedPropertiesHeader = "\t\t#pragma multi_compile_instancing\n";
+		public static readonly string InstancedPropertiesHeader = "multi_compile_instancing";
 		public static readonly string VirtualTexturePragmaHeader = "multi_compile _ _VT_SINGLE_MODE";
 
-		public static readonly string InstancedPropertiesBegin = "\t\tUNITY_INSTANCING_CBUFFER_START({0})\n";
-		public static readonly string InstancedPropertiesEnd = "\t\tUNITY_INSTANCING_CBUFFER_END\n";
-		public static readonly string InstancedPropertiesElement = "\t\t\tUNITY_DEFINE_INSTANCED_PROP({0}, {1})\n";
+		public static readonly string InstancedPropertiesBegin = "UNITY_INSTANCING_CBUFFER_START({0})";
+		public static readonly string InstancedPropertiesEnd = "UNITY_INSTANCING_CBUFFER_END";
+		public static readonly string InstancedPropertiesElement = "UNITY_DEFINE_INSTANCED_PROP({0}, {1})";
 		public static readonly string InstancedPropertiesData = "UNITY_ACCESS_INSTANCED_PROP({0})";
 
+
+		public static readonly string LWSRPInstancedPropertiesBegin = "UNITY_INSTANCING_BUFFER_START({0})";
+		public static readonly string LWSRPInstancedPropertiesEnd = "UNITY_INSTANCING_BUFFER_END({0})";
+		public static readonly string LWSRPInstancedPropertiesElement = "UNITY_DEFINE_INSTANCED_PROP({0}, {1})";
+		public static readonly string LWSRPInstancedPropertiesData = "UNITY_ACCESS_INSTANCED_PROP({0},{1})";
+
+		public static readonly string SRPCBufferPropertiesBegin = "CBUFFER_START( UnityPerMaterial )";//"CBUFFER_START({0})";
+		public static readonly string SRPCBufferPropertiesEnd = "CBUFFER_END";
+
+
+		public static readonly string InstancedPropertiesBeginTabs		= "\t\t"+ InstancedPropertiesBegin + "\n";
+		public static readonly string InstancedPropertiesEndTabs		= "\t\t"+ InstancedPropertiesEnd + "\n";
+		public static readonly string InstancedPropertiesElementTabs	= "\t\t\t"+ InstancedPropertiesElement + "\n";
+		
 		public static readonly string MetaBegin = "defaultTextures:";
 		public static readonly string MetaEnd = "userData:";
 		public static readonly string ShaderBodyBegin = "/*ASEBEGIN";
@@ -118,19 +135,24 @@ namespace AmplifyShaderEditor
 		public readonly static string DefaultASEDirtyCheckProperty = "[HideInInspector] " + DefaultASEDirtyCheckName + "( \"\", Int ) = 1";
 		public readonly static string DefaultASEDirtyCheckUniform = "uniform int " + DefaultASEDirtyCheckName + " = 1;";
 
-		public readonly static string MaskClipValueName = "_MaskClipValue";
+		public readonly static string MaskClipValueName = "_Cutoff";
 		public readonly static string MaskClipValueProperty = MaskClipValueName + "( \"{0}\", Float ) = {1}";
 		public readonly static string MaskClipValueUniform = "uniform float " + MaskClipValueName + " = {0};";
+
+		public readonly static string ChromaticAberrationProperty = "_ChromaticAberration";
 
 		//public static readonly string ASEFolderGUID = "daca988099666ec40aaa2cde22bb4935";
 		//public static string ASEResourcesPath = "/Plugins/EditorResources/";
 		//public static string ASEFolderPath;
-		
+
+		//public static bool IsShaderFunctionWindow = false;
+
+
 		public static int DefaultASEDirtyCheckId;
 
 		// this is to be used in combination with AssetDatabase.GetAssetPath, both of these include the Assets/ path so we need to remove from one of them 
 		public static string dataPath;
-		
+
 
 		public static string EditorResourcesGUID = "0932db7ec1402c2489679c4b72eab5eb";
 		public static string GraphBgTextureGUID = "881c304491028ea48b5027ac6c62cf73";
@@ -150,14 +172,32 @@ namespace AmplifyShaderEditor
 		public static string LivePendingGUID = "e3182200efb67114eb5050f8955e1746";
 		public static string CleanupOFFGUID = "f62c0c3a5ddcd844e905fb2632fdcb15";
 		public static string CleanUpOnGUID = "615d853995cf2344d8641fd19cb09b5d";
+		public static string TakeScreenshotOFFGUID = "7587de2e3bec8bf4d973109524ccc6b1";
+		public static string TakeScreenshotONGUID = "7587de2e3bec8bf4d973109524ccc6b1";
+		public static string ShareOFFGUID = "bc5bd469748466a459badfab23915cb0";
+		public static string ShareONGUID = "bc5bd469748466a459badfab23915cb0";
 		public static string OpenSourceCodeOFFGUID = "f7e8834b42791124095a8b7f2d4daac2";
 		public static string OpenSourceCodeONGUID = "8b114792ff84f6546880c031eda42bc0";
 		public static string FocusNodeGUID = "da673e6179c67d346abb220a6935e359";
 		public static string FitViewGUID = "1def740f2314c6b4691529cadeee2e9c";
 		public static string ShowInfoWindowGUID = "77af20044e9766840a6be568806dc22e";
+		public static string ShowTipsWindowGUID = "066674048bbb1e64e8cdcc6c3b4abbeb";
+		public static string ShowConsoleWindowGUID = "9a81d7df8e62c044a9d1cada0c8a2131";
+
+
+		public static Dictionary<string, string> NodeTypeReplacer = new Dictionary<string, string>()
+		{
+			{"AmplifyShaderEditor.RotateAboutAxis", "AmplifyShaderEditor.RotateAboutAxisNode"},
+			{"GlobalArrayNode", "AmplifyShaderEditor.GlobalArrayNode"},
+			{"AmplifyShaderEditor.SimpleMaxOp", "AmplifyShaderEditor.SimpleMaxOpNode"},
+			{"AmplifyShaderEditor.SimpleMinNode", "AmplifyShaderEditor.SimpleMinOpNode"},
+			{"AmplifyShaderEditor.TFHCRemap", "AmplifyShaderEditor.TFHCRemapNode"},
+			{"AmplifyShaderEditor.TFHCPixelateUV", "AmplifyShaderEditor.TFHCPixelate"},
+			{"AmplifyShaderEditor.VirtualTexturePropertyNode", "AmplifyShaderEditor.VirtualTextureObject"}
+		};
 
 		private static readonly string AmplifyShaderEditorDefineSymbol = "AMPLIFY_SHADER_EDITOR";
-		
+
 		/////////////////////////////////////////////////////////////////////////////
 		// THREAD IO UTILS
 		public static bool SaveInThreadFlag = false;
@@ -169,9 +209,28 @@ namespace AmplifyShaderEditor
 
 		private static bool Initialized = false;
 
+		public static bool FunctionNodeChanged = false;
+
+		public static List<AmplifyShaderEditorWindow> AllOpenedWindows = new List<AmplifyShaderEditorWindow>();
+
 		public static void StartSaveThread( string shaderBody, string pathName )
 		{
-			if ( UseSaveThread )
+			if( Provider.enabled && Provider.isActive )
+			{
+				Asset loadedAsset = Provider.GetAssetByPath( FileUtil.GetProjectRelativePath( pathName ) );
+				if( loadedAsset != null )
+				{
+					//Task statusTask = Provider.Status( loadedAsset );
+					//statusTask.Wait();
+					//if( Provider.CheckoutIsValid( statusTask.assetList[ 0 ] ) )
+					{
+						Task checkoutTask = Provider.Checkout( loadedAsset, CheckoutMode.Both );
+						checkoutTask.Wait();
+					}
+				}
+			}
+
+			if( UseSaveThread )
 			{
 				if ( !SaveInThreadFlag )
 				{
@@ -208,14 +267,14 @@ namespace AmplifyShaderEditor
 				{
 					if ( !currData[ currData.Length - 1 ].Equals( ';' ) )
 					{
-						currData += ';'; 
+						currData += ';';
 					}
 					currData += AmplifyShaderEditorDefineSymbol;
 					PlayerSettings.SetScriptingDefineSymbolsForGroup( targetGroup, currData );
 				}
 			}
 		}
-		
+
 		public static void Init()
 		{
 			if ( !Initialized )
@@ -231,13 +290,84 @@ namespace AmplifyShaderEditor
 
 				DefaultASEDirtyCheckId = Shader.PropertyToID( DefaultASEDirtyCheckName );
 				dataPath = Application.dataPath.Remove( Application.dataPath.Length - 6 );
-				
-				
+
+
 				//ASEFolderPath = AssetDatabase.GUIDToAssetPath( ASEFolderGUID );
 				//ASEResourcesPath = ASEFolderPath + ASEResourcesPath;
 			}
 		}
 
+
+		public static void DumpTemplateManagers()
+		{
+			for( int i = 0; i < AllOpenedWindows.Count; i++ )
+			{
+				if( AllOpenedWindows[ i ].TemplatesManagerInstance != null )
+				{
+					Debug.Log( AllOpenedWindows[ i ].titleContent.text + ": " + AllOpenedWindows[ i ].TemplatesManagerInstance.GetInstanceID() );
+				}
+			}
+		}
+
+		public static TemplatesManager FirstValidTemplatesManager
+		{
+			get
+			{
+				for( int i = 0; i < AllOpenedWindows.Count; i++ )
+				{
+					if( AllOpenedWindows[ i ].TemplatesManagerInstance != null )
+					{
+						return AllOpenedWindows[ i ].TemplatesManagerInstance;
+					}
+				}
+				return null;
+			}
+		}
+
+		public static void UpdateSFandRefreshWindows( AmplifyShaderFunction function )
+		{
+			for( int i = 0; i < AllOpenedWindows.Count; i++ )
+			{
+				AllOpenedWindows[ i ].LateRefreshAvailableNodes();
+				if( AllOpenedWindows[ i ].IsShaderFunctionWindow )
+				{
+					if( AllOpenedWindows[ i ].OpenedShaderFunction == function )
+					{
+						AllOpenedWindows[ i ].UpdateTabTitle();
+					}
+				}
+			}
+		}
+
+		public static void UpdateIO()
+		{
+			int windowCount = AllOpenedWindows.Count;
+			if ( windowCount == 0 )
+			{
+				EditorApplication.update -= IOUtils.UpdateIO;
+				return;
+			}
+
+			for ( int i = 0; i < AllOpenedWindows.Count; i++ )
+			{
+				if ( AllOpenedWindows[i] == EditorWindow.focusedWindow )
+				{
+					UIUtils.CurrentWindow = AllOpenedWindows[ i ];
+				}
+
+				if( FunctionNodeChanged )
+					AllOpenedWindows[ i ].CheckFunctions = true;
+
+				if ( AllOpenedWindows[ i ] == null )
+				{
+					AllOpenedWindows.RemoveAt( i );
+					i--;
+				}
+			}
+
+			if ( FunctionNodeChanged )
+				FunctionNodeChanged = false;
+		}
 
 		public static void Destroy()
 		{
@@ -297,7 +427,7 @@ namespace AmplifyShaderEditor
 			return hashstr;
 		}
 
-		public static void SaveTextfileToDisk( string shaderBody, string pathName, bool addAdditionalInfo = true)
+		public static void SaveTextfileToDisk( string shaderBody, string pathName, bool addAdditionalInfo = true )
 		{
 
 			if ( addAdditionalInfo )
@@ -324,25 +454,39 @@ namespace AmplifyShaderEditor
 			}
 		}
 
+		public static string AddAdditionalInfo( string shaderBody )
+		{
+			shaderBody = ShaderCopywriteMessage + shaderBody;
+			string checksum = CreateChecksum( shaderBody );
+			shaderBody += CHECKSUM + VALUE_SEPARATOR + checksum;
+			return shaderBody;
+		}
+
 		public static string LoadTextFileFromDisk( string pathName )
 		{
 			string result = string.Empty;
-			StreamReader fileReader = new StreamReader( pathName );
-			try
-			{
-				result = fileReader.ReadToEnd();
-			}
-			catch ( Exception e )
-			{
-				Debug.LogException( e );
-			}
-			finally
-			{
-				fileReader.Close();
-			}
+            if ( !string.IsNullOrEmpty( pathName ) && File.Exists( pathName ) )
+            {
+
+                StreamReader fileReader = null;
+                try
+                {
+                    fileReader = new StreamReader( pathName );
+                    result = fileReader.ReadToEnd();
+                }
+                catch ( Exception e )
+                {
+                    Debug.LogException( e );
+                }
+                finally
+                {
+                    if( fileReader != null)
+                        fileReader.Close();
+                }
+            }
 			return result;
 		}
-		
+
 		public static bool IsASEShader( Shader shader )
 		{
 			string datapath = AssetDatabase.GetAssetPath( shader );
@@ -352,6 +496,16 @@ namespace AmplifyShaderEditor
 			}
 
 			string buffer = LoadTextFileFromDisk( datapath );
+			if ( String.IsNullOrEmpty( buffer ) || !IOUtils.HasValidShaderBody( ref buffer ) )
+			{
+				return false;
+			}
+			return true;
+		}
+
+		public static bool IsShaderFunction( string functionInfo )
+		{
+			string buffer = functionInfo;
 			if ( String.IsNullOrEmpty( buffer ) || !IOUtils.HasValidShaderBody( ref buffer ) )
 			{
 				return false;
@@ -433,7 +587,7 @@ namespace AmplifyShaderEditor
 				{
 					for ( int i = 0; i < comments.Length; i++ )
 					{
-						finalComment +=  "//" + comments[ i ];
+						finalComment += "//" + comments[ i ];
 						if ( i < comments.Length - 1 )
 						{
 							finalComment += "\n\t\t\t";
@@ -448,7 +602,7 @@ namespace AmplifyShaderEditor
 						if ( i != 0 )
 							finalComment += "\t\t\t";
 						finalComment += comments[ i ];
-						if( i <comments.Length -1 )
+						if ( i < comments.Length - 1 )
 							finalComment += "\n";
 					}
 					finalComment += "*/";
@@ -465,13 +619,13 @@ namespace AmplifyShaderEditor
 
 		public static string GetUVChannelName( string uvName, int set )
 		{
-			string uvSetStr = ( set == 0 ) ? "uv" : "uv" + Constants.AvailableUVSetsStr[set];
+			string uvSetStr = ( set == 0 ) ? "uv" : "uv" + Constants.AvailableUVSetsStr[ set ];
 			return uvSetStr + uvName;
 		}
 
-		public static string GetVertexUVChannelName(  int set )
+		public static string GetVertexUVChannelName( int set )
 		{
-			string uvSetStr = ( set == 0 ) ? "texcoord" : ("texcoord" +set.ToString());
+			string uvSetStr = ( set == 0 ) ? "texcoord" : ( "texcoord" + set.ToString() );
 			return uvSetStr;
 		}
 
@@ -500,12 +654,27 @@ namespace AmplifyShaderEditor
 			return data.r.ToString() + VECTOR_SEPARATOR + data.g.ToString() + VECTOR_SEPARATOR + data.b.ToString() + VECTOR_SEPARATOR + data.a.ToString();
 		}
 
+		public static string Matrix3x3ToString( Matrix4x4 matrix )
+		{
+			return matrix[ 0, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 0, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 0, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR +
+					matrix[ 1, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 1, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 1, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR +
+					matrix[ 2, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 2, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 2, 2 ].ToString();
+		}
+
+		public static string Matrix4x4ToString( Matrix4x4 matrix )
+		{
+			return	matrix[ 0, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 0, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 0, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 0, 3 ].ToString() + IOUtils.VECTOR_SEPARATOR +
+					matrix[ 1, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 1, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 1, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 1, 3 ].ToString() + IOUtils.VECTOR_SEPARATOR +
+					matrix[ 2, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 2, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 2, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 2, 3 ].ToString() + IOUtils.VECTOR_SEPARATOR +
+					matrix[ 3, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 3, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 3, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + matrix[ 3, 3 ].ToString();
+		}
+
 		public static Vector2 StringToVector2( string data )
 		{
 			string[] parsedData = data.Split( VECTOR_SEPARATOR );
 			if ( parsedData.Length >= 2 )
 			{
-				return new Vector2( Convert.ToSingle( parsedData[ 0 ] ), 
+				return new Vector2( Convert.ToSingle( parsedData[ 0 ] ),
 									Convert.ToSingle( parsedData[ 1 ] ) );
 			}
 			return Vector2.zero;
@@ -548,6 +717,109 @@ namespace AmplifyShaderEditor
 			}
 			return Color.white;
 		}
-		
+
+		public static Matrix4x4 StringToMatrix3x3( string data )
+		{
+			string[] parsedData = data.Split( VECTOR_SEPARATOR );
+			if ( parsedData.Length == 9 )
+			{
+				Matrix4x4 matrix = new Matrix4x4();
+				matrix[ 0, 0 ] = Convert.ToSingle( parsedData[ 0 ] );
+				matrix[ 0, 1 ] = Convert.ToSingle( parsedData[ 1 ] );
+				matrix[ 0, 2 ] = Convert.ToSingle( parsedData[ 2 ] );
+
+				matrix[ 1, 0 ] = Convert.ToSingle( parsedData[ 3 ] );
+				matrix[ 1, 1 ] = Convert.ToSingle( parsedData[ 4 ] );
+				matrix[ 1, 2 ] = Convert.ToSingle( parsedData[ 5 ] );
+
+				matrix[ 2, 0 ] = Convert.ToSingle( parsedData[ 6 ] );
+				matrix[ 2, 1 ] = Convert.ToSingle( parsedData[ 7 ] );
+				matrix[ 2, 2 ] = Convert.ToSingle( parsedData[ 8 ] );
+				return matrix;
+			}
+			return Matrix4x4.identity;
+		}
+
+		public static Matrix4x4 StringToMatrix4x4( string data )
+		{
+			string[] parsedData = data.Split( VECTOR_SEPARATOR );
+			if ( parsedData.Length == 16 )
+			{
+				Matrix4x4 matrix = new Matrix4x4();
+				matrix[ 0, 0 ] = Convert.ToSingle( parsedData[ 0 ] );
+				matrix[ 0, 1 ] = Convert.ToSingle( parsedData[ 1 ] );
+				matrix[ 0, 2 ] = Convert.ToSingle( parsedData[ 2 ] );
+				matrix[ 0, 3 ] = Convert.ToSingle( parsedData[ 3 ] );
+
+				matrix[ 1, 0 ] = Convert.ToSingle( parsedData[ 4 ] );
+				matrix[ 1, 1 ] = Convert.ToSingle( parsedData[ 5 ] );
+				matrix[ 1, 2 ] = Convert.ToSingle( parsedData[ 6 ] );
+				matrix[ 1, 3 ] = Convert.ToSingle( parsedData[ 7 ] );
+
+				matrix[ 2, 0 ] = Convert.ToSingle( parsedData[ 8 ] );
+				matrix[ 2, 1 ] = Convert.ToSingle( parsedData[ 9 ] );
+				matrix[ 2, 2 ] = Convert.ToSingle( parsedData[ 10 ] );
+				matrix[ 2, 3 ] = Convert.ToSingle( parsedData[ 11 ] );
+
+				matrix[ 3, 0 ] = Convert.ToSingle( parsedData[ 12 ] );
+				matrix[ 3, 1 ] = Convert.ToSingle( parsedData[ 13 ] );
+				matrix[ 3, 2 ] = Convert.ToSingle( parsedData[ 14 ] );
+				matrix[ 3, 3 ] = Convert.ToSingle( parsedData[ 15 ] );
+				return matrix;
+			}
+			return Matrix4x4.identity;
+		}
+
+		public static void SaveTextureToDisk( Texture2D tex, string pathname )
+		{
+			byte[] rawData = tex.GetRawTextureData();
+			Texture2D newTex = new Texture2D( tex.width, tex.height, tex.format,  tex.mipmapCount > 1, false );
+			newTex.LoadRawTextureData( rawData );
+			newTex.Apply();
+			byte[] pngData = newTex.EncodeToPNG();
+			File.WriteAllBytes( pathname, pngData );
+		}
+
+		//public static void SaveObjToList( string newObj )
+		//{
+		//	Debug.Log( UIUtils.CurrentWindow.Lastpath );
+		//	UIUtils.CurrentWindow.Lastpath = newObj;
+		//	string lastOpenedObj = EditorPrefs.GetString( IOUtils.LAST_OPENED_OBJ_ID );
+		//	string[] allLocations = lastOpenedObj.Split( ':' );
+
+		//	string lastLocation = allLocations[ allLocations.Length - 1 ];
+
+		//	string resave = string.Empty;
+		//	for ( int i = 0; i < allLocations.Length; i++ )
+		//	{
+		//		if ( string.IsNullOrEmpty( allLocations[ i ] ) )
+		//			continue;
+
+		//		resave += allLocations[ i ];
+		//		resave += ":";
+		//	}
+
+		//	resave += newObj;
+		//	EditorPrefs.SetString( IOUtils.LAST_OPENED_OBJ_ID, resave );
+		//}
+
+		//public static void DeleteObjFromList( string newObj )
+		//{
+		//	string lastOpenedObj = EditorPrefs.GetString( IOUtils.LAST_OPENED_OBJ_ID );
+		//	string[] allLocations = lastOpenedObj.Split( ':' );
+
+		//	string resave = string.Empty;
+		//	for ( int i = 0; i < allLocations.Length; i++ )
+		//	{
+		//		if ( string.IsNullOrEmpty( allLocations[ i ] ) || newObj.Equals( allLocations[ i ] ) )
+		//			continue;
+
+		//		resave += allLocations[ i ];
+		//		if ( i < allLocations.Length - 1 )
+		//			resave += ":";
+		//	}
+
+		//	EditorPrefs.SetString( IOUtils.LAST_OPENED_OBJ_ID, resave );
+		//}
 	}
 }

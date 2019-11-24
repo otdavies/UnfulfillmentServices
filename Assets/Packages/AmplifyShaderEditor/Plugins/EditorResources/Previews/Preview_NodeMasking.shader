@@ -1,4 +1,4 @@
-﻿Shader "Hidden/NodeMasking"
+Shader "Hidden/NodeMasking"
 {
 	Properties {
 		_Ports ("_Ports", Vector) = (0,0,0,0)

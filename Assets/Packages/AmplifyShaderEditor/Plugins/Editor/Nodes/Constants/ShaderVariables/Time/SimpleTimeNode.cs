@@ -14,9 +14,11 @@ namespace AmplifyShaderEditor
 			ChangeOutputProperties( 0, "Out", WirePortDataType.FLOAT );
 			AddInputPort( WirePortDataType.FLOAT, false, "Scale" );
 			m_inputPorts[ 0 ].FloatInternalData = 1;
-			//m_inputPorts[ 0 ].InternalDataName = "Multiplier";
 			m_useInternalPortData = true;
+			m_previewShaderGUID = "45b7107d5d11f124fad92bcb1fa53661";
+			m_continuousPreviewRefresh = true;
 		}
+
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
 			base.GenerateShaderForOutput( outputId, ref dataCollector, ignoreLocalvar );
@@ -24,8 +26,8 @@ namespace AmplifyShaderEditor
 			if ( multiplier == "1.0" )
 				return "_Time.y";
 
-			dataCollector.AddLocalVariable( m_uniqueId, "float mulTime" + m_uniqueId + " = _Time.y * " + multiplier + ";" );
-			return "mulTime" + m_uniqueId;
+			dataCollector.AddLocalVariable( UniqueId, "float mulTime" + OutputId + " = _Time.y * " + multiplier + ";" );
+			return "mulTime" + OutputId;
 		}
 	}
 }

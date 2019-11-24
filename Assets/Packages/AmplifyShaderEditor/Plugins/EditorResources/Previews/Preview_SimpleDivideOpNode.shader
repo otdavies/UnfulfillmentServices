@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SimpleDivideOpNode"
+Shader "Hidden/SimpleDivideOpNode"
 {
 	Properties
 	{

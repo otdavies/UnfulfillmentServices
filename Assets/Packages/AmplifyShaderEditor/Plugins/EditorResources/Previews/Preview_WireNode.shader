@@ -1,4 +1,4 @@
-﻿Shader "Hidden/WireNode"
+Shader "Hidden/WireNode"
 {
 	Properties
 	{

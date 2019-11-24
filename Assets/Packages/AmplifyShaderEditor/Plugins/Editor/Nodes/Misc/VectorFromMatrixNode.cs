@@ -11,7 +11,7 @@ namespace AmplifyShaderEditor
 	}
 
 	[Serializable]
-	[NodeAttributes( "Vector From Matrix", "Misc", "Retrieve vector data from a matrix" )]
+	[NodeAttributes( "Vector From Matrix", "Matrix Operators", "Retrieve vector data from a matrix" )]
 	public sealed class VectorFromMatrixNode : ParentNode
 	{
 		private const string IndexStr = "Index";
@@ -30,6 +30,7 @@ namespace AmplifyShaderEditor
 		{
 			base.CommonInit( uniqueId );
 			AddInputPort( WirePortDataType.FLOAT4x4, false, Constants.EmptyPortValue );
+			m_inputPorts[ 0 ].CreatePortRestrictions( WirePortDataType.FLOAT3x3, WirePortDataType.FLOAT4x4 );
 			AddOutputVectorPorts( WirePortDataType.FLOAT4, "XYZW" );
 			m_useInternalPortData = true;
 			m_autoWrapProperties = true;
@@ -73,7 +74,7 @@ namespace AmplifyShaderEditor
 			if ( m_inputPorts[ 0 ].DataType != WirePortDataType.FLOAT4x4 &&
 				m_inputPorts[ 0 ].DataType != WirePortDataType.FLOAT3x3 )
 			{
-				value = UIUtils.CastPortType( dataCollector.PortCategory, m_currentPrecisionType, new NodeCastInfo( m_uniqueId, outputId ), value, m_inputPorts[ 0 ].DataType, WirePortDataType.FLOAT4x4, value );
+				value = UIUtils.CastPortType( ref dataCollector, CurrentPrecisionType, new NodeCastInfo( UniqueId, outputId ), value, m_inputPorts[ 0 ].DataType, WirePortDataType.FLOAT4x4, value );
 			}
 			if ( m_mode == eVectorFromMatrixMode.Row )
 			{
@@ -108,8 +109,8 @@ namespace AmplifyShaderEditor
 
 		public override void DrawProperties()
 		{
+			m_mode = (eVectorFromMatrixMode)EditorGUILayoutEnumPopup( ModeStr, m_mode );
 			m_index = EditorGUILayoutIntSlider( IndexStr, m_index, 0, m_maxIndex );
-			m_mode = ( eVectorFromMatrixMode ) EditorGUILayoutEnumPopup( ModeStr, m_mode );
 			base.DrawProperties();
 		}
 

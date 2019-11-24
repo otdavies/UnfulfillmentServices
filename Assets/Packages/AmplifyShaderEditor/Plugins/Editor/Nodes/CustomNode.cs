@@ -135,13 +135,13 @@ namespace AmplifyShaderEditor
 						}
 						else
 						{
-							UIUtils.ShowMessage( m_outputData[ outputId ].inputData[ i ].name + " invalid on the inputs list", MessageSeverity.Error );
+							UIUtils.ShowMessage( UniqueId, m_outputData[ outputId ].inputData[ i ].name + " invalid on the inputs list", MessageSeverity.Error );
 							return string.Empty;
 						}
 					}
 					else
 					{
-						UIUtils.ShowMessage( m_outputData[ outputId ].inputData[ i ].name + " Not found on the inputs list", MessageSeverity.Error );
+						UIUtils.ShowMessage( UniqueId, m_outputData[ outputId ].inputData[ i ].name + " Not found on the inputs list", MessageSeverity.Error );
 						return string.Empty;
 					}
 				}

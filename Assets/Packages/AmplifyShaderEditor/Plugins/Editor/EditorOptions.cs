@@ -1,16 +1,19 @@
 using UnityEditor;
-using UnityEngine;
 
 namespace AmplifyShaderEditor
 {
 	[System.Serializable]
 	public class OptionsWindow
 	{
-		private bool m_coloredPorts = false;
-		private bool m_multiLinePorts = false;
+		private AmplifyShaderEditorWindow m_parentWindow = null;
 
-		public OptionsWindow()
+		private bool m_coloredPorts = true;
+		private bool m_multiLinePorts = true;
+		private const string MultiLineId = "MultiLinePortsDefault";
+		private const string ColorPortId = "ColoredPortsDefault";
+		public OptionsWindow( AmplifyShaderEditorWindow parentWindow )
 		{
+			m_parentWindow = parentWindow;
 			//Load ();
 		}
 
@@ -26,27 +29,14 @@ namespace AmplifyShaderEditor
 
 		public void Save()
 		{
-			EditorPrefs.SetBool( "ColoredPorts", ColoredPorts );
-			EditorPrefs.SetBool( "MultiLinePorts", UIUtils.CurrentWindow.ToggleMultiLine );
-			EditorPrefs.SetBool( "ExpandedStencil", UIUtils.CurrentWindow.ExpandedStencil );
-			EditorPrefs.SetBool( "ExpandedTesselation", UIUtils.CurrentWindow.ExpandedTesselation );
-			EditorPrefs.SetBool( "ExpandedDepth", UIUtils.CurrentWindow.ExpandedDepth );
-			EditorPrefs.SetBool( "ExpandedRenderingOptions", UIUtils.CurrentWindow.ExpandedRenderingOptions );
-			EditorPrefs.SetBool( "ExpandedRenderingPlatforms", UIUtils.CurrentWindow.ExpandedRenderingPlatforms );
-			EditorPrefs.SetBool( "ExpandedProperties", UIUtils.CurrentWindow.ExpandedProperties );
+			EditorPrefs.SetBool( ColorPortId, ColoredPorts );
+			EditorPrefs.SetBool( MultiLineId, m_multiLinePorts );
 		}
 
 		public void Load()
 		{
-			ColoredPorts = EditorPrefs.GetBool( "ColoredPorts" );
-			UIUtils.CurrentWindow.ToggleMultiLine = EditorPrefs.GetBool( "MultiLinePorts" );
-			MultiLinePorts = UIUtils.CurrentWindow.ToggleMultiLine;
-			UIUtils.CurrentWindow.ExpandedStencil = EditorPrefs.GetBool( "ExpandedStencil" );
-			UIUtils.CurrentWindow.ExpandedTesselation = EditorPrefs.GetBool( "ExpandedTesselation" );
-			UIUtils.CurrentWindow.ExpandedDepth = EditorPrefs.GetBool( "ExpandedDepth" );
-			UIUtils.CurrentWindow.ExpandedRenderingOptions = EditorPrefs.GetBool( "ExpandedRenderingOptions" );
-			UIUtils.CurrentWindow.ExpandedRenderingPlatforms = EditorPrefs.GetBool( "ExpandedRenderingPlatforms" );
-			UIUtils.CurrentWindow.ExpandedProperties = EditorPrefs.GetBool( "ExpandedProperties" );
+			ColoredPorts = EditorPrefs.GetBool( ColorPortId, true );
+			m_multiLinePorts = EditorPrefs.GetBool( MultiLineId, true );
 		}
 
 		public bool ColoredPorts
@@ -55,7 +45,7 @@ namespace AmplifyShaderEditor
 			set
 			{
 				if ( m_coloredPorts != value )
-					EditorPrefs.SetBool( "ColoredPorts", value );
+					EditorPrefs.SetBool( ColorPortId, value );
 
 				m_coloredPorts = value;
 			}
@@ -67,10 +57,11 @@ namespace AmplifyShaderEditor
 			set
 			{
 				if ( m_multiLinePorts != value )
-					EditorPrefs.SetBool( "MultiLinePorts", value );
+					EditorPrefs.SetBool( MultiLineId, value );
 
 				m_multiLinePorts = value;
 			}
 		}
+		public AmplifyShaderEditorWindow ParentWindow { get { return m_parentWindow; } set { m_parentWindow = value; } }
 	}
 }

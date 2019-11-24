@@ -7,7 +7,7 @@ using UnityEngine;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Power", "Operators", "Base to the Exp-th power of scalars and vectors", null, KeyCode.E )]
+	[NodeAttributes( "Power", "Math Operators", "Base to the Exp-th power of scalars and vectors", null, KeyCode.E )]
 	public sealed class PowerNode : ParentNode
 	{
 		protected override void CommonInit( int uniqueId )
@@ -15,6 +15,7 @@ namespace AmplifyShaderEditor
 			base.CommonInit( uniqueId );
 			AddInputPort( WirePortDataType.FLOAT, false, "Base" );
 			AddInputPort( WirePortDataType.FLOAT, false, "Exp" );
+			m_inputPorts[ 1 ].FloatInternalData = 1;
 			AddOutputPort( WirePortDataType.FLOAT, Constants.EmptyPortValue );
 			m_useInternalPortData = true;
 			m_textLabelWidth = 50;
@@ -44,7 +45,10 @@ namespace AmplifyShaderEditor
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
-			string x = m_inputPorts[ 0 ].GenerateShaderForOutput( ref dataCollector, m_inputPorts[ 0 ].DataType, ignoreLocalvar );
+			if ( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
+
+			string x = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 			string y = m_inputPorts[ 1 ].GenerateShaderForOutput( ref dataCollector, m_inputPorts[ 0 ].DataType, ignoreLocalvar, true );
 			string result = "pow( " + x + " , " + y + " )";
 			return CreateOutputLocalVariable( 0, result, ref dataCollector );

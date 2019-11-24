@@ -4,7 +4,7 @@ About
 
   Amplify Shader Editor is a node-based shader creation tool for Unity 5
 	 
-  Redistribution of Amplify Occlusion is frowned upon. If you want to share the 
+  Redistribution of Amplify Shader Editor is frowned upon. If you want to share the 
   software, please refer others to the official product page:
 
     http://amplify.pt/unity/amplify-shader-editor/
@@ -23,6 +23,10 @@ Features
   * Extensive node library
   * Growing sample collection
   * Open to user requests and contributions
+  * Integrated Texture Array Creator tool
+  * Node API
+  * Custom Shader Templates
+  * SRP HD and Lightweight support
 
 Supported Platforms
 
@@ -34,7 +38,7 @@ Minimum Requirements
 
     Unity 5+
 
-Quick Guide
+Quick Guide Amplify Shader Editor
   
   1) Open the editor canvas located in the main menu under Window > Amplify Shader Editor > Open Canvas.
   2) Create an Amplify Shader via the Menu under Assets > Create > Shaders > Amplify Surface shader.
@@ -50,6 +54,16 @@ Quick Guide
   9) Quick access to current shader or material in use by hitting bottom left and or right buttons on main canvas
   10) Consult the Manual below for detailed information.
   
+Quick Guide Texture Array Creator
+  
+  1) Open the tool in the main menu under Window > Amplify Shader Editor > Texture Array Creator
+  2) Specify the desired Width and Height for the Texture Array through the X and Y Size
+  3) Configure your texture properties
+  4) Set your array Name and Path
+  5) Add elements to the array by hitting the (+) button over the Texture List area and assign textures to them
+  6) Hit the Build Array button on the top of the window to build your new Texture Array
+  7) Please notice that you can't load previously created texture arrays into the tool so maintain it open until all the tweaks on the array are done
+
 Documentation
 
   Please refer to the following website for an up-to-date online manual:

@@ -10,7 +10,7 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Tau", "Constants", "Tau constant (2*PI): 6.28318530718", null, KeyCode.None, true, false, null,null, true )]
+	[NodeAttributes( "Tau", "Constants And Properties", "Tau constant (2*PI): 6.28318530718", null, KeyCode.None, true, false, null,null, "The Four Headed Cat - @fourheadedcat" )]
 	public sealed class TauNode : ParentNode
 	{
 		private readonly string Tau = ( 2.0 * Mathf.PI ).ToString();
@@ -26,7 +26,7 @@ namespace AmplifyShaderEditor
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
-			return Tau;
+			return dataCollector.IsSRP? "TWO_PI": Tau;
 		}
 	}
 }

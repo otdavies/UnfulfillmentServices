@@ -19,41 +19,68 @@ namespace AmplifyShaderEditor
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
-			AddInputPort( WirePortDataType.INT, false, "Posterization Power [1-256]" );
-			AddInputPort( WirePortDataType.COLOR, false, "Color" );
+			AddInputPort( WirePortDataType.COLOR, false, "RGBA", -1, MasterNodePortCategory.Fragment, 1 );
+			AddInputPort( WirePortDataType.INT, false, "Power", -1, MasterNodePortCategory.Fragment, 0 );
+			m_inputPorts[ 1 ].AutoDrawInternalData = true;
 			AddOutputPort( WirePortDataType.COLOR, Constants.EmptyPortValue );
 			m_textLabelWidth = 60;
 			m_autoWrapProperties = true;
+			m_previewShaderGUID = "ecb3048ef0eec1645bad1d72a98d8279";
 		}
 
 		public override void DrawProperties()
 		{
 			base.DrawProperties();
-			EditorGUILayout.BeginVertical();
+			if( !m_inputPorts[ 1 ].IsConnected )
 			{
-				m_posterizationPower = EditorGUILayoutIntSlider( PosterizationPowerStr, m_posterizationPower, 1, 256 );
+				EditorGUILayout.BeginVertical();
+				{
+					EditorGUI.BeginChangeCheck();
+					m_posterizationPower = EditorGUILayoutIntSlider( PosterizationPowerStr, m_posterizationPower, 1, 256 );
+					if( EditorGUI.EndChangeCheck() )
+					{
+						GetInputPortByUniqueId( 0 ).IntInternalData = m_posterizationPower;
+					}
+				}
+				EditorGUILayout.EndVertical();
 			}
-			EditorGUILayout.EndVertical();
+			else
+			{
+				EditorGUILayout.Space();
+			}
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalVar )
 		{
+			if( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
+
 			string posterizationPower = "1";
-			if ( m_inputPorts[ 0 ].IsConnected )
+			if( m_inputPorts[ 1 ].IsConnected )
 			{
-				posterizationPower = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
+				posterizationPower = m_inputPorts[ 1 ].GeneratePortInstructions( ref dataCollector );
 			}
 			else
 			{
 				posterizationPower = m_posterizationPower.ToString();
 			}
 
-			string colorTarget = m_inputPorts[ 1 ].GeneratePortInstructions( ref dataCollector );
-			
-			string divVar = "div" + m_uniqueId;
-			dataCollector.AddToLocalVariables( m_uniqueId, "float " + divVar + "=256.0/float(" + posterizationPower + ");" );
+			string colorTarget = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
+
+			string divVar = "div" + OutputId;
+			dataCollector.AddLocalVariable( UniqueId, "float " + divVar + "=256.0/float(" + posterizationPower + ");" );
 			string result = "( floor( " + colorTarget + " * " + divVar + " ) / " + divVar + " )";
-			return CreateOutputLocalVariable( 0, result, ref dataCollector );
+
+			RegisterLocalVariable( 0, result, ref dataCollector, "posterize" + OutputId );
+
+			return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
+		}
+
+		public override void RefreshExternalReferences()
+		{
+			base.RefreshExternalReferences();
+			m_inputPorts[ 0 ].ChangeType( WirePortDataType.COLOR, false );
+			m_inputPorts[ 1 ].ChangeType( WirePortDataType.INT, false );
 		}
 
 		public override void WriteToString( ref string nodeInfo, ref string connectionsInfo )

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/DegreesOpNode"
+Shader "Hidden/DegreesOpNode"
 {
 	Properties
 	{

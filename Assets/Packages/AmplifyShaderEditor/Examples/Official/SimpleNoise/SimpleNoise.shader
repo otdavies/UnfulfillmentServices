@@ -1,6 +1,6 @@
 // Made with Amplify Shader Editor
 // Available at the Unity Asset Store - http://u3d.as/y3X 
-Shader "ASESampleShaders/SimpleNoise"
+Shader "ASESampleShaders/Simple/SimpleNoise"
 {
 	Properties
 	{
@@ -89,7 +89,7 @@ Node;AmplifyShaderEditor.SimpleMultiplyOpNode;200;1398.767,-79.30207;Float;FLOAT
 Node;AmplifyShaderEditor.TextureCoordinatesNode;198;1095.557,21.3978;Float;0;210;2;FLOAT2;1,1;FLOAT2;0,0
 Node;AmplifyShaderEditor.Vector2Node;199;1194.76,-149.3016;Float;Property;_Size;Size;1;0;0,0
 Node;AmplifyShaderEditor.NoiseGeneratorNode;205;1546.165,-24.90001;Float;Simplex2D;FLOAT2;0,0,0
-Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;2385.304,-300.1997;Float;True;6;Float;ASEMaterialInspector;Standard;ASESampleShaders/SimpleNoise;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;3;False;0;0;Masked;0.28;True;True;0;False;TransparentCutout;AlphaTest;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;False;0;255;255;0;0;0;0;False;1;4;10;25;False;0.5;True;0;Zero;Zero;0;Zero;Zero;Add;Add;0;FLOAT3;0,0,0;FLOAT3;0,0,0;FLOAT3;0,0,0;FLOAT;0.0;FLOAT;0.0;FLOAT;0.0;FLOAT3;0,0,0;FLOAT3;0,0,0;FLOAT;0.0;FLOAT;0.0;OBJECT;0;FLOAT3;0.0,0,0;FLOAT3;0.0,0,0;OBJECT;0;FLOAT4;0,0,0,0;FLOAT3;0,0,0
+Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;2385.304,-300.1997;Float;True;6;Float;ASEMaterialInspector;Standard;ASESampleShaders/Simple/SimpleNoise;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;3;False;0;0;Masked;0.28;True;True;0;False;TransparentCutout;AlphaTest;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;False;0;255;255;0;0;0;0;False;1;4;10;25;False;0.5;True;0;Zero;Zero;0;Zero;Zero;Add;Add;0;FLOAT3;0,0,0;FLOAT3;0,0,0;FLOAT3;0,0,0;FLOAT;0.0;FLOAT;0.0;FLOAT;0.0;FLOAT3;0,0,0;FLOAT3;0,0,0;FLOAT;0.0;FLOAT;0.0;OBJECT;0;FLOAT3;0.0,0,0;FLOAT3;0.0,0,0;OBJECT;0;FLOAT4;0,0,0,0;FLOAT3;0,0,0
 WireConnection;214;0;213;0
 WireConnection;214;1;212;0
 WireConnection;210;1;214;0

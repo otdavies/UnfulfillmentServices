@@ -1,4 +1,4 @@
-﻿Shader "Hidden/VertexColorNode"
+Shader "Hidden/VertexColorNode"
 {
 	SubShader
 	{

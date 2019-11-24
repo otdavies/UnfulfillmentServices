@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SimpleMinNode"
+Shader "Hidden/SimpleMinNode"
 {
 	Properties
 	{

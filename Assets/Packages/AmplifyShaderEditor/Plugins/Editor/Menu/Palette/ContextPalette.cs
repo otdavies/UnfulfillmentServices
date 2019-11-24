@@ -11,19 +11,18 @@ namespace AmplifyShaderEditor
 	{
 		private Vector3 m_position;
 		private Vector2 m_startDropPosition;
-		public ContextPalette( List<ContextMenuItem> items ) : base( items, 0, 0, 250, 250, string.Empty, MenuAnchor.NONE, MenuAutoSize.NONE )
+		public ContextPalette( AmplifyShaderEditorWindow parentWindow ) : base( parentWindow, 0, 0, 250, 250, string.Empty, MenuAnchor.NONE, MenuAutoSize.NONE )
 		{
 			m_isActive = false;
 			OnPaletteNodeCreateEvt += OnOptionSelected;
 			m_searchFilterControl += "CONTEXTPALETTE";
-			SortElements();
 		}
 
-		public override void OnEnterPressed()
+		public override void OnEnterPressed(int index = 0)
 		{
 			if ( m_searchFilter.Length > 0 && m_currentItems.Count > 0 )
 			{
-				FireNodeCreateEvent( m_currentItems[ 0 ].NodeType, m_currentItems[ 0 ].Name );
+				FireNodeCreateEvent( m_currentItems[ index ].NodeType, m_currentItems[ index ].Name, m_currentItems[ index ].Function );
 			}
 			else
 			{
@@ -34,9 +33,9 @@ namespace AmplifyShaderEditor
 		public override void OnEscapePressed()
 		{
 			Disable();
-			if ( UIUtils.ValidReferences() )
+			if ( m_parentWindow.WireReferenceUtils.ValidReferences() )
 			{
-				UIUtils.InvalidateReferences();
+				m_parentWindow.WireReferenceUtils.InvalidateReferences();
 			}
 		}
 
@@ -74,7 +73,7 @@ namespace AmplifyShaderEditor
 		//	return GUILayout.Button( content, style );
 		//}
 
-		void OnOptionSelected( Type type, string name )
+		void OnOptionSelected( System.Type type, string name, AmplifyShaderFunction function )
 		{
 			Disable();
 		}
@@ -82,11 +81,6 @@ namespace AmplifyShaderEditor
 		public void Disable()
 		{
 			m_isActive = false;
-		}
-
-		public bool IsActive
-		{
-			get { return m_isActive; }
 		}
 
 		public Vector2 StartDropPosition

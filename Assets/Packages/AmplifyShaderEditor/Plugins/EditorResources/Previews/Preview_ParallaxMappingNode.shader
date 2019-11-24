@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ParallaxMappingNode"
+Shader "Hidden/ParallaxMappingNode"
 {
 	Properties
 	{

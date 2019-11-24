@@ -1,4 +1,4 @@
-﻿Shader "Hidden/StepOpNode"
+Shader "Hidden/StepOpNode"
 {
 	Properties
 	{

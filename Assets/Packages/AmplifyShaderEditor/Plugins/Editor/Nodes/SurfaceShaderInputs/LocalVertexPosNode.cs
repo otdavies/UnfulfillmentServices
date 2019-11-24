@@ -7,7 +7,7 @@ using UnityEngine;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "[Deprecated] Local Position", "Surface Standard Inputs", "Interpolated Vertex Position in Local Space", null, KeyCode.None, true, true, "Vertex Position", typeof( PosVertexDataNode ) )]
+	[NodeAttributes( "[Deprecated] Local Position", "Surface Data", "Interpolated Vertex Position in Local Space", null, KeyCode.None, true, true, "Vertex Position", typeof( PosVertexDataNode ) )]
 	public sealed class LocalVertexPosNode : ParentNode
 	{
 		private const string VertexVarName = "localVertexPos";
@@ -38,8 +38,8 @@ namespace AmplifyShaderEditor
 			{
 				if ( m_addInstruction )
 				{
-					dataCollector.AddToInput( m_uniqueId, "float3 " + VertexVarName, true );
-					dataCollector.AddVertexInstruction( Constants.VertexShaderOutputStr + "." + VertexVarName + " = " + Constants.VertexShaderInputStr + ".vertex.xyz ", m_uniqueId );
+					dataCollector.AddToInput( UniqueId, VertexVarName, WirePortDataType.FLOAT3 );
+					dataCollector.AddVertexInstruction( Constants.VertexShaderOutputStr + "." + VertexVarName + " = " + Constants.VertexShaderInputStr + ".vertex.xyz ", UniqueId );
 					m_addInstruction = false;
 				}
 

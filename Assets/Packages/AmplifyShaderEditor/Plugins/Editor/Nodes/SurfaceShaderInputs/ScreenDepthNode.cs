@@ -1,3 +1,6 @@
+// Amplify Shader Editor - Visual Shader Editing Tool
+// Copyright (c) Amplify Creations, Lda <info@amplify.pt>
+
 using UnityEngine;
 using UnityEditor;
 
@@ -5,15 +8,22 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Screen Depth", "Surface Standard Inputs", "Given a screen postion returns the depth of the scene to the object as seen by the camera" )]
+	[NodeAttributes( "Screen Depth", "Camera And Screen", "Given a screen position returns the depth of the scene to the object as seen by the camera" )]
 	public sealed class ScreenDepthNode : ParentNode
 	{
 		[SerializeField]
+		private bool m_convertToLinear = true;
+
+		[SerializeField]
 		private int m_viewSpaceInt = 0;
+
+		private const string ConvertToLinearStr = "Convert To Linear";
 
 		private readonly string[] m_viewSpaceStr = { "Eye Space", "0-1 Space" };
 
 		private readonly string[] m_vertexNameStr = { "eyeDepth", "clampDepth" };
+
+		private UpperLeftWidgetHelper m_upperLeftWidget = new UpperLeftWidgetHelper();
 
 		protected override void CommonInit( int uniqueId )
 		{
@@ -21,49 +31,142 @@ namespace AmplifyShaderEditor
 			AddInputPort( WirePortDataType.FLOAT4, false, "Pos" );
 			AddOutputPort( WirePortDataType.FLOAT, "Depth" );
 			m_autoWrapProperties = true;
+			m_hasLeftDropdown = true;
+			SetAdditonalTitleText( string.Format( Constants.SubTitleSpaceFormatStr, m_viewSpaceStr[ m_viewSpaceInt ] ) );
+		}
+
+		public override void AfterCommonInit()
+		{
+			base.AfterCommonInit();
+			if( PaddingTitleLeft == 0 )
+			{
+				PaddingTitleLeft = Constants.PropertyPickerWidth + Constants.IconsLeftRightMargin;
+				if( PaddingTitleRight == 0 )
+					PaddingTitleRight = Constants.PropertyPickerWidth + Constants.IconsLeftRightMargin;
+			}
+		}
+
+		public override void Destroy()
+		{
+			base.Destroy();
+			m_upperLeftWidget = null;
+		}
+
+		public override void Draw( DrawInfo drawInfo )
+		{
+			base.Draw( drawInfo );
+			EditorGUI.BeginChangeCheck();
+			m_viewSpaceInt = m_upperLeftWidget.DrawWidget( this, m_viewSpaceInt, m_viewSpaceStr );
+			if( EditorGUI.EndChangeCheck() )
+			{
+				SetAdditonalTitleText( string.Format( Constants.SubTitleSpaceFormatStr, m_viewSpaceStr[ m_viewSpaceInt ] ) );
+			}
 		}
 
 		public override void DrawProperties()
 		{
 			base.DrawProperties();
+			EditorGUI.BeginChangeCheck();
 			m_viewSpaceInt = EditorGUILayoutPopup( "View Space", m_viewSpaceInt, m_viewSpaceStr );
+			if( EditorGUI.EndChangeCheck() )
+			{
+				SetAdditonalTitleText( string.Format( Constants.SubTitleSpaceFormatStr, m_viewSpaceStr[ m_viewSpaceInt ] ) );
+			}
+
+			m_convertToLinear = EditorGUILayoutToggle( ConvertToLinearStr, m_convertToLinear );
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
-			if ( dataCollector.PortCategory == MasterNodePortCategory.Vertex || dataCollector.PortCategory == MasterNodePortCategory.Tessellation )
+			if( dataCollector.PortCategory == MasterNodePortCategory.Tessellation )
 			{
 				UIUtils.ShowNoVertexModeNodeMessage( this );
 				return "0";
 			}
 
-			dataCollector.AddToIncludes( m_uniqueId, Constants.UnityCgLibFuncs );
-			dataCollector.AddToUniforms( m_uniqueId, "uniform sampler2D _CameraDepthTexture;" );
-			string screenPos = string.Empty;
-			if ( m_inputPorts[ 0 ].IsConnected )
-				screenPos = m_inputPorts[ 0 ].GenerateShaderForOutput( ref dataCollector, WirePortDataType.FLOAT4, false );
+			if( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return GetOutputColorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory ) );
+
+			if( !( dataCollector.IsTemplate && dataCollector.IsSRP ) )
+				dataCollector.AddToIncludes( UniqueId, Constants.UnityCgLibFuncs );
+
+			if( !dataCollector.IsTemplate || dataCollector.TemplateDataCollectorInstance.CurrentSRPType != TemplateSRPType.HD )
+			{
+				if( dataCollector.IsTemplate && dataCollector.CurrentSRPType == TemplateSRPType.Lightweight )
+				{
+					//dataCollector.AddToUniforms( UniqueId, Constants.CameraDepthTextureSRPVar );
+					//dataCollector.AddToUniforms( UniqueId, Constants.CameraDepthTextureSRPSampler );
+					dataCollector.AddToDirectives( Constants.CameraDepthTextureLWEnabler, -1, AdditionalLineType.Define );
+				}
+				else
+				{
+					dataCollector.AddToUniforms( UniqueId, Constants.CameraDepthTextureValue );
+				}
+				dataCollector.AddToUniforms( UniqueId, Constants.CameraDepthTextureTexelSize );
+			}
+
+
+			string screenPosNorm = string.Empty;
+			if( m_inputPorts[ 0 ].IsConnected )
+				screenPosNorm = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 			else
-				screenPos = GeneratorUtils.GenerateScreenPosition( ref dataCollector, m_uniqueId, m_currentPrecisionType, true );
-			//string screenPos = m_inputPorts[ 0 ].GenerateShaderForOutput( ref dataCollector, WirePortDataType.FLOAT4, false );
+			{
+				if( dataCollector.IsTemplate )
+				{
+					if( !dataCollector.TemplateDataCollectorInstance.GetCustomInterpolatedData( TemplateInfoOnSematics.SCREEN_POSITION_NORMALIZED, WirePortDataType.FLOAT4, PrecisionType.Float, ref screenPosNorm, true,MasterNodePortCategory.Fragment ) )
+					{
+						screenPosNorm = GeneratorUtils.GenerateScreenPositionNormalized( ref dataCollector, UniqueId, CurrentPrecisionType, !dataCollector.UsingCustomScreenPos );
+					}
+				}
+				else
+				{
+					screenPosNorm = GeneratorUtils.GenerateScreenPositionNormalized( ref dataCollector, UniqueId, CurrentPrecisionType, !dataCollector.UsingCustomScreenPos );
+				}
+			}
 
-			string viewSpace = m_viewSpaceInt == 0 ? "Eye" : "01";
-			string screenDepthInstruction = "Linear" + viewSpace + "Depth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture,UNITY_PROJ_COORD(" + screenPos + "))))";
+			string screenDepthInstruction = TemplateHelperFunctions.CreateDepthFetch( dataCollector, screenPosNorm );
+			
+			if( m_convertToLinear )
+			{
+				string viewSpace = m_viewSpaceInt == 0 ? "LinearEyeDepth" : "Linear01Depth";
+				string formatStr = string.Empty;
+				if( ( dataCollector.IsTemplate && dataCollector.IsSRP ) )
+					formatStr = "(" + screenDepthInstruction + ",_ZBufferParams)";
+				else
+					formatStr = "(" + screenDepthInstruction + ")";
+				screenDepthInstruction = viewSpace + formatStr;
+			}
+			else
+			{
+				if( m_viewSpaceInt == 0 )
+				{
+					screenDepthInstruction = string.Format( "({0}*( _ProjectionParams.z - _ProjectionParams.y ))", screenDepthInstruction );
+				}
+			}
 
-			dataCollector.AddToLocalVariables( m_uniqueId, m_currentPrecisionType, WirePortDataType.FLOAT, m_vertexNameStr[ m_viewSpaceInt ] + m_uniqueId, screenDepthInstruction );
+			dataCollector.AddLocalVariable( UniqueId, CurrentPrecisionType, WirePortDataType.FLOAT, m_vertexNameStr[ m_viewSpaceInt ] + OutputId, screenDepthInstruction );
 
-			return m_vertexNameStr[ m_viewSpaceInt ] + m_uniqueId;
+			m_outputPorts[ 0 ].SetLocalValue( m_vertexNameStr[ m_viewSpaceInt ] + OutputId, dataCollector.PortCategory );
+			return GetOutputColorItem( 0, outputId, m_vertexNameStr[ m_viewSpaceInt ] + OutputId );
 		}
 
 		public override void ReadFromString( ref string[] nodeParams )
 		{
 			base.ReadFromString( ref nodeParams );
 			m_viewSpaceInt = Convert.ToInt32( GetCurrentParam( ref nodeParams ) );
+			if( UIUtils.CurrentShaderVersion() >= 13901 )
+			{
+				m_convertToLinear = Convert.ToBoolean( GetCurrentParam( ref nodeParams ) );
+			}
+
+			SetAdditonalTitleText( string.Format( Constants.SubTitleSpaceFormatStr, m_viewSpaceStr[ m_viewSpaceInt ] ) );
 		}
 
 		public override void WriteToString( ref string nodeInfo, ref string connectionsInfo )
 		{
 			base.WriteToString( ref nodeInfo, ref connectionsInfo );
 			IOUtils.AddFieldValueToString( ref nodeInfo, m_viewSpaceInt );
+			IOUtils.AddFieldValueToString( ref nodeInfo, m_convertToLinear );
 		}
 	}
 

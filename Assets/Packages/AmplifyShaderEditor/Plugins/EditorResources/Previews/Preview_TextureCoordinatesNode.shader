@@ -1,4 +1,4 @@
-﻿Shader "Hidden/TextureCoordinatesNode"
+Shader "Hidden/TextureCoordinatesNode"
 {
 	Properties
 	{

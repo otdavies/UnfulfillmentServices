@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ASinOpNode"
+Shader "Hidden/ASinOpNode"
 {
 	Properties
 	{

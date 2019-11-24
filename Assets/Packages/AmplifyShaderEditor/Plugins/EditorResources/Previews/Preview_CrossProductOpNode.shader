@@ -1,4 +1,4 @@
-﻿Shader "Hidden/CrossProductOpNode"
+Shader "Hidden/CrossProductOpNode"
 {
 	Properties
 	{

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/DdxOpNode"
+Shader "Hidden/DdxOpNode"
 {
 	Properties
 	{

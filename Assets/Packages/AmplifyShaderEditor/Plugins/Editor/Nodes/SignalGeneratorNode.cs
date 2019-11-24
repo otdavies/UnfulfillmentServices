@@ -15,11 +15,13 @@ namespace AmplifyShaderEditor
 
 		public void GenerateSignalPropagation()
 		{
-			Type myType = GetType();
+			System.Type myType = GetType();
 			for ( int i = 0; i < m_inputPorts.Count; i++ )
 			{
 				if ( m_inputPorts[ i ].IsConnected )
-					m_inputPorts[ i ].GetOutputNode().ActivateNode( m_uniqueId, i, myType );
+				{
+					m_inputPorts[ i ].GetOutputNode().ActivateNode( UniqueId, i, myType );
+				}
 			}
 		}
 
@@ -27,8 +29,12 @@ namespace AmplifyShaderEditor
 		{
 			for ( int i = 0; i < m_inputPorts.Count; i++ )
 			{
-				if ( m_inputPorts[ i ].IsConnected )
-					m_inputPorts[ i ].GetOutputNode().DeactivateNode( i, false );
+				if( m_inputPorts[ i ].IsConnected )
+				{
+					ParentNode node = m_inputPorts[ i ].GetOutputNode();
+					if( node != null )
+						node.DeactivateNode( i, false );
+				}
 			}
 		}
 	}

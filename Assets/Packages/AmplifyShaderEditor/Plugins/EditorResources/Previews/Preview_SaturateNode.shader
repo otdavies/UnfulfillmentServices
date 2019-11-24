@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SaturateNode"
+Shader "Hidden/SaturateNode"
 {
 	Properties
 	{

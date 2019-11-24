@@ -22,7 +22,29 @@ namespace AmplifyShaderEditor
 		SAMPLER1D = 1 << 10,
 		SAMPLER2D = 1 << 11,
 		SAMPLER3D = 1 << 12,
-		SAMPLERCUBE = 1 << 13
+		SAMPLERCUBE = 1 << 13,
+		UINT = 1 << 14
+	}
+
+	public enum VariableQualifiers
+	{
+		In = 0,
+		Out,
+		InOut
+	}
+
+	public struct WirePortDataTypeComparer : IEqualityComparer<WirePortDataType>
+	{
+		public bool Equals( WirePortDataType x, WirePortDataType y )
+		{
+			return x == y;
+		}
+
+		public int GetHashCode( WirePortDataType obj )
+		{
+			// you need to do some thinking here,
+			return (int)obj;
+		}
 	}
 
 	[System.Serializable]
@@ -39,10 +61,15 @@ namespace AmplifyShaderEditor
 		private bool m_isEditable = false;
 		private bool m_editingName = false;
 
-		private int m_portRestrictions = 0;
+		protected int m_portRestrictions = 0;
+
+		private bool m_repeatButtonState = false;
 
 		[SerializeField]
 		private Rect m_position;
+
+		[SerializeField]
+		private Rect m_labelPosition;
 
 		[SerializeField]
 		protected int m_nodeId = -1;
@@ -69,6 +96,9 @@ namespace AmplifyShaderEditor
 		protected bool m_visible = true;
 
 		[SerializeField]
+		protected bool m_isDummy = false;
+
+		[SerializeField]
 		protected bool m_hasCustomColor = false;
 
 		[SerializeField]
@@ -76,7 +106,7 @@ namespace AmplifyShaderEditor
 
 		[SerializeField]
 		protected Rect m_activePortArea;
-		
+
 		public WirePort( int nodeId, int portId, WirePortDataType dataType, string name, int orderId = -1 )
 		{
 			m_nodeId = nodeId;
@@ -93,32 +123,62 @@ namespace AmplifyShaderEditor
 			m_externalReferences = null;
 		}
 
-		public void CreatePortRestrictions( params WirePortDataType[] validTypes )
+		public void AddPortForbiddenTypes( params WirePortDataType[] forbiddenTypes )
 		{
-			if ( validTypes != null )
+			if( forbiddenTypes != null )
 			{
-				for ( int i = 0; i < validTypes.Length; i++ )
+				if( m_portRestrictions == 0 )
 				{
-					m_portRestrictions = m_portRestrictions | ( int)validTypes[ i ];
+					//if no previous restrictions are detected then we set up the bit array so we can set is bit correctly
+					m_portRestrictions = int.MaxValue;
+				}
+
+				for( int i = 0; i < forbiddenTypes.Length; i++ )
+				{
+					m_portRestrictions = m_portRestrictions & ( int.MaxValue - (int)forbiddenTypes[ i ] );
 				}
 			}
 		}
 
-		public bool CheckValidType( WirePortDataType dataType )
+		public void AddPortRestrictions( params WirePortDataType[] validTypes )
 		{
-			if ( m_portRestrictions == 0 )
+			if( validTypes != null )
+			{
+				for( int i = 0; i < validTypes.Length; i++ )
+				{
+					m_portRestrictions = m_portRestrictions | (int)validTypes[ i ];
+				}
+			}
+		}
+
+		public void CreatePortRestrictions( params WirePortDataType[] validTypes )
+		{
+			m_portRestrictions = 0;
+			if( validTypes != null )
+			{
+				for( int i = 0; i < validTypes.Length; i++ )
+				{
+					m_portRestrictions = m_portRestrictions | (int)validTypes[ i ];
+				}
+			}
+		}
+
+		public virtual bool CheckValidType( WirePortDataType dataType )
+		{
+			if( m_portRestrictions == 0 )
 			{
 				return true;
 			}
-			return ( m_portRestrictions & ( int ) dataType ) != 0;
+
+			return ( m_portRestrictions & (int)dataType ) != 0;
 		}
 
 		public bool ConnectTo( WireReference port )
 		{
-			if ( m_locked )
+			if( m_locked )
 				return false;
 
-			if ( m_externalReferences.Contains( port ) )
+			if( m_externalReferences.Contains( port ) )
 				return false;
 
 			m_externalReferences.Add( port );
@@ -127,13 +187,13 @@ namespace AmplifyShaderEditor
 
 		public bool ConnectTo( int nodeId, int portId )
 		{
-			if ( m_locked )
+			if( m_locked )
 				return false;
 
 
-			foreach ( WireReference reference in m_externalReferences )
+			foreach( WireReference reference in m_externalReferences )
 			{
-				if ( reference.NodeId == nodeId && reference.PortId == portId )
+				if( reference.NodeId == nodeId && reference.PortId == portId )
 				{
 					return false;
 				}
@@ -144,12 +204,12 @@ namespace AmplifyShaderEditor
 
 		public bool ConnectTo( int nodeId, int portId, WirePortDataType dataType, bool typeLocked )
 		{
-			if ( m_locked )
+			if( m_locked )
 				return false;
 
-			foreach ( WireReference reference in m_externalReferences )
+			foreach( WireReference reference in m_externalReferences )
 			{
-				if ( reference.NodeId == nodeId && reference.PortId == portId )
+				if( reference.NodeId == nodeId && reference.PortId == portId )
 				{
 					return false;
 				}
@@ -161,43 +221,58 @@ namespace AmplifyShaderEditor
 		public void DummyAdd( int nodeId, int portId )
 		{
 			m_externalReferences.Insert( 0, new WireReference( nodeId, portId, WirePortDataType.OBJECT, false ) );
+			m_isDummy = true;
 		}
 
 		public void DummyRemove()
 		{
 			m_externalReferences.RemoveAt( 0 );
+			m_isDummy = false;
+		}
+
+		public void DummyClear()
+		{
+			m_externalReferences.Clear();
+			m_isDummy = false;
 		}
 
 		public WireReference GetConnection( int connID = 0 )
 		{
-			if ( connID < m_externalReferences.Count )
+			if( connID < m_externalReferences.Count )
 				return m_externalReferences[ connID ];
 			return null;
 		}
 
 		public void ChangeProperties( string newName, WirePortDataType newType, bool invalidateConnections )
 		{
-			m_name = newName;
-			if ( m_dataType != newType )
-			{
-				DataType = newType;
-				if ( invalidateConnections )
-				{
-					InvalidateAllConnections();
-				}
-				else
-				{
-					NotifyExternalRefencesOnChange();
-				}
-			}
+			Name = newName;
+			ChangeType( newType, invalidateConnections );
+			//if ( m_dataType != newType )
+			//{
+			//	DataType = newType;
+			//	if ( invalidateConnections )
+			//	{
+			//		InvalidateAllConnections();
+			//	}
+			//	else
+			//	{
+			//		NotifyExternalRefencesOnChange();
+			//	}
+			//}
 		}
 
 		public void ChangeType( WirePortDataType newType, bool invalidateConnections )
 		{
-			if ( m_dataType != newType )
+			if( m_dataType != newType )
 			{
+				//ParentNode node = UIUtils.GetNode( m_nodeId );
+				//if ( node )
+				//{
+				//	Undo.RegisterCompleteObjectUndo( node.ContainerGraph.ParentWindow, Constants.UndoChangeTypeNodesId );
+				//	Undo.RecordObject( node, Constants.UndoChangeTypeNodesId );
+				//}
 				DataType = newType;
-				if ( invalidateConnections )
+				if( invalidateConnections )
 				{
 					InvalidateAllConnections();
 				}
@@ -208,13 +283,14 @@ namespace AmplifyShaderEditor
 			}
 		}
 
+        public virtual void ChangePortId( int newId ) { }
 		public virtual void NotifyExternalRefencesOnChange() { }
 
 		public void UpdateInfoOnExternalConn( int nodeId, int portId, WirePortDataType type )
 		{
-			for ( int i = 0; i < m_externalReferences.Count; i++ )
+			for( int i = 0; i < m_externalReferences.Count; i++ )
 			{
-				if ( m_externalReferences[ i ].NodeId == nodeId && m_externalReferences[ i ].PortId == portId )
+				if( m_externalReferences[ i ].NodeId == nodeId && m_externalReferences[ i ].PortId == portId )
 				{
 					m_externalReferences[ i ].DataType = type;
 				}
@@ -224,16 +300,16 @@ namespace AmplifyShaderEditor
 		public void InvalidateConnection( int nodeId, int portId )
 		{
 			int id = -1;
-			for ( int i = 0; i < m_externalReferences.Count; i++ )
+			for( int i = 0; i < m_externalReferences.Count; i++ )
 			{
-				if ( m_externalReferences[ i ].NodeId == nodeId && m_externalReferences[ i ].PortId == portId )
+				if( m_externalReferences[ i ].NodeId == nodeId && m_externalReferences[ i ].PortId == portId )
 				{
 					id = i;
 					break;
 				}
 			}
 
-			if ( id > -1 )
+			if( id > -1 )
 				m_externalReferences.RemoveAt( id );
 		}
 
@@ -241,9 +317,9 @@ namespace AmplifyShaderEditor
 		{
 			Debug.Log( "Cleaning invalid connections" );
 			List<WireReference> validConnections = new List<WireReference>();
-			for ( int i = 0; i < m_externalReferences.Count; i++ )
+			for( int i = 0; i < m_externalReferences.Count; i++ )
 			{
-				if ( m_externalReferences[ i ].IsValid )
+				if( m_externalReferences[ i ].IsValid )
 				{
 					validConnections.Add( m_externalReferences[ i ] );
 				}
@@ -265,12 +341,12 @@ namespace AmplifyShaderEditor
 
 		public bool IsConnectedTo( int nodeId, int portId )
 		{
-			if ( m_locked )
+			if( m_locked )
 				return false;
-			 
-			for ( int i = 0; i < m_externalReferences.Count; i++ )
+
+			for( int i = 0; i < m_externalReferences.Count; i++ )
 			{
-				if ( m_externalReferences[ i ].NodeId == nodeId && m_externalReferences[ i ].PortId == portId )
+				if( m_externalReferences[ i ].NodeId == nodeId && m_externalReferences[ i ].PortId == portId )
 					return true;
 			}
 			return false;
@@ -283,7 +359,7 @@ namespace AmplifyShaderEditor
 
 		public bool CheckMatchConnectionType( int id = 0 )
 		{
-			if ( id < m_externalReferences.Count )
+			if( id < m_externalReferences.Count )
 				return m_externalReferences[ id ].DataType == DataType;
 
 			return false;
@@ -291,7 +367,7 @@ namespace AmplifyShaderEditor
 
 		public void MatchPortToConnection( int id = 0 )
 		{
-			if ( id < m_externalReferences.Count )
+			if( id < m_externalReferences.Count )
 			{
 				DataType = m_externalReferences[ id ].DataType;
 			}
@@ -299,7 +375,7 @@ namespace AmplifyShaderEditor
 
 		public void ResetWireReferenceStatus()
 		{
-			for ( int i = 0; i < m_externalReferences.Count; i++ )
+			for( int i = 0; i < m_externalReferences.Count; i++ )
 			{
 				m_externalReferences[ i ].WireStatus = WireStatus.Default;
 			}
@@ -312,14 +388,14 @@ namespace AmplifyShaderEditor
 
 		public void Click()
 		{
-			if ( m_isEditable )
+			if( m_isEditable )
 			{
-				if ( ( EditorApplication.timeSinceStartup - m_lastTimeClicked ) < PortClickTime )
+				if( ( EditorApplication.timeSinceStartup - m_lastTimeClicked ) < PortClickTime )
 				{
 					m_editingName = true;
 					GUI.FocusControl( "port" + m_nodeId.ToString() + m_portId.ToString() );
-					TextEditor te = ( TextEditor ) GUIUtility.GetStateObject( typeof( TextEditor ), GUIUtility.keyboardControl );
-					if ( te != null )
+					TextEditor te = (TextEditor)GUIUtility.GetStateObject( typeof( TextEditor ), GUIUtility.keyboardControl );
+					if( te != null )
 					{
 						te.SelectAll();
 					}
@@ -329,22 +405,22 @@ namespace AmplifyShaderEditor
 			}
 		}
 
-		public bool Draw( Rect textPos , GUIStyle style )
+		public bool Draw( Rect textPos, GUIStyle style )
 		{
 			bool changeFlag = false;
-			if ( m_isEditable && m_editingName )
+			if( m_isEditable && m_editingName )
 			{
 				textPos.width = m_labelSize.x;
 				EditorGUI.BeginChangeCheck();
 				GUI.SetNextControlName( "port" + m_nodeId.ToString() + m_portId.ToString() );
 				m_name = GUI.TextField( textPos, m_name, style );
-				if ( EditorGUI.EndChangeCheck() )
+				if( EditorGUI.EndChangeCheck() )
 				{
 					m_dirtyLabelSize = true;
 					changeFlag = true;
 				}
 
-				if ( Event.current.isKey && ( Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter ) )
+				if( Event.current.isKey && ( Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter ) )
 				{
 					m_editingName = false;
 					GUIUtility.keyboardControl = 0;
@@ -354,7 +430,7 @@ namespace AmplifyShaderEditor
 			{
 				GUI.Label( textPos, m_name, style );
 			}
-			//GUI.Box( textPos, string.Empty );
+			//GUI.Label( textPos, string.Empty );
 			return changeFlag;
 		}
 
@@ -367,7 +443,7 @@ namespace AmplifyShaderEditor
 
 		public bool IsConnected
 		{
-			get { return ( m_externalReferences.Count > 0  && !m_locked ); }
+			get { return ( m_externalReferences.Count > 0 && !m_locked ); }
 		}
 
 		public List<WireReference> ExternalReferences
@@ -383,8 +459,13 @@ namespace AmplifyShaderEditor
 		public Rect Position
 		{
 			get { return m_position; }
-
 			set { m_position = value; }
+		}
+
+		public Rect LabelPosition
+		{
+			get { return m_labelPosition; }
+			set { m_labelPosition = value; }
 		}
 
 		public int PortId
@@ -418,7 +499,7 @@ namespace AmplifyShaderEditor
 			set
 			{
 				m_visible = value;
-				if ( !m_visible && IsConnected )
+				if( !m_visible && IsConnected )
 				{
 					ForceClearConnection();
 				}
@@ -470,7 +551,7 @@ namespace AmplifyShaderEditor
 			get { return m_activePortArea; }
 			set { m_activePortArea = value; }
 		}
-		
+
 		public Vector2 LabelSize
 		{
 			get { return m_labelSize; }
@@ -499,12 +580,18 @@ namespace AmplifyShaderEditor
 			dump += " NodeId : " + m_nodeId;
 			dump += " PortId : " + m_portId;
 			dump += "\nConnections:\n";
-			foreach ( WireReference wirePort in m_externalReferences )
+			foreach( WireReference wirePort in m_externalReferences )
 			{
 				dump += wirePort + "\n";
 			}
 			return dump;
 		}
 
+		public bool RepeatButtonState
+		{
+			get { return m_repeatButtonState; }
+			set { m_repeatButtonState = value; }
+		}
+		public bool IsDummy { get { return m_isDummy; } }
 	}
 }

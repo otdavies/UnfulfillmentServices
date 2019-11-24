@@ -27,14 +27,154 @@ namespace AmplifyShaderEditor
 			GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, ( EditorGUIUtility.isProSkin ? 0.5f : 0.25f ) );
 			EditorGUILayout.BeginVertical( UIUtils.MenuItemBackgroundStyle );
 			GUI.color = cachedColor;
-
-			EditorGUI.indentLevel++;
 			DrawSection();
-			EditorGUI.indentLevel--;
 			EditorGUILayout.Separator();
 			EditorGUILayout.EndVertical();
-
 		}
+
+
+		public static void DrawNestedPropertyGroup( ref bool foldoutValue, string sectionName, DrawPropertySection DrawSection, int horizontalSpacing = 15 )
+		{
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.Space( horizontalSpacing );
+				EditorGUILayout.BeginVertical( EditorStyles.helpBox );
+				{
+					Color cachedColor = GUI.color;
+					GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, 0.5f );
+					EditorGUILayout.BeginHorizontal();
+					{
+						GUI.color = cachedColor;
+						bool value = GUILayout.Toggle( foldoutValue, sectionName, UIUtils.MenuItemToggleStyle );
+						if( Event.current.button == Constants.FoldoutMouseId )
+						{
+							foldoutValue = value;
+						}
+					}
+					EditorGUILayout.EndHorizontal();
+					EditorGUI.indentLevel--;
+					if( foldoutValue )
+					{
+						cachedColor = GUI.color;
+						GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, ( EditorGUIUtility.isProSkin ? 0.5f : 0.25f ) );
+						{
+							EditorGUILayout.BeginVertical( UIUtils.MenuItemBackgroundStyle );
+							{
+								GUI.color = cachedColor;
+								DrawSection();
+							}
+							EditorGUILayout.EndVertical();
+							EditorGUILayout.Separator();
+						}
+					}
+					EditorGUI.indentLevel++;
+				}
+				EditorGUILayout.EndVertical();
+			}
+			GUILayout.EndHorizontal();
+		}
+
+		public static void DrawNestedPropertyGroup( ref bool foldoutValue, Rect rect, string sectionName, DrawPropertySection DrawSection, int horizontalSpacing = 15 )
+		{
+			var box = rect;
+			box.height -= 2;
+			GUI.Label( box, string.Empty, EditorStyles.helpBox );
+
+			var tog = rect;
+			tog.xMin += 2;
+			tog.xMax -= 2;
+			tog.yMin += 2;
+			bool value = GUI.Toggle( tog, foldoutValue, sectionName, UIUtils.MenuItemToggleStyle );
+			if( Event.current.button == Constants.FoldoutMouseId )
+			{
+				foldoutValue = value;
+			}
+
+			if( foldoutValue )
+			{
+				DrawSection();
+			}
+		}
+
+
+		public static void DrawNestedPropertyGroup( ref bool foldoutValue, string sectionName, DrawPropertySection DrawSection, DrawPropertySection HeaderSection )
+		{
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.Space( 15 );
+				EditorGUILayout.BeginVertical( EditorStyles.helpBox );
+				Color cachedColor = GUI.color;
+				GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, 0.5f );
+				EditorGUILayout.BeginHorizontal();
+				GUI.color = cachedColor;
+
+				bool value = GUILayout.Toggle( foldoutValue, sectionName, UIUtils.MenuItemToggleStyle );
+				if( Event.current.button == Constants.FoldoutMouseId )
+				{
+					foldoutValue = value;
+				}
+				HeaderSection();
+				EditorGUILayout.EndHorizontal();
+				EditorGUI.indentLevel--;
+				if( foldoutValue )
+				{
+					cachedColor = GUI.color;
+					GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, ( EditorGUIUtility.isProSkin ? 0.5f : 0.25f ) );
+					EditorGUILayout.BeginVertical( UIUtils.MenuItemBackgroundStyle );
+					GUI.color = cachedColor;
+					DrawSection();
+					EditorGUILayout.EndVertical();
+					EditorGUILayout.Separator();
+				}
+				EditorGUI.indentLevel++;
+				EditorGUILayout.EndVertical();
+			}
+			GUILayout.EndHorizontal();
+		}
+
+		public static void DrawNestedPropertyGroup( UndoParentNode owner, ref bool foldoutValue, ref bool enabledValue, string sectionName, DrawPropertySection DrawSection )
+		{
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.Space( 15 );
+				EditorGUILayout.BeginVertical( EditorStyles.helpBox );
+				Color cachedColor = GUI.color;
+				GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, 0.5f );
+				EditorGUILayout.BeginHorizontal();
+				GUI.color = cachedColor;
+
+				bool value = GUILayout.Toggle( foldoutValue, sectionName, UIUtils.MenuItemToggleStyle );
+				if( Event.current.button == Constants.FoldoutMouseId )
+				{
+					foldoutValue = value;
+				}
+				
+				value = ( (object)owner != null ) ? owner.GUILayoutToggle( enabledValue, string.Empty,UIUtils.MenuItemEnableStyle, GUILayout.Width( 16 ) ) :
+										GUILayout.Toggle( enabledValue, string.Empty, UIUtils.MenuItemEnableStyle, GUILayout.Width( 16 ) );
+				if( Event.current.button == Constants.FoldoutMouseId )
+				{
+					enabledValue = value;
+				}
+				
+
+				EditorGUILayout.EndHorizontal();
+				EditorGUI.indentLevel--;
+				if( foldoutValue )
+				{
+					cachedColor = GUI.color;
+					GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, ( EditorGUIUtility.isProSkin ? 0.5f : 0.25f ) );
+					EditorGUILayout.BeginVertical( UIUtils.MenuItemBackgroundStyle );
+					GUI.color = cachedColor;
+					DrawSection();
+					EditorGUILayout.EndVertical();
+					EditorGUILayout.Separator();
+				}
+				EditorGUI.indentLevel++;
+				EditorGUILayout.EndVertical();
+			}
+			GUILayout.EndHorizontal();
+		}
+
 
 		public static void DrawPropertyGroup( ref bool foldoutValue, string sectionName, DrawPropertySection DrawSection )
 		{
@@ -43,14 +183,14 @@ namespace AmplifyShaderEditor
 			EditorGUILayout.BeginHorizontal( UIUtils.MenuItemToolbarStyle );
 			GUI.color = cachedColor;
 
-			bool value =  GUILayout.Toggle( foldoutValue, sectionName, UIUtils.MenuItemToggleStyle );
-			if ( Event.current.button == Constants.FoldoutMouseId )
+			bool value = GUILayout.Toggle( foldoutValue, sectionName, UIUtils.MenuItemToggleStyle );
+			if( Event.current.button == Constants.FoldoutMouseId )
 			{
 				foldoutValue = value;
 			}
 			EditorGUILayout.EndHorizontal();
 
-			if ( foldoutValue )
+			if( foldoutValue )
 			{
 				cachedColor = GUI.color;
 				GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, ( EditorGUIUtility.isProSkin ? 0.5f : 0.25f ) );
@@ -65,7 +205,6 @@ namespace AmplifyShaderEditor
 				EditorGUILayout.EndVertical();
 			}
 		}
-
 
 		public static void DrawPropertyGroup( ref bool foldoutValue, string sectionName, DrawPropertySection DrawSection, DrawPropertySection HeaderSection )
 		{
@@ -75,14 +214,14 @@ namespace AmplifyShaderEditor
 			GUI.color = cachedColor;
 
 			bool value = GUILayout.Toggle( foldoutValue, sectionName, UIUtils.MenuItemToggleStyle );
-			if ( Event.current.button == Constants.FoldoutMouseId )
+			if( Event.current.button == Constants.FoldoutMouseId )
 			{
 				foldoutValue = value;
 			}
 			HeaderSection();
 			EditorGUILayout.EndHorizontal();
 
-			if ( foldoutValue )
+			if( foldoutValue )
 			{
 				cachedColor = GUI.color;
 				GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, ( EditorGUIUtility.isProSkin ? 0.5f : 0.25f ) );
@@ -98,6 +237,7 @@ namespace AmplifyShaderEditor
 			}
 		}
 
+
 		public static bool DrawPropertyGroup( UndoParentNode owner, ref bool foldoutValue, ref bool enabledValue, string sectionName, DrawPropertySection DrawSection )
 		{
 			bool enableChanged = false;
@@ -106,25 +246,25 @@ namespace AmplifyShaderEditor
 			EditorGUILayout.BeginHorizontal( UIUtils.MenuItemToolbarStyle );
 			GUI.color = cachedColor;
 			bool value = GUILayout.Toggle( foldoutValue, sectionName, UIUtils.MenuItemToggleStyle, GUILayout.ExpandWidth( true ) );
-			if ( Event.current.button == Constants.FoldoutMouseId )
+			if( Event.current.button == Constants.FoldoutMouseId )
 			{
 				foldoutValue = value;
 			}
 			EditorGUI.BeginChangeCheck();
-			value = ( ( object ) owner != null ) ? owner.EditorGUILayoutToggle( string.Empty, enabledValue, UIUtils.MenuItemEnableStyle, GUILayout.Width( 16 ) ) :
+			value = ( (object)owner != null ) ? owner.EditorGUILayoutToggle( string.Empty, enabledValue, UIUtils.MenuItemEnableStyle, GUILayout.Width( 16 ) ) :
 											EditorGUILayout.Toggle( string.Empty, enabledValue, UIUtils.MenuItemEnableStyle, GUILayout.Width( 16 ) );
-			if ( Event.current.button == Constants.FoldoutMouseId )
+			if( Event.current.button == Constants.FoldoutMouseId )
 			{
 				enabledValue = value;
 			}
-			if ( EditorGUI.EndChangeCheck() )
+			if( EditorGUI.EndChangeCheck() )
 			{
 				enableChanged = true;
 			}
 
 			EditorGUILayout.EndHorizontal();
 
-			if ( foldoutValue )
+			if( foldoutValue )
 			{
 				cachedColor = GUI.color;
 				GUI.color = new Color( cachedColor.r, cachedColor.g, cachedColor.b, ( EditorGUIUtility.isProSkin ? 0.5f : 0.25f ) );

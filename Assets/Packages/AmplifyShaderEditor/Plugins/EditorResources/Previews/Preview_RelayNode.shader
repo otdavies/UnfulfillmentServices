@@ -1,4 +1,4 @@
-﻿Shader "Hidden/RelayNode"
+Shader "Hidden/RelayNode"
 {
 	Properties
 	{

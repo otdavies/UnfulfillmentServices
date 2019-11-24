@@ -8,28 +8,32 @@ using UnityEditor;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Weighted Blend", "Misc", "Mix all channels through weighted average sum", null, KeyCode.None, true )]
+	[NodeAttributes( "Weighted Blend", "Miscellaneous", "Mix all channels through weighted average sum", null, KeyCode.None, true )]
 	public sealed class WeightedBlendNode : WeightedAvgNode
 	{
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
 			m_inputData = new string[ 6 ];
+			m_previewShaderGUID = "6076cbeaa41ebb14c85ff81b58df7d88";
 		}
 		
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
+			if ( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
+
 			GetInputData( ref dataCollector, ignoreLocalvar );
 
 			string result = string.Empty;
 			string avgSum = string.Empty;
 
-			string localVarName = "weightedBlendVar" + m_uniqueId;
-			dataCollector.AddToLocalVariables( m_uniqueId, m_currentPrecisionType, m_inputPorts[ 0 ].DataType, localVarName, m_inputData[ 0 ] );
+			string localVarName = "weightedBlendVar" + OutputId;
+			dataCollector.AddLocalVariable( UniqueId, CurrentPrecisionType, m_inputPorts[ 0 ].DataType, localVarName, m_inputData[ 0 ] );
 			
 			if ( m_activeCount  < 2 )
 			{
-				return CreateOutputLocalVariable( 0, m_inputData[ 0 ], ref dataCollector );
+				return CreateOutputLocalVariable( 0, m_inputData[ 1 ], ref dataCollector );
 			}
 			else
 			{
@@ -47,7 +51,8 @@ namespace AmplifyShaderEditor
 
 			result = UIUtils.AddBrackets( result ) + "/" + UIUtils.AddBrackets( avgSum );
 			result = UIUtils.AddBrackets( result );
-			return CreateOutputLocalVariable( 0, result, ref dataCollector );
+			RegisterLocalVariable( 0, result, ref dataCollector, "weightedAvg" + OutputId );
+			return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
 		}
 	}
 }

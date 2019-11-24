@@ -9,7 +9,7 @@ Material:
   m_Name: ScreenSpaceDetail
   m_Shader: {fileID: 4800000, guid: 835b21104e8c1ca4f85b9df00fca695c, type: 3}
   m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 1
+  m_LightmapFlags: 5
   m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
@@ -18,7 +18,7 @@ Material:
     - first:
         name: _Albedo
       second:
-        m_Texture: {fileID: 2800000, guid: 10ff51d2d87fb7b46b70b55f8551c146, type: 3}
+        m_Texture: {fileID: 2800000, guid: b297077dae62c1944ba14cad801cddf5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - first:
@@ -87,6 +87,12 @@ Material:
         m_Texture: {fileID: 2800000, guid: 7b2d250cb1ff5984ebe320abfcbe4c1f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - first:
+        name: _texcoord
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - first:
         name: _BumpScale
@@ -138,7 +144,7 @@ Material:
       second: 1
     - first:
         name: __dirty
-      second: 1
+      second: 0
     m_Colors:
     - first:
         name: _Color

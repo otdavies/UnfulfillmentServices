@@ -31,7 +31,7 @@ namespace AmplifyShaderEditor
 				case 4: return ( m_value + ".w" );
 			}
 
-			UIUtils.ShowMessage( "ConstVecShaderVariable generating empty code", MessageSeverity.Warning );
+			UIUtils.ShowMessage( UniqueId, "ConstVecShaderVariable generating empty code", MessageSeverity.Warning );
 			return string.Empty;
 		}
 

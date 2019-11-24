@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ReflectOpNode"
+Shader "Hidden/ReflectOpNode"
 {
 	Properties
 	{

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/Exp2OpNode"
+Shader "Hidden/Exp2OpNode"
 {
 	Properties
 	{

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/FmodOpNode"
+Shader "Hidden/FmodOpNode"
 {
 	Properties
 	{

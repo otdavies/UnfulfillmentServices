@@ -8,7 +8,7 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Texture Array", "Textures", "Texture Array", KeyCode.None, true, 0, typeof( Texture2DArray ) )]
+	[NodeAttributes( "Texture Array", "Textures", "Texture Array fetches a texture from a texture2DArray asset file given a index value", KeyCode.None, true, 0, int.MaxValue, typeof( Texture2DArray ) )]
 	public class TextureArrayNode : PropertyNode
 	{
 		[SerializeField]
@@ -26,7 +26,7 @@ namespace AmplifyShaderEditor
 		[SerializeField]
 		private MipType m_mipMode = MipType.Auto;
 
-		private readonly string[] m_mipOptions = { "Auto", "Mip Level" };
+		private readonly string[] m_mipOptions = { "Auto", "Mip Level", "Derivative" };
 
 		private TextureArrayNode m_referenceSampler = null;
 
@@ -39,83 +39,123 @@ namespace AmplifyShaderEditor
 		[SerializeField]
 		private bool m_autoUnpackNormals = false;
 
+		private InputPort m_texPort;
 		private InputPort m_uvPort;
 		private InputPort m_indexPort;
 		private InputPort m_lodPort;
 		private InputPort m_normalPort;
+		private InputPort m_ddxPort;
+		private InputPort m_ddyPort;
 
 		private OutputPort m_colorPort;
 
 		private const string AutoUnpackNormalsStr = "Normal";
 		private const string NormalScaleStr = "Scale";
 
-		private readonly Color ReferenceHeaderColor = new Color( 2.67f, 1.0f, 0.5f, 1.0f );
-		private bool m_forceSamplerUpdate = false;
+		private string m_labelText = "None (Texture2DArray)";
 
-		private GUIStyle m_titleOverlay;
-		private int m_tittleOverlayIndex = -1;
+		private readonly Color ReferenceHeaderColor = new Color( 2.66f, 1.02f, 0.6f, 1.0f );
 
 		private int m_cachedUvsId = -1;
 		private int m_cachedSamplerId = -1;
+		private int m_texConnectedId = -1;
 		private int m_cachedUnpackId = -1;
 		private int m_cachedLodId = -1;
 
+		private Rect m_iconPos;
+		private bool m_isEditingPicker;
+
 		private bool m_linearTexture;
+		protected bool m_drawPicker;
+
+		private ReferenceState m_state = ReferenceState.Self;
+		private ParentNode m_previewTextProp = null;
 
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
 			AddOutputColorPorts( "RGBA" );
 			m_colorPort = m_outputPorts[ 0 ];
-			AddInputPort( WirePortDataType.FLOAT2, false, "UV" );
-			AddInputPort( WirePortDataType.FLOAT, false, "Index" );
-			AddInputPort( WirePortDataType.FLOAT, false, "Level" );
-			AddInputPort( WirePortDataType.FLOAT, false, NormalScaleStr );
-			m_inputPorts[ 2 ].Visible = false;
-			m_uvPort = m_inputPorts[ 0 ];
-			m_indexPort = m_inputPorts[ 1 ];
-			m_lodPort = m_inputPorts[ 2 ];
-			m_normalPort = m_inputPorts[ 3 ];
+			AddInputPort( WirePortDataType.SAMPLER2D, false, "Tex", -1, MasterNodePortCategory.Fragment, 6 );
+			AddInputPort( WirePortDataType.FLOAT2, false, "UV", -1, MasterNodePortCategory.Fragment, 0 );
+			AddInputPort( WirePortDataType.FLOAT, false, "Index", -1, MasterNodePortCategory.Fragment, 1 );
+			AddInputPort( WirePortDataType.FLOAT, false, "Level", -1, MasterNodePortCategory.Fragment, 2 );
+			AddInputPort( WirePortDataType.FLOAT, false, NormalScaleStr, -1, MasterNodePortCategory.Fragment, 3 );
+			AddInputPort( WirePortDataType.FLOAT2, false, "DDX", -1, MasterNodePortCategory.Fragment, 4 );
+			AddInputPort( WirePortDataType.FLOAT2, false, "DDY", -1, MasterNodePortCategory.Fragment, 5 );
+			m_inputPorts[ 2 ].AutoDrawInternalData = true;
+
+			m_texPort = m_inputPorts[ 0 ];
+			m_uvPort = m_inputPorts[ 1 ];
+			m_indexPort = m_inputPorts[ 2 ];
+			m_lodPort = m_inputPorts[ 3 ];
+
+			m_lodPort.Visible = false;
+			m_normalPort = m_inputPorts[ 4 ];
 			m_normalPort.Visible = m_autoUnpackNormals;
 			m_normalPort.FloatInternalData = 1.0f;
-			m_insideSize.Set( 110, 110 + 5 );
+			m_ddxPort = m_inputPorts[ 5 ];
+			m_ddxPort.Visible = false;
+			m_ddyPort = m_inputPorts[ 6 ];
+			m_ddyPort.Visible = false;
+			m_insideSize.Set( 128, 128 + 5 );
 			m_drawPrecisionUI = false;
 			m_currentParameterType = PropertyType.Property;
+
+			m_availableAttribs.Add( new PropertyAttributes( "No Scale Offset", "[NoScaleOffset]" ) );
+
 			m_freeType = false;
 			m_showPreview = true;
 			m_drawPreviewExpander = false;
 			m_drawPreview = false;
+			m_drawPicker = true;
 			m_customPrefix = "Texture Array ";
 			m_selectedLocation = PreviewLocation.TopCenter;
-			//m_useCustomPrefix = true;
-			m_precisionString = UIUtils.FinalPrecisionWirePortToCgType( m_currentPrecisionType, m_outputPorts[ 0 ].DataType );
 			m_previewShaderGUID = "2e6d093df2d289f47b827b36efb31a81";
+			m_showAutoRegisterUI = false;
 		}
 
 		public override void SetPreviewInputs()
 		{
 			base.SetPreviewInputs();
 
-			if ( m_cachedUvsId == -1 )
+			if( m_cachedUvsId == -1 )
 				m_cachedUvsId = Shader.PropertyToID( "_CustomUVs" );
 
-			if ( m_cachedSamplerId == -1 )
+			if( m_cachedSamplerId == -1 )
 				m_cachedSamplerId = Shader.PropertyToID( "_Sampler" );
 
-			if ( m_cachedUnpackId == -1 )
+			if( m_texConnectedId == -1 )
+				m_texConnectedId = Shader.PropertyToID( "_TexConnected" );
+
+			if( m_cachedUnpackId == -1 )
 				m_cachedUnpackId = Shader.PropertyToID( "_Unpack" );
 
-			if ( m_cachedLodId == -1 )
+			if( m_cachedLodId == -1 )
 				m_cachedLodId = Shader.PropertyToID( "_LodType" );
 
 			PreviewMaterial.SetFloat( m_cachedLodId, ( m_mipMode == MipType.MipLevel ? 1 : 0 ) );
 			PreviewMaterial.SetFloat( m_cachedUnpackId, m_autoUnpackNormals ? 1 : 0 );
-			if ( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
+			if( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
 			{
-				PreviewMaterial.SetTexture( m_cachedSamplerId, m_referenceSampler.TextureArray );
+				if( (ParentNode)m_referenceSampler != m_referenceSampler.PreviewTextProp )
+				{
+					PreviewMaterial.SetInt( m_texConnectedId, 1 );
+					PreviewMaterial.SetTexture( "_G", m_referenceSampler.PreviewTextProp.PreviewTexture );
+				}
+				else
+				{
+					PreviewMaterial.SetInt( m_texConnectedId, 0 );
+					PreviewMaterial.SetTexture( m_cachedSamplerId, m_referenceSampler.TextureArray );
+				}
+			}
+			else if( m_texPort.IsConnected )
+			{
+				PreviewMaterial.SetInt( m_texConnectedId, 1 );
 			}
 			else
 			{
+				PreviewMaterial.SetInt( m_texConnectedId, 0 );
 				PreviewMaterial.SetTexture( m_cachedSamplerId, TextureArray );
 			}
 			PreviewMaterial.SetFloat( m_cachedUvsId, ( m_uvPort.IsConnected ? 1 : 0 ) );
@@ -124,10 +164,22 @@ namespace AmplifyShaderEditor
 		protected override void OnUniqueIDAssigned()
 		{
 			base.OnUniqueIDAssigned();
-			if ( m_referenceType == TexReferenceType.Object )
+			if( m_referenceType == TexReferenceType.Object )
 			{
 				UIUtils.RegisterTextureArrayNode( this );
 				UIUtils.RegisterPropertyNode( this );
+			}
+
+			if( UniqueId > -1 )
+				ContainerGraph.TextureArrayNodes.OnReorderEventComplete += OnReorderEventComplete;
+
+		}
+
+		private void OnReorderEventComplete()
+		{
+			if( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
+			{
+				m_referenceArrayId = ContainerGraph.TextureArrayNodes.GetNodeRegisterIdx( m_referenceSampler.UniqueId );
 			}
 		}
 
@@ -135,40 +187,57 @@ namespace AmplifyShaderEditor
 		{
 			m_uvSet = EditorGUILayoutIntPopup( Constants.AvailableUVSetsLabel, m_uvSet, Constants.AvailableUVSetsStr, Constants.AvailableUVSets );
 
-			MipType newMipMode = ( MipType ) EditorGUILayoutPopup( "Mip Mode", ( int ) m_mipMode, m_mipOptions );
-			if ( newMipMode != m_mipMode )
+			MipType newMipMode = (MipType)EditorGUILayoutPopup( "Mip Mode", (int)m_mipMode, m_mipOptions );
+			if( newMipMode != m_mipMode )
 			{
 				m_mipMode = newMipMode;
 			}
 
-			if ( m_mipMode == MipType.MipLevel )
+			switch( m_mipMode )
 			{
-				m_lodPort.Visible = true;
-			}
-			else
-			{
+				case MipType.Auto:
 				m_lodPort.Visible = false;
+				m_ddxPort.Visible = false;
+				m_ddyPort.Visible = false;
+				break;
+				case MipType.MipLevel:
+				m_lodPort.Visible = true;
+				m_ddxPort.Visible = false;
+				m_ddyPort.Visible = false;
+				break;
+				case MipType.MipBias:
+				case MipType.Derivative:
+				m_ddxPort.Visible = true;
+				m_ddyPort.Visible = true;
+				m_lodPort.Visible = false;
+				break;
 			}
 
-			if ( !m_lodPort.IsConnected && m_lodPort.Visible )
+			if( m_ddxPort.Visible )
+			{
+				EditorGUILayout.HelpBox( "Warning: Derivative Mip Mode only works on some platforms (D3D11 XBOXONE GLES3 GLCORE)", MessageType.Warning );
+			}
+
+			if( !m_lodPort.IsConnected && m_lodPort.Visible )
 			{
 				m_lodPort.FloatInternalData = EditorGUILayoutFloatField( "Mip Level", m_lodPort.FloatInternalData );
 			}
 
-			if ( !m_indexPort.IsConnected )
+			if( !m_indexPort.IsConnected )
 			{
 				m_indexPort.FloatInternalData = EditorGUILayoutFloatField( "Index", m_indexPort.FloatInternalData );
 			}
+
+
 		}
 
 		public override void DrawMainPropertyBlock()
 		{
 			EditorGUI.BeginChangeCheck();
-			//m_referenceType = ( TexReferenceType ) EditorGUILayout.EnumPopup( Constants.ReferenceTypeStr, m_referenceType );
-			m_referenceType = ( TexReferenceType ) EditorGUILayoutPopup( Constants.ReferenceTypeStr, ( int ) m_referenceType, Constants.ReferenceArrayLabels );
-			if ( EditorGUI.EndChangeCheck() )
+			m_referenceType = (TexReferenceType)EditorGUILayoutPopup( Constants.ReferenceTypeStr, (int)m_referenceType, Constants.ReferenceArrayLabels );
+			if( EditorGUI.EndChangeCheck() )
 			{
-				if ( m_referenceType == TexReferenceType.Object )
+				if( m_referenceType == TexReferenceType.Object )
 				{
 					UIUtils.RegisterTextureArrayNode( this );
 					UIUtils.RegisterPropertyNode( this );
@@ -187,11 +256,11 @@ namespace AmplifyShaderEditor
 				UpdateHeaderColor();
 			}
 
-			if ( m_referenceType == TexReferenceType.Object )
+			if( m_referenceType == TexReferenceType.Object )
 			{
 				EditorGUI.BeginChangeCheck();
 				base.DrawMainPropertyBlock();
-				if ( EditorGUI.EndChangeCheck() )
+				if( EditorGUI.EndChangeCheck() )
 				{
 					OnPropertyNameChanged();
 				}
@@ -200,7 +269,7 @@ namespace AmplifyShaderEditor
 			{
 				string[] arr = UIUtils.TextureArrayNodeArr();
 				bool guiEnabledBuffer = GUI.enabled;
-				if ( arr != null && arr.Length > 0 )
+				if( arr != null && arr.Length > 0 )
 				{
 					GUI.enabled = true;
 				}
@@ -212,6 +281,7 @@ namespace AmplifyShaderEditor
 
 				m_referenceArrayId = EditorGUILayoutPopup( Constants.AvailableReferenceStr, m_referenceArrayId, arr );
 				GUI.enabled = guiEnabledBuffer;
+
 				ShowDefaults();
 
 				DrawSamplerOptions();
@@ -221,7 +291,7 @@ namespace AmplifyShaderEditor
 		public override void OnPropertyNameChanged()
 		{
 			base.OnPropertyNameChanged();
-			UIUtils.UpdateTextureArrayDataNode( m_uniqueId, PropertyInspectorName );
+			UIUtils.UpdateTextureArrayDataNode( UniqueId, PropertyInspectorName );
 		}
 
 		public override void DrawSubProperties()
@@ -232,7 +302,7 @@ namespace AmplifyShaderEditor
 
 			EditorGUI.BeginChangeCheck();
 			m_defaultTextureArray = EditorGUILayoutObjectField( Constants.DefaultValueLabel, m_defaultTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
-			if ( EditorGUI.EndChangeCheck() )
+			if( EditorGUI.EndChangeCheck() )
 			{
 				CheckTextureImporter( true );
 				SetAdditonalTitleText( string.Format( Constants.PropertyValueLabel, GetPropertyValStr() ) );
@@ -247,7 +317,7 @@ namespace AmplifyShaderEditor
 
 			EditorGUI.BeginChangeCheck();
 			m_materialTextureArray = EditorGUILayoutObjectField( Constants.MaterialValueLabel, m_materialTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
-			if ( EditorGUI.EndChangeCheck() )
+			if( EditorGUI.EndChangeCheck() )
 			{
 				CheckTextureImporter( true );
 				SetAdditonalTitleText( string.Format( Constants.PropertyValueLabel, GetPropertyValStr() ) );
@@ -259,9 +329,9 @@ namespace AmplifyShaderEditor
 		{
 			EditorGUI.BeginChangeCheck();
 			bool autoUnpackNormals = EditorGUILayoutToggle( "Normal Map", m_autoUnpackNormals );
-			if ( EditorGUI.EndChangeCheck() )
+			if( EditorGUI.EndChangeCheck() )
 			{
-				if ( m_autoUnpackNormals != autoUnpackNormals )
+				if( m_autoUnpackNormals != autoUnpackNormals )
 				{
 					AutoUnpackNormals = autoUnpackNormals;
 
@@ -270,7 +340,7 @@ namespace AmplifyShaderEditor
 				}
 			}
 
-			if ( m_autoUnpackNormals && !m_normalPort.IsConnected )
+			if( m_autoUnpackNormals && !m_normalPort.IsConnected )
 			{
 				m_normalPort.FloatInternalData = EditorGUILayoutFloatField( NormalScaleStr, m_normalPort.FloatInternalData );
 			}
@@ -280,16 +350,6 @@ namespace AmplifyShaderEditor
 		{
 			m_normalPort.Visible = AutoUnpackNormals;
 
-			//switch ( m_mipMode )
-			//{
-			//	case MipType.Auto:
-			//	m_lodPort.Visible = false;
-			//	break;
-			//	case MipType.MipLevel:
-			//	m_lodPort.Visible = true;
-			//	break;
-			//}
-
 			m_sizeIsDirty = true;
 		}
 
@@ -297,7 +357,7 @@ namespace AmplifyShaderEditor
 		{
 			m_outputPorts[ m_colorPort.PortId + 4 ].Visible = !AutoUnpackNormals;
 
-			if ( !AutoUnpackNormals )
+			if( !AutoUnpackNormals )
 			{
 				m_colorPort.ChangeProperties( "RGBA", WirePortDataType.FLOAT4, false );
 				m_outputPorts[ m_colorPort.PortId + 1 ].ChangeProperties( "R", WirePortDataType.FLOAT, false );
@@ -323,12 +383,16 @@ namespace AmplifyShaderEditor
 			Texture2DArray texture = m_materialMode ? m_materialTextureArray : m_defaultTextureArray;
 
 			UnityEngine.Object obj = AssetDatabase.LoadAssetAtPath( AssetDatabase.GetAssetPath( texture ), typeof( UnityEngine.Object ) );
-			SerializedObject serializedObject = new UnityEditor.SerializedObject( obj );
 
-			if ( serializedObject != null )
+			if( obj != null )
 			{
-				SerializedProperty colorSpace = serializedObject.FindProperty( "m_ColorSpace" );
-				m_linearTexture = ( colorSpace.intValue == 0 );
+				SerializedObject serializedObject = new UnityEditor.SerializedObject( obj );
+
+				if( serializedObject != null )
+				{
+					SerializedProperty colorSpace = serializedObject.FindProperty( "m_ColorSpace" );
+					m_linearTexture = ( colorSpace.intValue == 0 );
+				}
 			}
 		}
 
@@ -337,193 +401,210 @@ namespace AmplifyShaderEditor
 			m_headerColorModifier = ( m_referenceType == TexReferenceType.Object ) ? Color.white : ReferenceHeaderColor;
 		}
 
-		public override void Draw( DrawInfo drawInfo )
+		public override void DrawGUIControls( DrawInfo drawInfo )
 		{
-			EditorGUI.BeginChangeCheck();
-			base.Draw( drawInfo );
-			if ( m_forceSamplerUpdate )
+			base.DrawGUIControls( drawInfo );
+
+			if( !( drawInfo.CurrentEventType == EventType.MouseDown || drawInfo.CurrentEventType == EventType.MouseUp || drawInfo.CurrentEventType == EventType.ExecuteCommand || drawInfo.CurrentEventType == EventType.DragPerform ) )
+				return;
+
+			bool insideBox = m_previewRect.Contains( drawInfo.MousePosition );
+
+			if( insideBox )
 			{
-				m_forceSamplerUpdate = false;
-				m_referenceSampler = UIUtils.GetNode( m_referenceNodeId ) as TextureArrayNode;
-				m_referenceArrayId = UIUtils.GetTextureArrayNodeRegisterId( m_referenceNodeId );
+				m_isEditingPicker = true;
 			}
-			if ( EditorGUI.EndChangeCheck() )
+			else if( m_isEditingPicker && !insideBox && drawInfo.CurrentEventType != EventType.ExecuteCommand )
 			{
-				OnPropertyNameChanged();
+				GUI.FocusControl( null );
+				m_isEditingPicker = false;
+			}
+
+			if( m_state != ReferenceState.Self && drawInfo.CurrentEventType == EventType.MouseDown && m_previewRect.Contains( drawInfo.MousePosition ) )
+			{
+				UIUtils.FocusOnNode( m_previewTextProp, 1, true );
+				Event.current.Use();
+			}
+		}
+
+		public override void OnNodeLayout( DrawInfo drawInfo )
+		{
+			base.OnNodeLayout( drawInfo );
+
+			if( m_drawPreview )
+			{
+				m_iconPos = m_globalPosition;
+				m_iconPos.width = 19 * drawInfo.InvertedZoom;
+				m_iconPos.height = 19 * drawInfo.InvertedZoom;
+
+				m_iconPos.y += 10 * drawInfo.InvertedZoom;
+				m_iconPos.x += m_globalPosition.width - m_iconPos.width - 5 * drawInfo.InvertedZoom;
 			}
 
 			bool instanced = CheckReference();
-
-			if ( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
+			if( instanced )
 			{
-				SetTitleText( m_referenceSampler.PropertyInspectorName + Constants.InstancePostfixStr );
-				SetAdditonalTitleText( m_referenceSampler.AdditonalTitleContent.text );
+				m_state = ReferenceState.Instance;
+				m_previewTextProp = m_referenceSampler;
+			}
+			else if( m_texPort.IsConnected )
+			{
+				m_state = ReferenceState.Connected;
+				m_previewTextProp = m_texPort.GetOutputNode( 0 ) as ParentNode;
 			}
 			else
 			{
-				SetTitleText( PropertyInspectorName );
-				SetAdditonalTitleText( AdditonalTitleContent.text );
+				m_state = ReferenceState.Self;
+				m_previewTextProp = this;
 			}
 
-			if ( m_tittleOverlayIndex == -1 )
-				m_tittleOverlayIndex = Array.IndexOf<GUIStyle>( GUI.skin.customStyles, GUI.skin.GetStyle( "ObjectFieldThumbOverlay" ) );
+			if( m_previewTextProp == null )
+				m_previewTextProp = this;
 
-			m_titleOverlay = GUI.skin.customStyles[ m_tittleOverlayIndex ];
+		}
 
-			int fontSizeUpper = m_titleOverlay.fontSize;
+		public override void Draw( DrawInfo drawInfo )
+		{
+			base.Draw( drawInfo );
 
-			Rect newRect = m_globalPosition;
-			newRect.width = ( 128 ) * drawInfo.InvertedZoom;
-			newRect.height = ( 128 ) * drawInfo.InvertedZoom;
-			newRect.x = m_previewRect.x;
-			newRect.y = m_previewRect.y;
-
-			m_titleOverlay.fontSize = ( int ) ( 9 * drawInfo.InvertedZoom );
-
-			Rect smallButton = newRect;
-			smallButton.height = 14 * drawInfo.InvertedZoom;
-			smallButton.y = newRect.yMax - smallButton.height - 2;
-			smallButton.width = 40 * drawInfo.InvertedZoom;
-			smallButton.x = newRect.xMax - smallButton.width - 2;
-
-			m_showPreview = true;
-
-			if ( instanced )
+			if( m_isEditingPicker && m_drawPicker )
 			{
-				DrawPreview( drawInfo, m_previewRect );
+				Rect hitRect = m_previewRect;
+				hitRect.height = 14 * drawInfo.InvertedZoom;
+				hitRect.y = m_previewRect.yMax - hitRect.height;
+				hitRect.width = 4 * 14 * drawInfo.InvertedZoom;
 
-				if ( GUI.Button( newRect, string.Empty, GUIStyle.none ) )
+				bool restoreMouse = false;
+				if( Event.current.type == EventType.MouseDown && hitRect.Contains( drawInfo.MousePosition ) )
 				{
-					UIUtils.FocusOnNode( m_referenceSampler, 1, true );
+					restoreMouse = true;
+					Event.current.type = EventType.Ignore;
 				}
-			}
-			else
-			{
+
 				EditorGUI.BeginChangeCheck();
-
-				if ( m_materialMode )
-				{
-					if ( m_materialTextureArray == null )
-					{
-						GUI.Box( newRect, "", UIUtils.ObjectFieldThumb );
-
-						Color temp = GUI.color;
-						GUI.color = Color.clear;
-						m_materialTextureArray = EditorGUIObjectField( newRect, m_materialTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
-						GUI.color = temp;
-
-						GUI.Button( smallButton, "Select", UIUtils.GetCustomStyle( CustomStyle.SamplerButton ) );
-						if ( UIUtils.CurrentWindow.CurrentGraph.LodLevel <= ParentGraph.NodeLOD.LOD2 )
-							GUI.Label( newRect, "None (Texture2DArray)", UIUtils.ObjectFieldThumbOverlay );
-					}
-					else
-					{
-						Rect butRect = m_previewRect;
-						butRect.y -= 1;
-						butRect.x += 1;
-
-						Rect hitRect = butRect;
-						hitRect.height = 14 * drawInfo.InvertedZoom;
-						hitRect.y = butRect.yMax - hitRect.height;
-						hitRect.width = 4 * 14 * drawInfo.InvertedZoom;
-
-						Color temp = GUI.color;
-						GUI.color = Color.clear;
-						bool restoreMouse = false;
-						if ( Event.current.type == EventType.MouseDown && hitRect.Contains( Event.current.mousePosition ) )
-						{
-							restoreMouse = true;
-							Event.current.type = EventType.Ignore;
-						}
-
-						m_materialTextureArray = EditorGUIObjectField( newRect, m_materialTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
-						if ( restoreMouse )
-						{
-							Event.current.type = EventType.MouseDown;
-						}
-
-						GUI.color = temp;
-
-						DrawPreview( drawInfo, m_previewRect );
-						DrawPreviewMaskButtons( drawInfo, butRect );
-
-						GUI.Box( newRect, string.Empty, UIUtils.GetCustomStyle( CustomStyle.SamplerFrame ) );
-						GUI.Box( smallButton, "Select", UIUtils.GetCustomStyle( CustomStyle.SamplerButton ) );
-					}
-				}
+				m_colorBuffer = GUI.color;
+				GUI.color = Color.clear;
+				if( m_materialMode )
+					m_materialTextureArray = EditorGUIObjectField( m_previewRect, m_materialTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
 				else
+					m_defaultTextureArray = EditorGUIObjectField( m_previewRect, m_defaultTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
+				GUI.color = m_colorBuffer;
+
+				if( EditorGUI.EndChangeCheck() )
 				{
-					if ( m_defaultTextureArray == null )
-					{
-						GUI.Box( newRect, "", UIUtils.ObjectFieldThumb );
-
-						Color temp = GUI.color;
-						GUI.color = Color.clear;
-						m_defaultTextureArray = EditorGUIObjectField( newRect, m_defaultTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
-						GUI.color = temp;
-
-						GUI.Button( smallButton, "Select", UIUtils.GetCustomStyle( CustomStyle.SamplerButton ) );
-						if ( UIUtils.CurrentWindow.CurrentGraph.LodLevel <= ParentGraph.NodeLOD.LOD2 )
-							GUI.Label( newRect, "None (Texture2DArray)", UIUtils.ObjectFieldThumbOverlay );
-					}
-					else
-					{
-						Rect butRect = m_previewRect;
-						butRect.y -= 1;
-						butRect.x += 1;
-
-						Rect hitRect = butRect;
-						hitRect.height = 14 * drawInfo.InvertedZoom;
-						hitRect.y = butRect.yMax - hitRect.height;
-						hitRect.width = 4 * 14 * drawInfo.InvertedZoom;
-
-						Color temp = GUI.color;
-						GUI.color = Color.clear;
-						bool restoreMouse = false;
-						if ( Event.current.type == EventType.MouseDown && hitRect.Contains( Event.current.mousePosition ) )
-						{
-							restoreMouse = true;
-							Event.current.type = EventType.Ignore;
-						}
-
-						m_defaultTextureArray = EditorGUIObjectField( newRect, m_defaultTextureArray, typeof( Texture2DArray ), false ) as Texture2DArray;
-						if ( restoreMouse )
-						{
-							Event.current.type = EventType.MouseDown;
-						}
-
-						GUI.color = temp;
-
-						DrawPreview( drawInfo, m_previewRect );
-						DrawPreviewMaskButtons( drawInfo, butRect );
-
-						GUI.Box( newRect, string.Empty, UIUtils.GetCustomStyle( CustomStyle.SamplerFrame ) );
-						GUI.Box( smallButton, "Select", UIUtils.GetCustomStyle( CustomStyle.SamplerButton ) );
-					}
-				}
-
-				//if ( m_materialMode )
-				//	m_materialTextureArray = ( Texture2DArray ) EditorGUI.ObjectField( newRect, m_materialTextureArray, typeof( Texture2DArray ), false );
-				//else
-				//	m_defaultTextureArray = ( Texture2DArray ) EditorGUI.ObjectField( newRect, m_defaultTextureArray, typeof( Texture2DArray ), false );
-
-				if ( EditorGUI.EndChangeCheck() )
-				{
+					PreviewIsDirty = true;
 					CheckTextureImporter( true );
+					SetTitleText( PropertyInspectorName );
 					SetAdditonalTitleText( string.Format( Constants.PropertyValueLabel, GetPropertyValStr() ) );
+					ConfigureInputPorts();
+					ConfigureOutputPorts();
 					BeginDelayedDirtyProperty();
 					m_requireMaterialUpdate = true;
 				}
 
-				m_titleOverlay.fontSize = fontSizeUpper;
+				if( restoreMouse )
+				{
+					Event.current.type = EventType.MouseDown;
+				}
+
+				if( ( drawInfo.CurrentEventType == EventType.MouseDown || drawInfo.CurrentEventType == EventType.MouseUp ) )
+					DrawPreviewMaskButtonsLayout( drawInfo, m_previewRect );
 			}
 
+			if( drawInfo.CurrentEventType != EventType.Repaint )
+				return;
+
+			switch( m_state )
+			{
+				default:
+				case ReferenceState.Self:
+				if( drawInfo.CurrentEventType == EventType.Repaint )
+				{
+					m_drawPreview = false;
+					m_drawPicker = true;
+
+					DrawTexturePicker( drawInfo );
+				}
+				break;
+				case ReferenceState.Connected:
+				if( drawInfo.CurrentEventType == EventType.Repaint )
+				{
+					m_drawPreview = true;
+					m_drawPicker = false;
+
+					if( m_previewTextProp != null )
+					{
+						SetTitleTextOnCallback( m_previewTextProp.TitleContent.text, ( instance, newTitle ) => instance.TitleContent.text = newTitle + " (Input)" );
+						SetAdditonalTitleText( m_previewTextProp.AdditonalTitleContent.text );
+					}
+
+					// Draw chain lock
+					GUI.Label( m_iconPos, string.Empty, UIUtils.GetCustomStyle( CustomStyle.SamplerTextureIcon ) );
+
+					// Draw frame around preview
+					GUI.Label( m_previewRect, string.Empty, UIUtils.GetCustomStyle( CustomStyle.SamplerFrame ) );
+				}
+				break;
+				case ReferenceState.Instance:
+				{
+					m_drawPreview = true;
+					m_drawPicker = false;
+
+					if( m_referenceSampler != null )
+					{
+						SetTitleTextOnCallback( m_referenceSampler.PreviewTextProp.TitleContent.text, ( instance, newTitle ) => instance.TitleContent.text = newTitle + Constants.InstancePostfixStr );
+						SetAdditonalTitleText( m_referenceSampler.PreviewTextProp.AdditonalTitleContent.text );
+					}
+
+					// Draw chain lock
+					GUI.Label( m_iconPos, string.Empty, UIUtils.GetCustomStyle( CustomStyle.SamplerTextureIcon ) );
+
+					// Draw frame around preview
+					GUI.Label( m_previewRect, string.Empty, UIUtils.GetCustomStyle( CustomStyle.SamplerFrame ) );
+				}
+				break;
+			}
+		}
+
+		protected void DrawTexturePicker( DrawInfo drawInfo )
+		{
+			Rect newRect = m_previewRect;
+			Texture2DArray currentValue = m_materialMode ? m_materialTextureArray : m_defaultTextureArray;
+
+			if( currentValue == null )
+				GUI.Label( newRect, string.Empty, UIUtils.ObjectFieldThumb );
+			else
+				DrawPreview( drawInfo, m_previewRect );
+
+			if( ContainerGraph.LodLevel <= ParentGraph.NodeLOD.LOD2 )
+			{
+				Rect butRect = m_previewRect;
+				butRect.y -= 1;
+				butRect.x += 1;
+
+				Rect smallButton = newRect;
+				smallButton.height = 14 * drawInfo.InvertedZoom;
+				smallButton.y = newRect.yMax - smallButton.height - 2;
+				smallButton.width = 40 * drawInfo.InvertedZoom;
+				smallButton.x = newRect.xMax - smallButton.width - 2;
+				if( currentValue == null )
+				{
+					GUI.Label( newRect, m_labelText, UIUtils.ObjectFieldThumbOverlay );
+				}
+				else
+				{
+					DrawPreviewMaskButtonsRepaint( drawInfo, butRect );
+				}
+				GUI.Label( smallButton, "Select", UIUtils.GetCustomStyle( CustomStyle.SamplerButton ) );
+			}
+
+			GUI.Label( newRect, string.Empty, UIUtils.GetCustomStyle( CustomStyle.SamplerFrame ) );
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
-			if ( m_outputPorts[ 0 ].IsLocalValue )
-				return GetOutputVectorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue );
+			if( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return GetOutputVectorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory ) );
 
 
 			OnPropertyNameChanged();
@@ -533,102 +614,169 @@ namespace AmplifyShaderEditor
 			bool isVertex = ( dataCollector.PortCategory == MasterNodePortCategory.Vertex || dataCollector.PortCategory == MasterNodePortCategory.Tessellation );
 
 			bool instanced = false;
-			if ( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
+			if( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
 				instanced = true;
 
-			if ( !instanced )
+			if( instanced )
+			{
+				if( !m_referenceSampler.TexPort.IsConnected )
+					base.GenerateShaderForOutput( outputId, ref dataCollector, ignoreLocalvar );
+			}
+			else if( !m_texPort.IsConnected )
 				base.GenerateShaderForOutput( outputId, ref dataCollector, ignoreLocalvar );
 
 			string level = string.Empty;
-			if ( m_lodPort.Visible )
+			if( m_lodPort.Visible )
 			{
 				level = m_lodPort.GeneratePortInstructions( ref dataCollector );
 			}
 
-			if ( isVertex && !m_lodPort.Visible )
+			if( isVertex && !m_lodPort.Visible )
 				level = "0";
 
+			string propertyName = string.Empty;
+			if( instanced )
+			{
+				if( m_referenceSampler.TexPort.IsConnected )
+					propertyName = m_referenceSampler.TexPort.GeneratePortInstructions( ref dataCollector );
+				else
+					propertyName = m_referenceSampler.PropertyName;
+			}
+			else if( m_texPort.IsConnected )
+				propertyName = m_texPort.GeneratePortInstructions( ref dataCollector );
+			else
+				propertyName = PropertyName;
 
 			string uvs = string.Empty;
-			if ( m_uvPort.IsConnected )
+			if( m_uvPort.IsConnected )
 			{
 				uvs = m_uvPort.GeneratePortInstructions( ref dataCollector );
 			}
 			else
 			{
-				if ( isVertex )
-					uvs = TexCoordVertexDataNode.GenerateVertexUVs( ref dataCollector, m_uniqueId, m_uvSet, ( instanced ? m_referenceSampler.PropertyName : PropertyName ) );
+				if( dataCollector.IsTemplate )
+				{
+					uvs = dataCollector.TemplateDataCollectorInstance.GetTextureCoord( m_uvSet, ( instanced ? m_referenceSampler.PropertyName : PropertyName ), UniqueId, CurrentPrecisionType );
+				}
 				else
-					uvs = TexCoordVertexDataNode.GenerateFragUVs( ref dataCollector, m_uniqueId, m_uvSet, ( instanced ? m_referenceSampler.PropertyName : PropertyName ) );
+				{
+					if( isVertex )
+						uvs = TexCoordVertexDataNode.GenerateVertexUVs( ref dataCollector, UniqueId, m_uvSet, propertyName );
+					else
+						uvs = TexCoordVertexDataNode.GenerateFragUVs( ref dataCollector, UniqueId, m_uvSet, propertyName );
+				}
 			}
 			string index = m_indexPort.GeneratePortInstructions( ref dataCollector );
 
-			int connectionNumber = 0;
-			for ( int i = 0; i < m_outputPorts.Count; i++ )
-			{
-				connectionNumber += m_outputPorts[ i ].ConnectionCount;
-			}
-
-			string propertyName = string.Empty;
-			if ( !instanced )
-				propertyName = PropertyName;
-			else
-				propertyName = m_referenceSampler.PropertyName;
-
-
 			string m_normalMapUnpackMode = "";
-			if ( m_autoUnpackNormals )
+			if( m_autoUnpackNormals )
 			{
 				bool isScaledNormal = false;
-				if ( m_normalPort.IsConnected )
+				if( m_normalPort.IsConnected )
 				{
 					isScaledNormal = true;
 				}
 				else
 				{
-					if ( m_normalPort.FloatInternalData != 1 )
+					if( m_normalPort.FloatInternalData != 1 )
 					{
 						isScaledNormal = true;
 					}
 				}
-				if ( isScaledNormal )
+
+				string scaleValue = isScaledNormal ? m_normalPort.GeneratePortInstructions( ref dataCollector ) : "1.0";
+				m_normalMapUnpackMode = TemplateHelperFunctions.CreateUnpackNormalStr( dataCollector, isScaledNormal, scaleValue );
+				if( isScaledNormal && ( !dataCollector.IsTemplate || !dataCollector.IsSRP ) )
 				{
-					string scaleValue = m_normalPort.GeneratePortInstructions( ref dataCollector );
-					dataCollector.AddToIncludes( m_uniqueId, Constants.UnityStandardUtilsLibFuncs );
-					m_normalMapUnpackMode = "UnpackScaleNormal( {0} ," + scaleValue + " )";
+					dataCollector.AddToIncludes( UniqueId, Constants.UnityStandardUtilsLibFuncs );
+				}
+
+			}
+
+			string result = string.Empty;
+
+			if( dataCollector.IsTemplate && dataCollector.IsSRP )
+			{
+				//CAREFUL mipbias here means derivative (this needs index changes)
+				//TODO: unity now supports bias as well
+				if( m_mipMode == MipType.MipBias )
+				{
+					dataCollector.UsingArrayDerivatives = true;
+					result = propertyName + ".SampleGrad(sampler" + propertyName + ", float3(" + uvs + ", " + index + "), " + m_ddxPort.GeneratePortInstructions( ref dataCollector ) + ", " + m_ddyPort.GeneratePortInstructions( ref dataCollector ) + ");";
+				}
+				else if( m_lodPort.Visible || isVertex )
+				{
+					result = "SAMPLE_TEXTURE2D_ARRAY_LOD(" + propertyName + ", sampler" + propertyName + ", " + uvs + ", " + index + ", " + level + " )";
 				}
 				else
 				{
-					m_normalMapUnpackMode = "UnpackNormal( {0} )";
+					result = "SAMPLE_TEXTURE2D_ARRAY(" + propertyName + ", sampler" + propertyName + ", " + uvs + ", " + index + " )";
+				}
+			}
+			else
+			{
+				//CAREFUL mipbias here means derivative (this needs index changes)
+				if( m_mipMode == MipType.MipBias )
+				{
+					dataCollector.UsingArrayDerivatives = true;
+					result = "ASE_SAMPLE_TEX2DARRAY_GRAD(" + propertyName + ", float3(" + uvs + ", " + index + "), " + m_ddxPort.GeneratePortInstructions( ref dataCollector ) + ", " + m_ddyPort.GeneratePortInstructions( ref dataCollector ) + " )";
+				}
+				else if( m_lodPort.Visible || isVertex )
+				{
+					result = "UNITY_SAMPLE_TEX2DARRAY_LOD(" + propertyName + ", float3(" + uvs + ", " + index + "), " + level + " )";
+				}
+				else
+				{
+					result = "UNITY_SAMPLE_TEX2DARRAY" + ( m_lodPort.Visible || isVertex ? "_LOD" : "" ) + "(" + propertyName + ", float3(" + uvs + ", " + index + ") " + ( m_lodPort.Visible || isVertex ? ", " + level : "" ) + " )";
 				}
 			}
 
-			string result = "UNITY_SAMPLE_TEX2DARRAY" + ( m_lodPort.Visible || isVertex ? "_LOD" : "" ) + "(" + propertyName + ", float3(" + uvs + ", " + index + ") " + ( m_lodPort.Visible || isVertex ? ", " + level : "" ) + " )";
-			if ( m_autoUnpackNormals )
+			if( m_autoUnpackNormals )
 				result = string.Format( m_normalMapUnpackMode, result );
 
-			//if ( connectionNumber > 1 )
-			//{
-			RegisterLocalVariable( 0, result, ref dataCollector, "texArray" + m_uniqueId );
-			//dataCollector.AddToLocalVariables( m_uniqueId, "float" + ( m_autoUnpackNormals ? "3" : "4" ) + " texArray" + m_uniqueId + " = " + result + ";" );
-			return GetOutputVectorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue );
-			//}
-			//else
-			//{
+			RegisterLocalVariable( 0, result, ref dataCollector, "texArray" + OutputId );
+			return GetOutputVectorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory ) );
+		}
 
-			//	return GetOutputVectorItem( 0, outputId, result );
-			//}
+		public override string PropertyName
+		{
+			get
+			{
+				if( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
+					return m_referenceSampler.PropertyName;
+				else
+					return base.PropertyName;
+			}
+		}
+
+		public override string PropertyInspectorName
+		{
+			get
+			{
+				if( m_referenceType == TexReferenceType.Instance && m_referenceSampler != null )
+					return m_referenceSampler.PropertyInspectorName;
+				else
+					return base.PropertyInspectorName;
+			}
 		}
 
 		public override string GetPropertyValue()
 		{
-			return PropertyAttributes + m_propertyName + "(\"" + m_propertyInspectorName + "\", 2DArray ) = \"\" {}";
+			return PropertyAttributes + PropertyName + "(\"" + PropertyInspectorName + "\", 2DArray ) = \"\" {}";
 		}
 
-		public override void GetUniformData( out string dataType, out string dataName )
+		public override bool GetUniformData( out string dataType, out string dataName, ref bool fullValue )
 		{
+			MasterNode currMasterNode = ( m_containerGraph.CurrentMasterNode != null ) ? m_containerGraph.CurrentMasterNode : m_containerGraph.ParentWindow.OutsideGraph.CurrentMasterNode;
+			if( currMasterNode != null && currMasterNode.CurrentDataCollector.IsTemplate && currMasterNode.CurrentDataCollector.IsSRP )
+			{
+				dataType = "TEXTURE2D_ARRAY( " + PropertyName + "";
+				dataName = ");\nuniform SAMPLER( sampler" + PropertyName + " )";
+				return true;
+			}
 			dataType = "UNITY_DECLARE_TEX2DARRAY(";
-			dataName = m_propertyName + " )";
+			dataName = PropertyName + " )";
+			return true;
 		}
 
 		public override void ReadFromString( ref string[] nodeParams )
@@ -637,31 +785,46 @@ namespace AmplifyShaderEditor
 			string textureName = GetCurrentParam( ref nodeParams );
 			m_defaultTextureArray = AssetDatabase.LoadAssetAtPath<Texture2DArray>( textureName );
 			m_uvSet = Convert.ToInt32( GetCurrentParam( ref nodeParams ) );
-			m_referenceType = ( TexReferenceType ) Enum.Parse( typeof( TexReferenceType ), GetCurrentParam( ref nodeParams ) );
+			m_referenceType = (TexReferenceType)Enum.Parse( typeof( TexReferenceType ), GetCurrentParam( ref nodeParams ) );
 			m_referenceNodeId = Convert.ToInt32( GetCurrentParam( ref nodeParams ) );
-			if ( UIUtils.CurrentShaderVersion() > 3202 )
-				m_mipMode = ( MipType ) Enum.Parse( typeof( MipType ), GetCurrentParam( ref nodeParams ) );
-			if ( UIUtils.CurrentShaderVersion() > 5105 )
+			if( UIUtils.CurrentShaderVersion() > 3202 )
+				m_mipMode = (MipType)Enum.Parse( typeof( MipType ), GetCurrentParam( ref nodeParams ) );
+			if( UIUtils.CurrentShaderVersion() > 5105 )
 				m_autoUnpackNormals = Convert.ToBoolean( GetCurrentParam( ref nodeParams ) );
 
-			if ( m_referenceType == TexReferenceType.Instance )
+			if( m_referenceType == TexReferenceType.Instance )
 			{
 				UIUtils.UnregisterTextureArrayNode( this );
 				UIUtils.UnregisterPropertyNode( this );
-				m_forceSamplerUpdate = true;
 			}
 
 			ConfigureInputPorts();
 			ConfigureOutputPorts();
 
 			m_lodPort.Visible = ( m_mipMode == MipType.MipLevel );
+			m_ddxPort.Visible = ( m_mipMode == MipType.MipBias ); //not really bias, it's derivative
+			m_ddyPort.Visible = ( m_mipMode == MipType.MipBias ); //not really bias, it's derivative
 
 			UpdateHeaderColor();
 
-			if ( m_defaultTextureArray )
+			if( m_defaultTextureArray )
 			{
 				m_materialTextureArray = m_defaultTextureArray;
 			}
+
+			if( !m_isNodeBeingCopied && m_referenceType == TexReferenceType.Object )
+			{
+				ContainerGraph.TextureArrayNodes.UpdateDataOnNode( UniqueId, DataToArray );
+			}
+		}
+
+		public override void RefreshExternalReferences()
+		{
+			base.RefreshExternalReferences();
+
+			m_referenceSampler = UIUtils.GetNode( m_referenceNodeId ) as TextureArrayNode;
+			m_referenceArrayId = UIUtils.GetTextureArrayNodeRegisterId( m_referenceNodeId );
+			OnPropertyNameChanged();
 		}
 
 		public override void WriteToString( ref string nodeInfo, ref string connectionsInfo )
@@ -675,28 +838,42 @@ namespace AmplifyShaderEditor
 			IOUtils.AddFieldValueToString( ref nodeInfo, m_autoUnpackNormals );
 		}
 
+		public override void ReadAdditionalClipboardData( ref string[] nodeParams )
+		{
+			base.ReadAdditionalClipboardData( ref nodeParams );
+			string textureName = GetCurrentParam( ref nodeParams );
+			m_materialTextureArray = AssetDatabase.LoadAssetAtPath<Texture2DArray>( textureName );
+		}
+
+		public override void WriteAdditionalClipboardData( ref string nodeInfo )
+		{
+			base.WriteAdditionalClipboardData( ref nodeInfo );
+			IOUtils.AddFieldValueToString( ref nodeInfo, ( m_materialTextureArray != null ) ? AssetDatabase.GetAssetPath( m_materialTextureArray ) : Constants.NoStringValue );
+		}
+
+
 		public override void UpdateMaterial( Material mat )
 		{
 			base.UpdateMaterial( mat );
-			if ( UIUtils.IsProperty( m_currentParameterType ) )
+			if( UIUtils.IsProperty( m_currentParameterType ) && !InsideShaderFunction && m_referenceType == TexReferenceType.Object )
 			{
 				OnPropertyNameChanged();
-				if ( mat.HasProperty( PropertyName ) )
+				if( mat.HasProperty( PropertyName ) )
 				{
 					mat.SetTexture( PropertyName, m_materialTextureArray );
 				}
 			}
 		}
 
-		public override void SetMaterialMode( Material mat )
+		public override void SetMaterialMode( Material mat, bool fetchMaterialValues )
 		{
-			base.SetMaterialMode( mat );
-			if ( m_materialMode && UIUtils.IsProperty( m_currentParameterType ) )
+			base.SetMaterialMode( mat, fetchMaterialValues );
+			if( fetchMaterialValues && m_materialMode && UIUtils.IsProperty( m_currentParameterType ) )
 			{
-				if ( mat.HasProperty( PropertyName ) )
+				if( mat.HasProperty( PropertyName ) )
 				{
-					m_materialTextureArray = ( Texture2DArray ) mat.GetTexture( PropertyName );
-					if ( m_materialTextureArray == null )
+					m_materialTextureArray = (Texture2DArray)mat.GetTexture( PropertyName );
+					if( m_materialTextureArray == null )
 						m_materialTextureArray = m_defaultTextureArray;
 				}
 			}
@@ -704,17 +881,19 @@ namespace AmplifyShaderEditor
 
 		public override void ForceUpdateFromMaterial( Material material )
 		{
-			if ( UIUtils.IsProperty( m_currentParameterType ) && material.HasProperty( PropertyName ) )
+			if( UIUtils.IsProperty( m_currentParameterType ) && material.HasProperty( PropertyName ) )
 			{
-				m_materialTextureArray = ( Texture2DArray ) material.GetTexture( PropertyName );
-				if ( m_materialTextureArray == null )
+				m_materialTextureArray = (Texture2DArray)material.GetTexture( PropertyName );
+				if( m_materialTextureArray == null )
 					m_materialTextureArray = m_defaultTextureArray;
+
+				PreviewIsDirty = true;
 			}
 		}
 
 		public override bool UpdateShaderDefaults( ref Shader shader, ref TextureDefaultsDataColector defaultCol )
 		{
-			if ( m_defaultTextureArray != null )
+			if( m_defaultTextureArray != null )
 			{
 				defaultCol.AddValue( PropertyName, m_defaultTextureArray );
 			}
@@ -729,12 +908,21 @@ namespace AmplifyShaderEditor
 
 		public bool CheckReference()
 		{
-			if ( m_referenceType == TexReferenceType.Instance && m_referenceArrayId > -1 )
+			if( m_referenceType == TexReferenceType.Instance && m_referenceArrayId > -1 )
 			{
 				m_referenceSampler = UIUtils.GetTextureArrayNode( m_referenceArrayId );
 
-				if ( m_referenceSampler == null )
+				if( m_referenceSampler == null )
+				{
+					m_texPort.Locked = false;
 					m_referenceArrayId = -1;
+				}
+				else
+					m_texPort.Locked = true;
+			}
+			else
+			{
+				m_texPort.Locked = false;
 			}
 
 			return m_referenceSampler != null;
@@ -751,38 +939,22 @@ namespace AmplifyShaderEditor
 			SetupFromObject( obj );
 		}
 
-		void SetupFromObject( UnityEngine.Object obj )
+		private void SetupFromObject( UnityEngine.Object obj )
 		{
-			if ( m_materialMode )
-			{
+			if( m_materialMode )
 				m_materialTextureArray = obj as Texture2DArray;
-			}
 			else
-			{
 				m_defaultTextureArray = obj as Texture2DArray;
-			}
 		}
 
-		public Texture2DArray TextureArray
-		{
-			get { return ( m_materialMode ? m_materialTextureArray : m_defaultTextureArray ); }
-		}
+		public Texture2DArray TextureArray { get { return ( m_materialMode ? m_materialTextureArray : m_defaultTextureArray ); } }
 
-		public bool IsLinearTexture
-		{
-			get
-			{
-				return m_linearTexture;
-			}
-		}
+		public bool IsLinearTexture { get { return m_linearTexture; } }
 
 		public bool AutoUnpackNormals
 		{
 			get { return m_autoUnpackNormals; }
-			set
-			{
-				m_autoUnpackNormals = value;
-			}
+			set { m_autoUnpackNormals = value; }
 		}
 
 		public override string DataToArray { get { return PropertyInspectorName; } }
@@ -793,11 +965,25 @@ namespace AmplifyShaderEditor
 			m_defaultTextureArray = null;
 			m_materialTextureArray = null;
 
-			if ( m_referenceType == TexReferenceType.Object )
+			m_texPort = null;
+			m_uvPort = null;
+			m_indexPort = null;
+			m_lodPort = null;
+			m_normalPort = null;
+			m_ddxPort = null;
+			m_ddyPort = null;
+
+			if( m_referenceType == TexReferenceType.Object )
 			{
 				UIUtils.UnregisterTextureArrayNode( this );
 				UIUtils.UnregisterPropertyNode( this );
 			}
+
+			if( UniqueId > -1 )
+				ContainerGraph.TextureArrayNodes.OnReorderEventComplete -= OnReorderEventComplete;
 		}
+
+		public ParentNode PreviewTextProp { get { return m_previewTextProp; } }
+		public InputPort TexPort { get { return m_texPort; } }
 	}
 }

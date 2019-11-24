@@ -1,4 +1,4 @@
-﻿Shader "Hidden/CosTime"
+Shader "Hidden/CosTime"
 {
 	SubShader
 	{

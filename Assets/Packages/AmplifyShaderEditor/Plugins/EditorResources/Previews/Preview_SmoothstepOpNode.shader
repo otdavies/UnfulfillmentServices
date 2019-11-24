@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SmoothstepOpNode"
+Shader "Hidden/SmoothstepOpNode"
 {
 	Properties
 	{

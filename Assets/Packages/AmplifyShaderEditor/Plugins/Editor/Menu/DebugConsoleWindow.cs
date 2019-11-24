@@ -5,6 +5,7 @@
 
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace AmplifyShaderEditor
 {
@@ -20,6 +21,9 @@ namespace AmplifyShaderEditor
 		private bool m_miscAreaFoldout = true;
 		private Vector2 m_currentScrollPos;
 
+		private int m_minURLNode = 0;
+		private int m_maxURLNode = -1;
+
 #if ASE_CONSOLE_WINDOW
 		public readonly static bool DeveloperMode = true;
 		public static bool UseShaderPanelsInfo = true;
@@ -28,6 +32,12 @@ namespace AmplifyShaderEditor
 		{
 			OpenWindow();
 		}
+		[MenuItem( "Window/Amplify Shader Editor/Create Template Menu Items" )]
+		public static void CreateTemplateMenuItems()
+		{
+			UIUtils.CurrentWindow.TemplatesManagerInstance.CreateTemplateMenuItems();
+		}
+
 #else
 		public readonly static bool DeveloperMode = false;
 		public static bool UseShaderPanelsInfo = false;
@@ -88,7 +98,23 @@ namespace AmplifyShaderEditor
 
 			if ( GUILayout.Button( "Nodes Screen Shots" ) )
 			{
-				window.CurrentNodeExporterUtils.ActivateAutoScreenShot( Application.dataPath + "/../NodesInfo/Shots/" );
+				window.CurrentNodeExporterUtils.ActivateAutoScreenShot( Application.dataPath + "/../NodesInfo/Shots/",0,-1 );
+			}
+
+			GUILayout.BeginHorizontal();
+			if( GUILayout.Button( "Nodes URLs" ) )
+			{
+				window.CurrentNodeExporterUtils.ActivateNodesURL( m_minURLNode, m_maxURLNode );
+			}
+			m_minURLNode = EditorGUILayout.IntField( m_minURLNode );
+			m_maxURLNode = EditorGUILayout.IntField( m_maxURLNode );
+			GUILayout.EndHorizontal();
+
+			EditorGUILayout.Separator();
+
+			if( GUILayout.Button( "Nodes Undo Test" ) )
+			{
+				window.CurrentNodeExporterUtils.ActivateAutoUndo();
 			}
 
 			EditorGUILayout.Separator();
@@ -125,7 +151,49 @@ namespace AmplifyShaderEditor
 
 			if ( GUILayout.Button( "Dump Uniform Names" ) )
 			{
+				//window.CurrentPaletteWindow.NewList()
 				window.DuplicatePrevBufferInstance.DumpUniformNames();
+			}
+
+			EditorGUILayout.Separator();
+
+			if ( GUILayout.Button( "Force Palette Update" ) )
+			{
+				Debug.Log( UIUtils.CurrentWindow.IsShaderFunctionWindow );
+				window.CurrentPaletteWindow.ForceUpdate = true;
+			}
+
+			EditorGUILayout.Separator();
+
+			if( GUILayout.Button( "Detect Infinite Loops" ) )
+			{
+				if( window.IsShaderFunctionWindow )
+				{
+					Debug.Log( "Starting infinite loop detection over shader functions" );
+					List<FunctionOutput> nodes = window.OutsideGraph.FunctionOutputNodes.NodesList;
+					for( int i = 0; i < nodes.Count; i++ )
+					{
+						UIUtils.DetectNodeLoopsFrom( nodes[ i ], new Dictionary<int, int>() );
+					}
+				}
+				else
+				{
+					if( window.OutsideGraph.MultiPassMasterNodes.Count > 0 )
+					{
+						Debug.Log( "Starting infinite loop detection over shader from template" );
+						List<TemplateMultiPassMasterNode> nodes = window.OutsideGraph.MultiPassMasterNodes.NodesList;
+						for( int i = 0; i < nodes.Count; i++ )
+						{
+							UIUtils.DetectNodeLoopsFrom( nodes[ i ], new Dictionary<int, int>() );
+						}
+					}
+					else
+					{
+						Debug.Log( "Starting infinite loop detection over standard shader" );
+						UIUtils.DetectNodeLoopsFrom( window.OutsideGraph.CurrentMasterNode, new Dictionary<int, int>() );
+					}
+				}
+				Debug.Log( "End infinite loop detection" );
 			}
 		}
 	}

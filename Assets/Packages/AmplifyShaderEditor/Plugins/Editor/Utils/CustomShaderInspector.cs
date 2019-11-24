@@ -75,7 +75,11 @@ namespace UnityEditor
 			if ( m_previewRenderUtility == null )
 			{
 				m_previewRenderUtility = new PreviewRenderUtility();
+#if UNITY_2017_1_OR_NEWER
 				m_cameraTransform = m_previewRenderUtility.camera.transform;
+#else
+				m_cameraTransform = m_previewRenderUtility.m_Camera.transform;
+#endif
 				m_cameraTransform.position = new Vector3( 0, 0, -4 );
 				m_cameraTransform.rotation = Quaternion.identity;
 			}
@@ -154,37 +158,53 @@ namespace UnityEditor
 				m_previewRenderUtility.DrawMesh( m_previewMesh, Matrix4x4.identity, m_material, 0 );
 				m_cameraTransform.rotation = Quaternion.Euler( new Vector3( -m_mouseDelta.y, -m_mouseDelta.x, 0 ) );
 				m_cameraTransform.position = m_cameraTransform.forward * -8f;
+#if UNITY_2017_1_OR_NEWER
 				m_previewRenderUtility.camera.Render();
-
+#else
+				m_previewRenderUtility.m_Camera.Render();
+#endif
 				GUI.DrawTexture( r, resultRender, ScaleMode.StretchToFill, false );
 			}
 		}
-
+		
 		void OnDestroy()
 		{
-			if ( m_previewRenderUtility != null )
+			CleanUp();
+		}
+
+		public void OnDisable()
+		{
+			CleanUp();
+		}
+		
+		void CleanUp()
+		{
+			if( m_previewRenderUtility != null )
 			{
 				m_previewRenderUtility.Cleanup();
 				m_previewRenderUtility = null;
 			}
 
-			if ( m_previewMesh != null )
+			if( m_previewMesh != null )
 			{
 				Resources.UnloadAsset( m_previewMesh );
 				m_previewMesh = null;
 			}
 
+			if( m_previewRenderUtility != null )
+			{
+				m_previewRenderUtility.Cleanup();
+				m_previewRenderUtility = null;
+			}
 			m_material = null;
 		}
-
 
 		public virtual void OnEnable()
 		{
 			Shader s = this.target as Shader;
 			ShaderUtilEx.FetchCachedErrors( s );
 		}
-
-
+		
 		private static string GetPropertyType( Shader s, int index )
 		{
 			UnityEditor.ShaderUtil.ShaderPropertyType propertyType = UnityEditor.ShaderUtil.GetPropertyType( s, index );
@@ -210,12 +230,23 @@ namespace UnityEditor
 			{
 				if ( GUILayout.Button( "Open in Shader Editor" ) )
 				{
+#if UNITY_2018_3_OR_NEWER
+					ASEPackageManagerHelper.SetupLateShader( shader );
+#else
 					AmplifyShaderEditorWindow.ConvertShaderToASE( shader );
+#endif
 				}
 
 				if ( GUILayout.Button( "Open in Text Editor" ) )
 				{
-					AssetDatabase.OpenAsset( shader, 1 );
+					if( UIUtils.IsUnityNativeShader( shader ) )
+					{
+						Debug.LogWarningFormat( "Action not allowed. Attempting to load the native {0} shader into Text Editor", shader.name );
+					}
+					else
+					{
+						AssetDatabase.OpenAsset( shader, 1 );
+					}
 				}
 			}
 			GUILayout.EndHorizontal();
@@ -226,8 +257,8 @@ namespace UnityEditor
 			if ( shader.isSupported )
 			{
 				EditorGUILayout.LabelField( "Cast shadows", ( !ShaderUtilEx.HasShadowCasterPass( shader ) ) ? "no" : "yes", new GUILayoutOption[ 0 ] );
-				EditorGUILayout.LabelField( "Render queue", ShaderUtilEx.GetRenderQueue( shader ).ToString( CultureInfo.InvariantCulture ), new GUILayoutOption[ 0 ] );
-				EditorGUILayout.LabelField( "LOD", ShaderUtilEx.GetLOD( shader ).ToString( CultureInfo.InvariantCulture ), new GUILayoutOption[ 0 ] );
+				EditorGUILayout.LabelField( "Render queue", ShaderUtilEx.GetRenderQueue( shader ).ToString( System.Globalization.CultureInfo.InvariantCulture ), new GUILayoutOption[ 0 ] );
+				EditorGUILayout.LabelField( "LOD", ShaderUtilEx.GetLOD( shader ).ToString( System.Globalization.CultureInfo.InvariantCulture ), new GUILayoutOption[ 0 ] );
 				EditorGUILayout.LabelField( "Ignore projector", ( !ShaderUtilEx.DoesIgnoreProjector( shader ) ) ? "no" : "yes", new GUILayoutOption[ 0 ] );
 				string label;
 				switch ( ShaderEx.GetDisableBatching( shader ) )
@@ -246,6 +277,17 @@ namespace UnityEditor
 					break;
 				}
 				EditorGUILayout.LabelField( "Disable batching", label, new GUILayoutOption[ 0 ] );
+
+#if UNITY_2018_3_OR_NEWER
+				int shaderActiveSubshaderIndex = ShaderUtilEx.GetShaderActiveSubshaderIndex( shader );
+				int sRPBatcherCompatibilityCode = ShaderUtilEx.GetSRPBatcherCompatibilityCode( shader, shaderActiveSubshaderIndex );
+				string label2 = ( sRPBatcherCompatibilityCode != 0 ) ? "not compatible" : "compatible";
+				EditorGUILayout.LabelField( "SRP Batcher", label2 );
+				if( sRPBatcherCompatibilityCode != 0 )
+				{
+					EditorGUILayout.HelpBox( ShaderUtilEx.GetSRPBatcherCompatibilityIssueReason( shader, shaderActiveSubshaderIndex, sRPBatcherCompatibilityCode ), MessageType.Info );
+				}
+#endif
 				CustomShaderInspector.ShowShaderProperties( shader );
 			}
 		}
@@ -276,11 +318,7 @@ namespace UnityEditor
 			int num = errors.Length;
 			GUILayout.Space( 5f );
 			GUILayout.Label( string.Format( "Errors ({0}):", num ), EditorStyles.boldLabel, new GUILayoutOption[ 0 ] );
-#if UNITY_5_5_OR_NEWER
 			int controlID = GUIUtility.GetControlID( CustomShaderInspector.kErrorViewHash, FocusType.Passive );
-#else
-			int controlID = GUIUtility.GetControlID( CustomShaderInspector.kErrorViewHash, FocusType.Native );
-#endif
 			float minHeight = Mathf.Min( ( float ) num * 20f + 40f, 150f );
 			scrollPosition = GUILayout.BeginScrollView( scrollPosition, GUISkinEx.GetCurrentSkin().box, new GUILayoutOption[]
 			{
@@ -338,11 +376,11 @@ namespace UnityEditor
 					GUIContent content;
 					if ( string.IsNullOrEmpty( lastPathNameComponent ) )
 					{
-						content = EditorGUIUtilityEx.TempContent( line.ToString( CultureInfo.InvariantCulture ) );
+						content = EditorGUIUtilityEx.TempContent( line.ToString( System.Globalization.CultureInfo.InvariantCulture ) );
 					}
 					else
 					{
-						content = EditorGUIUtilityEx.TempContent( lastPathNameComponent + ":" + line.ToString( CultureInfo.InvariantCulture ) );
+						content = EditorGUIUtilityEx.TempContent( lastPathNameComponent + ":" + line.ToString( System.Globalization.CultureInfo.InvariantCulture ) );
 					}
 					Vector2 vector = EditorStyles.miniLabel.CalcSize( content );
 					rect.xMin -= vector.x;
@@ -381,7 +419,11 @@ namespace UnityEditor
 			{
 				return;
 			}
+#if UNITY_2019_3_OR_NEWER
+			ShaderInspectorEx.ShaderErrorListUI( s, ShaderUtil.GetShaderMessages( s ), ref this.m_ScrollPosition );
+#else
 			CustomShaderInspector.ShaderErrorListUI( s, ShaderUtilEx.GetShaderErrors( s ), ref this.m_ScrollPosition );
+#endif
 		}
 
 		private void ShowCompiledCodeButton( Shader s )
@@ -400,7 +442,7 @@ namespace UnityEditor
 				if ( EditorGUIEx.ButtonMouseDown( position, GUIContent.none, FocusType.Passive, GUIStyle.none ) )
 				{
 					Rect last = GUILayoutUtilityEx.TopLevel_GetLast();
-					PopupWindow.Show( last, ( PopupWindowContent ) Activator.CreateInstance( Type.GetType( "UnityEditor.ShaderInspectorPlatformsPopup, UnityEditor" ), new object[] { s } ) );
+					PopupWindow.Show( last, ( PopupWindowContent ) Activator.CreateInstance( System.Type.GetType( "UnityEditor.ShaderInspectorPlatformsPopup, UnityEditor" ), new object[] { s } ) );
 					GUIUtility.ExitGUI();
 				}
 				if ( GUI.Button( rect, showCurrent, EditorStyles.miniButton ) )
@@ -500,43 +542,67 @@ namespace UnityEditor
 
 	public static class EditorGUIUtilityEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEditor.EditorGUIUtility, UnityEditor" ) : type; } }
+		private static System.Type type = null;
+		public static System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEditor.EditorGUIUtility, UnityEditor" ) : type; } }
 
 		public static Texture2D LoadIcon( string icon )
 		{
-			return ( Texture2D ) Type.InvokeMember( "LoadIcon", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { icon } );
+			return ( Texture2D ) EditorGUIUtilityEx.Type.InvokeMember( "LoadIcon", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { icon } );
 		}
 
 		public static GUIContent TextContent( string t )
 		{
-			return ( GUIContent ) Type.InvokeMember( "TextContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { t } );
+			return ( GUIContent ) EditorGUIUtilityEx.Type.InvokeMember( "TextContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { t } );
 		}
 
 		internal static GUIContent TempContent( string t )
 		{
-			return ( GUIContent ) Type.InvokeMember( "TempContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { t } );
+			return ( GUIContent ) EditorGUIUtilityEx.Type.InvokeMember( "TempContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { t } );
 		}
 
 		internal static GUIContent TempContent( Texture i )
 		{
-			return ( GUIContent ) Type.InvokeMember( "TempContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { i } );
+			return ( GUIContent ) EditorGUIUtilityEx.Type.InvokeMember( "TempContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { i } );
 		}
 
 		internal static GUIContent TempContent( string t, Texture i )
 		{
-			return ( GUIContent ) Type.InvokeMember( "TempContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { t, i } );
+			return ( GUIContent ) EditorGUIUtilityEx.Type.InvokeMember( "TempContent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { t, i } );
+		}
+	}
+
+	public static class EditorGUILayoutEx
+	{
+		public static System.Type Type = typeof( EditorGUILayout );
+		public static Gradient GradientField( Gradient value, params GUILayoutOption[] options )
+		{
+#if UNITY_2018_3_OR_NEWER
+			return EditorGUILayout.GradientField( value, options );
+#else
+			MethodInfo method = EditorGUILayoutEx.Type.GetMethod( "GradientField", BindingFlags.NonPublic | BindingFlags.Static, null, new Type[] { typeof( Gradient ), typeof( GUILayoutOption[] ) }, null );
+			return (Gradient)method.Invoke( Type, new object[]{ value, options} );
+#endif
+		}
+
+		public static Gradient GradientField( string label, Gradient value, params GUILayoutOption[] options )
+		{
+#if UNITY_2018_3_OR_NEWER
+			return EditorGUILayout.GradientField( label, value, options );
+#else
+			MethodInfo method = EditorGUILayoutEx.Type.GetMethod( "GradientField", BindingFlags.NonPublic | BindingFlags.Static, null, new Type[] { typeof( string ), typeof( Gradient ), typeof( GUILayoutOption[] ) }, null );
+			return (Gradient)method.Invoke( Type, new object[] { label, value, options } );
+#endif
 		}
 	}
 
 	public static class GUILayoutUtilityEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEngine.GUILayoutUtility, UnityEngine" ) : type; } }
+		private static System.Type type = null;
+		public static System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEngine.GUILayoutUtility, UnityEngine" ) : type; } }
 
 		public static Rect TopLevel_GetLast()
 		{
-			Type guiLayoutGroup = Type.GetType( "UnityEngine.GUILayoutGroup, UnityEngine" );
+			System.Type guiLayoutGroup = System.Type.GetType( "UnityEngine.GUILayoutGroup, UnityEngine" );
 			var topLevel = GUILayoutUtilityEx.Type.GetProperty( "topLevel", BindingFlags.NonPublic | BindingFlags.Static ).GetValue( null, null );
 			return ( Rect ) guiLayoutGroup.InvokeMember( "GetLast", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, topLevel, new object[] { } );
 		}
@@ -544,49 +610,62 @@ namespace UnityEditor
 
 	public static class ShaderEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEngine.Shader, UnityEngine" ) : type; } }
+		private static System.Type type = null;
+		public static System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEngine.Shader, UnityEngine" ) : type; } }
 
 		public static DisableBatchingType GetDisableBatching( Shader s )
 		{
-			return ( DisableBatchingType ) Type.GetProperty( "disableBatching", BindingFlags.NonPublic | BindingFlags.Instance ).GetValue( s, new object[ 0 ] );
+			return ( DisableBatchingType ) ShaderEx.Type.GetProperty( "disableBatching", BindingFlags.NonPublic | BindingFlags.Instance ).GetValue( s, new object[ 0 ] );
 		}
 	}
 
 	public static class ShaderUtilEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEditor.ShaderUtil, UnityEditor" ) : type; } }
+		private static System.Type type = null;
+		public static System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEditor.ShaderUtil, UnityEditor" ) : type; } }
 
 		public static void OpenParsedSurfaceShader( Shader s )
 		{
-			Type.InvokeMember( "OpenParsedSurfaceShader", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			ShaderUtilEx.Type.InvokeMember( "OpenParsedSurfaceShader", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static void OpenGeneratedFixedFunctionShader( Shader s )
 		{
-			Type.InvokeMember( "OpenGeneratedFixedFunctionShader", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			ShaderUtilEx.Type.InvokeMember( "OpenGeneratedFixedFunctionShader", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static void OpenCompiledShader( Shader shader, int mode, int customPlatformsMask, bool includeAllVariants )
 		{
-			Type.InvokeMember( "OpenCompiledShader", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { shader, mode, customPlatformsMask, includeAllVariants } );
+			ShaderUtilEx.Type.InvokeMember( "OpenCompiledShader", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { shader, mode, customPlatformsMask, includeAllVariants } );
 		}
 
 		public static void FetchCachedErrors( Shader s )
 		{
-			Type.InvokeMember( "FetchCachedErrors", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+#if UNITY_2019_3_OR_NEWER
+			ShaderUtilEx.Type.InvokeMember( "FetchCachedMessages", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+#else
+			ShaderUtilEx.Type.InvokeMember( "FetchCachedErrors", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+#endif
 		}
 
 		public static int GetShaderErrorCount( Shader s )
 		{
-			return ( int ) Type.InvokeMember( "GetShaderErrorCount", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+#if UNITY_2019_3_OR_NEWER
+			return ShaderUtil.GetShaderMessageCount( s );
+#else
+			return ( int ) ShaderUtilEx.Type.InvokeMember( "GetShaderErrorCount", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+#endif
+		}
+
+		public static int GetAvailableShaderCompilerPlatforms()
+		{
+			return (int)ShaderUtilEx.Type.InvokeMember( "GetAvailableShaderCompilerPlatforms", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { } );
 		}
 
 		public static ShaderError[] GetShaderErrors( Shader s )
 		{
-			Type shaderErrorType = Type.GetType( "UnityEditor.ShaderError, UnityEditor" );
-			var errorList = ( System.Collections.IList ) Type.InvokeMember( "GetShaderErrors", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			System.Type shaderErrorType = System.Type.GetType( "UnityEditor.ShaderError, UnityEditor" );
+			var errorList = ( System.Collections.IList ) ShaderUtilEx.Type.InvokeMember( "GetShaderErrors", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 
 			FieldInfo messageField = shaderErrorType.GetField( "message", BindingFlags.Public | BindingFlags.Instance );
 			FieldInfo messageDetailsField = shaderErrorType.GetField( "messageDetails", BindingFlags.Public | BindingFlags.Instance );
@@ -610,101 +689,150 @@ namespace UnityEditor
 
 		public static bool HasShaderSnippets( Shader s )
 		{
-			return ( bool ) Type.InvokeMember( "HasShaderSnippets", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			return ( bool ) ShaderUtilEx.Type.InvokeMember( "HasShaderSnippets", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static bool HasSurfaceShaders( Shader s )
 		{
-			return ( bool ) Type.InvokeMember( "HasSurfaceShaders", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			return ( bool ) ShaderUtilEx.Type.InvokeMember( "HasSurfaceShaders", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static bool HasFixedFunctionShaders( Shader s )
 		{
-			return ( bool ) Type.InvokeMember( "HasFixedFunctionShaders", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			return ( bool ) ShaderUtilEx.Type.InvokeMember( "HasFixedFunctionShaders", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static bool HasShadowCasterPass( Shader s )
 		{
-			return ( bool ) Type.InvokeMember( "HasShadowCasterPass", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			return ( bool ) ShaderUtilEx.Type.InvokeMember( "HasShadowCasterPass", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static int GetRenderQueue( Shader s )
 		{
-			return ( int ) Type.InvokeMember( "GetRenderQueue", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			return ( int ) ShaderUtilEx.Type.InvokeMember( "GetRenderQueue", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static int GetLOD( Shader s )
 		{
-			return ( int ) Type.InvokeMember( "GetLOD", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			return ( int ) ShaderUtilEx.Type.InvokeMember( "GetLOD", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
 
 		public static bool DoesIgnoreProjector( Shader s )
 		{
-			return ( bool ) Type.InvokeMember( "DoesIgnoreProjector", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+			return ( bool ) ShaderUtilEx.Type.InvokeMember( "DoesIgnoreProjector", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
 		}
+
+#if UNITY_2018_3_OR_NEWER
+		public static int GetShaderActiveSubshaderIndex( Shader s )
+		{
+			return (int)ShaderUtilEx.Type.InvokeMember( "GetShaderActiveSubshaderIndex", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s } );
+		}
+
+		public static int GetSRPBatcherCompatibilityCode( Shader s, int subShaderIdx )
+		{
+			return (int)ShaderUtilEx.Type.InvokeMember( "GetSRPBatcherCompatibilityCode", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s, subShaderIdx } );
+		}
+
+		public static string GetSRPBatcherCompatibilityIssueReason( Shader s, int subShaderIdx, int err )
+		{
+			return (string)ShaderUtilEx.Type.InvokeMember( "GetSRPBatcherCompatibilityIssueReason", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { s, subShaderIdx, err } );
+		}
+#endif
 	}
 
 	public static class FileUtilEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEditor.FileUtil, UnityEditor" ) : type; } }
+		private static System.Type type = null;
+		public static  System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEditor.FileUtil, UnityEditor" ) : type; } }
 
 		public static string GetLastPathNameComponent( string path )
 		{
-			return ( string ) Type.InvokeMember( "GetLastPathNameComponent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { path } );
+			return ( string ) FileUtilEx.Type.InvokeMember( "GetLastPathNameComponent", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { path } );
 		}
 	}
 
 	public static class ShaderInspectorEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEditor.ShaderInspector, UnityEditor" ) : type; } }
+		private static System.Type type = null;
+		public static  System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEditor.ShaderInspector, UnityEditor" ) : type; } }
+
+#if UNITY_2019_3_OR_NEWER
+		public static void ShaderErrorListUI( UnityEngine.Object shader, ShaderMessage[] messages, ref Vector2 scrollPosition )
+		{
+			Type.InvokeMember( "ShaderErrorListUI", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { shader, messages, scrollPosition } );
+		}
+#endif
 	}
 
 	public static class GUISkinEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEngine.GUISkin, UnityEngine" ) : type; } }
+		private static System.Type type = null;
+		public static System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEngine.GUISkin, UnityEngine" ) : type; } }
 
 		public static GUISkin GetCurrentSkin()
 		{
-			return ( GUISkin ) Type.GetField( "current", BindingFlags.NonPublic | BindingFlags.Static ).GetValue( null );
+			return ( GUISkin ) GUISkinEx.Type.GetField( "current", BindingFlags.NonPublic | BindingFlags.Static ).GetValue( null );
 		}
 	}
 
 	public static class EditorGUIEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEditor.EditorGUI, UnityEditor" ) : type; } }
+		public static System.Type Type = typeof( EditorGUI );
+
+		public static Gradient GradientField( Rect position, Gradient gradient )
+		{
+#if UNITY_2018_3_OR_NEWER
+			return EditorGUI.GradientField( position, gradient );
+#else
+			return (Gradient)EditorGUIEx.Type.InvokeMember( "GradientField", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { position, gradient } );
+#endif
+		}
 
 		public static bool ButtonMouseDown( Rect position, GUIContent content, FocusType focusType, GUIStyle style )
 		{
 #if UNITY_5_6_OR_NEWER
 			return EditorGUI.DropdownButton( position, content, focusType, style );
 #else
-			return ( bool ) Type.InvokeMember( "ButtonMouseDown", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { position, content, focusType, style } );
+			return ( bool ) EditorGUIEx.Type.InvokeMember( "ButtonMouseDown", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { position, content, focusType, style } );
 #endif
 		}
+
+		public static float kObjectFieldMiniThumbnailHeight
+		{
+			get
+			{
+				return (float)EditorGUIEx.Type.InvokeMember( "kObjectFieldMiniThumbnailHeight", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.GetField, null, null, new object[] {} );
+			}
+		}
+
+		public static float kSingleLineHeight
+		{
+			get
+			{
+				return (float)EditorGUIEx.Type.InvokeMember( "kSingleLineHeight", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.GetField, null, null, new object[] { } );
+			}
+		}
+
 	}
 
 	public static class ShaderInspectorPlatformsPopupEx
 	{
-		private static Type type = null;
-		public static Type Type { get { return ( type == null ) ? type = Type.GetType( "UnityEditor.ShaderInspectorPlatformsPopup, UnityEditor" ) : type; } }
+		private static System.Type type = null;
+		public static  System.Type Type { get { return ( type == null ) ? type = System.Type.GetType( "UnityEditor.ShaderInspectorPlatformsPopup, UnityEditor" ) : type; } }
 
 		public static int GetCurrentMode()
 		{
-			return ( int ) Type.GetProperty( "currentMode", BindingFlags.Public | BindingFlags.Static ).GetValue( null, null );
+			return ( int ) ShaderInspectorPlatformsPopupEx.Type.GetProperty( "currentMode", BindingFlags.Public | BindingFlags.Static ).GetValue( null, null );
 		}
 
 		public static int GetCurrentPlatformMask()
 		{
-			return ( int ) Type.GetProperty( "currentPlatformMask", BindingFlags.Public | BindingFlags.Static ).GetValue( null, null );
+			return ( int ) ShaderInspectorPlatformsPopupEx.Type.GetProperty( "currentPlatformMask", BindingFlags.Public | BindingFlags.Static ).GetValue( null, null );
 		}
 
 		public static int GetCurrentVariantStripping()
 		{
-			return ( int ) Type.GetProperty( "currentVariantStripping", BindingFlags.Public | BindingFlags.Static ).GetValue( null, null );
+			return ( int ) ShaderInspectorPlatformsPopupEx.Type.GetProperty( "currentVariantStripping", BindingFlags.Public | BindingFlags.Static ).GetValue( null, null );
 		}
 	}
 }

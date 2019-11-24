@@ -1,4 +1,4 @@
-﻿Shader "Hidden/RadiansOpNode"
+Shader "Hidden/RadiansOpNode"
 {
 	Properties
 	{

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/NormalizeNode"
+Shader "Hidden/NormalizeNode"
 {
 	Properties
 	{

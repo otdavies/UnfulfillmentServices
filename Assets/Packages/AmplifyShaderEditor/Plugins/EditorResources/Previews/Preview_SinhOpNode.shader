@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SinhOpNode"
+Shader "Hidden/SinhOpNode"
 {
 	Properties
 	{

@@ -8,27 +8,21 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Matrix4X4", "Constants", "Matrix4X4 property" )]
-	public sealed class Matrix4X4Node : PropertyNode
-	{
-		[SerializeField]
-		private Matrix4x4 m_defaultValue = Matrix4x4.identity;
-
-		[SerializeField]
-		private Matrix4x4 m_materialValue = Matrix4x4.identity;
-
-
+	[NodeAttributes( "Matrix4X4", "Constants And Properties", "Matrix4X4 property" )]
+	public sealed class Matrix4X4Node : MatrixParentNode
+	{	
+		private string[,] m_fieldText = new string[ 4, 4 ] { { "0", "0", "0", "0" }, { "0", "0", "0", "0" }, { "0", "0", "0", "0" }, { "0", "0", "0", "0" } };
 		public Matrix4X4Node() : base() { }
 		public Matrix4X4Node( int uniqueId, float x, float y, float width, float height ) : base( uniqueId, x, y, width, height ) { }
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
+			GlobalTypeWarningText = string.Format( GlobalTypeWarningText, "Matrix" );
 			AddOutputPort( WirePortDataType.FLOAT4x4, Constants.EmptyPortValue );
 			m_insideSize.Set( Constants.FLOAT_DRAW_WIDTH_FIELD_SIZE * 4 + Constants.FLOAT_WIDTH_SPACING * 3, Constants.FLOAT_DRAW_HEIGHT_FIELD_SIZE * 4 + Constants.FLOAT_WIDTH_SPACING * 3 + Constants.OUTSIDE_WIRE_MARGIN );
-			m_defaultValue = new Matrix4x4();
-			m_materialValue = new Matrix4x4();
+			//m_defaultValue = new Matrix4x4();
+			//m_materialValue = new Matrix4x4();
 			m_drawPreview = false;
-			m_precisionString = UIUtils.FinalPrecisionWirePortToCgType( m_currentPrecisionType, m_outputPorts[ 0 ].DataType );
 		}
 
 		public override void CopyDefaultsToMaterial()
@@ -70,18 +64,49 @@ namespace AmplifyShaderEditor
 				m_requireMaterialUpdate = true;
 		}
 
+		public override void OnNodeLayout( DrawInfo drawInfo )
+		{
+			base.OnNodeLayout( drawInfo );
+
+			m_propertyDrawPos.position = m_remainingBox.position;
+			m_propertyDrawPos.width = drawInfo.InvertedZoom * Constants.FLOAT_DRAW_WIDTH_FIELD_SIZE;
+			m_propertyDrawPos.height = drawInfo.InvertedZoom * Constants.FLOAT_DRAW_HEIGHT_FIELD_SIZE;
+		}
+
+		public override void DrawGUIControls( DrawInfo drawInfo )
+		{
+			base.DrawGUIControls( drawInfo );
+
+			if ( drawInfo.CurrentEventType != EventType.MouseDown )
+				return;
+
+			Rect hitBox = m_remainingBox;
+			hitBox.height = m_insideSize.y * drawInfo.InvertedZoom;
+			bool insideBox = hitBox.Contains( drawInfo.MousePosition );
+
+			if ( insideBox )
+			{
+				GUI.FocusControl( null );
+				m_isEditingFields = true;
+			}
+			else if ( m_isEditingFields && !insideBox )
+			{
+				GUI.FocusControl( null );
+				m_isEditingFields = false;
+			}
+		}
+
 		public override void Draw( DrawInfo drawInfo )
 		{
 			base.Draw( drawInfo );
-			if ( m_isVisible )
-			{
-				m_propertyDrawPos.position = m_remainingBox.position;
 
+			if ( !m_isVisible )
+				return;
+
+			if ( m_isEditingFields && m_currentParameterType != PropertyType.Global )
+			{
 				bool currMode = m_materialMode && m_currentParameterType != PropertyType.Constant;
 				Matrix4x4 value = currMode ? m_materialValue : m_defaultValue;
-
-				m_propertyDrawPos.width = drawInfo.InvertedZoom * Constants.FLOAT_DRAW_WIDTH_FIELD_SIZE;
-				m_propertyDrawPos.height = drawInfo.InvertedZoom * Constants.FLOAT_DRAW_HEIGHT_FIELD_SIZE;
 
 				EditorGUI.BeginChangeCheck();
 				for ( int row = 0; row < 4; row++ )
@@ -108,14 +133,41 @@ namespace AmplifyShaderEditor
 					BeginDelayedDirtyProperty();
 				}
 			}
+			else if ( drawInfo.CurrentEventType == EventType.Repaint )
+			{
+				bool guiEnabled = GUI.enabled;
+				GUI.enabled = m_currentParameterType != PropertyType.Global;
+
+				bool currMode = m_materialMode && m_currentParameterType != PropertyType.Constant;
+				Matrix4x4 value = currMode ? m_materialValue : m_defaultValue;
+				for ( int row = 0; row < 4; row++ )
+				{
+					for ( int column = 0; column < 4; column++ )
+					{
+						Rect fakeField = m_propertyDrawPos;
+						fakeField.position = m_remainingBox.position + Vector2.Scale( m_propertyDrawPos.size, new Vector2( column, row ) ) + new Vector2( Constants.FLOAT_WIDTH_SPACING * drawInfo.InvertedZoom * column, Constants.FLOAT_WIDTH_SPACING * drawInfo.InvertedZoom * row );
+						if( GUI.enabled )
+							EditorGUIUtility.AddCursorRect( fakeField, MouseCursor.Text );
+
+						if ( m_previousValue[ row, column ] != value[ row, column ] )
+						{
+							m_previousValue[ row, column ] = value[ row, column ];
+							m_fieldText[ row, column ] = value[ row, column ].ToString();
+						}
+
+						GUI.Label( fakeField, m_fieldText[ row, column ], UIUtils.MainSkin.textField );
+					}
+				}
+				GUI.enabled = guiEnabled;
+			}
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
 			base.GenerateShaderForOutput( outputId, ref dataCollector, ignoreLocalvar );
-			m_precisionString = UIUtils.FinalPrecisionWirePortToCgType( m_currentPrecisionType, m_outputPorts[ 0 ].DataType );
+			m_precisionString = UIUtils.PrecisionWirePortToCgType( CurrentPrecisionType, m_outputPorts[ 0 ].DataType );
 			if ( m_currentParameterType != PropertyType.Constant )
-				return PropertyData;
+				return PropertyData( dataCollector.PortCategory );
 
 			Matrix4x4 value = m_defaultValue;
 
@@ -130,16 +182,16 @@ namespace AmplifyShaderEditor
 		public override void UpdateMaterial( Material mat )
 		{
 			base.UpdateMaterial( mat );
-			if ( UIUtils.IsProperty( m_currentParameterType ) )
+			if ( UIUtils.IsProperty( m_currentParameterType ) && !InsideShaderFunction )
 			{
 				mat.SetMatrix( m_propertyName, m_materialValue );
 			}
 		}
 
-		public override void SetMaterialMode( Material mat )
+		public override void SetMaterialMode( Material mat , bool fetchMaterialValues )
 		{
-			base.SetMaterialMode( mat );
-			if ( m_materialMode && UIUtils.IsProperty( m_currentParameterType ) && mat.HasProperty( m_propertyName ) )
+			base.SetMaterialMode( mat , fetchMaterialValues );
+			if ( fetchMaterialValues && m_materialMode && UIUtils.IsProperty( m_currentParameterType ) && mat.HasProperty( m_propertyName ) )
 			{
 				m_materialValue = mat.GetMatrix( m_propertyName );
 			}
@@ -147,53 +199,37 @@ namespace AmplifyShaderEditor
 
 		public override void ForceUpdateFromMaterial( Material material )
 		{
-			if ( UIUtils.IsProperty( m_currentParameterType ) && material.HasProperty( m_propertyName ) )
+			if( UIUtils.IsProperty( m_currentParameterType ) && material.HasProperty( m_propertyName ) )
+			{
 				m_materialValue = material.GetMatrix( m_propertyName );
+				PreviewIsDirty = true;
+			}
 		}
-
-
+		
 		public override void ReadFromString( ref string[] nodeParams )
 		{
 			base.ReadFromString( ref nodeParams );
-			string[] matrixVals = GetCurrentParam( ref nodeParams ).Split( IOUtils.VECTOR_SEPARATOR );
-			if ( matrixVals.Length == 16 )
-			{
-				m_defaultValue[ 0, 0 ] = Convert.ToSingle( matrixVals[ 0 ] );
-				m_defaultValue[ 0, 1 ] = Convert.ToSingle( matrixVals[ 1 ] );
-				m_defaultValue[ 0, 2 ] = Convert.ToSingle( matrixVals[ 2 ] );
-				m_defaultValue[ 0, 3 ] = Convert.ToSingle( matrixVals[ 3 ] );
-
-				m_defaultValue[ 1, 0 ] = Convert.ToSingle( matrixVals[ 4 ] );
-				m_defaultValue[ 1, 1 ] = Convert.ToSingle( matrixVals[ 5 ] );
-				m_defaultValue[ 1, 2 ] = Convert.ToSingle( matrixVals[ 6 ] );
-				m_defaultValue[ 1, 3 ] = Convert.ToSingle( matrixVals[ 7 ] );
-
-				m_defaultValue[ 2, 0 ] = Convert.ToSingle( matrixVals[ 8 ] );
-				m_defaultValue[ 2, 1 ] = Convert.ToSingle( matrixVals[ 9 ] );
-				m_defaultValue[ 2, 2 ] = Convert.ToSingle( matrixVals[ 10 ] );
-				m_defaultValue[ 2, 3 ] = Convert.ToSingle( matrixVals[ 11 ] );
-
-				m_defaultValue[ 3, 0 ] = Convert.ToSingle( matrixVals[ 12 ] );
-				m_defaultValue[ 3, 1 ] = Convert.ToSingle( matrixVals[ 13 ] );
-				m_defaultValue[ 3, 2 ] = Convert.ToSingle( matrixVals[ 14 ] );
-				m_defaultValue[ 3, 3 ] = Convert.ToSingle( matrixVals[ 15 ] );
-
-			}
-			else
-			{
-				UIUtils.ShowMessage( "Incorrect number of matrix4x4 values", MessageSeverity.Error );
-			}
+			m_defaultValue = IOUtils.StringToMatrix4x4( GetCurrentParam( ref nodeParams ) );
 		}
 
 		public override void WriteToString( ref string nodeInfo, ref string connectionsInfo )
 		{
 			base.WriteToString( ref nodeInfo, ref connectionsInfo );
-
-			IOUtils.AddFieldValueToString( ref nodeInfo, m_defaultValue[ 0, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 0, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 0, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 0, 3 ].ToString() + IOUtils.VECTOR_SEPARATOR +
-															m_defaultValue[ 1, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 1, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 1, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 1, 3 ].ToString() + IOUtils.VECTOR_SEPARATOR +
-															m_defaultValue[ 2, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 2, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 2, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 2, 3 ].ToString() + IOUtils.VECTOR_SEPARATOR +
-															m_defaultValue[ 3, 0 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 3, 1 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 3, 2 ].ToString() + IOUtils.VECTOR_SEPARATOR + m_defaultValue[ 3, 3 ].ToString() );
+			IOUtils.AddFieldValueToString( ref nodeInfo, IOUtils.Matrix4x4ToString( m_defaultValue ) );
 		}
+
+		public override void ReadAdditionalClipboardData( ref string[] nodeParams )
+		{
+			base.ReadAdditionalClipboardData( ref nodeParams );
+			m_materialValue = IOUtils.StringToMatrix4x4( GetCurrentParam( ref nodeParams ) );
+		}
+
+		public override void WriteAdditionalClipboardData( ref string nodeInfo )
+		{
+			base.WriteAdditionalClipboardData( ref nodeInfo );
+			IOUtils.AddFieldValueToString( ref nodeInfo, IOUtils.Matrix4x4ToString( m_materialValue ) );
+		}
+
 
 		public override string GetPropertyValStr()
 		{

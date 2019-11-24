@@ -77,11 +77,11 @@ namespace AmplifyShaderEditor
 			{
 				if ( m_style == null )
 				{
-					m_style = UIUtils.CurrentWindow.CustomStylesInstance.Box;
+					m_style = UIUtils.Box;
 				}
 				Color bufferedColor = GUI.color;
 				GUI.color = m_color;
-				GUI.Box( m_area, string.Empty, m_style );
+				GUI.Label( m_area, string.Empty, m_style );
 				GUI.color = bufferedColor;
 			}
 			return m_area.Contains( mousePosition );

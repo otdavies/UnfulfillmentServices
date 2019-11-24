@@ -8,7 +8,7 @@ using UnityEditor;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Layered Blend", "Misc", "Mix all channels through interpolation factors", null, KeyCode.None, true )]
+	[NodeAttributes( "Layered Blend", "Miscellaneous", "Mix all channels through interpolation factors", null, KeyCode.None, true )]
 	public sealed class LayeredBlendNode : WeightedAvgNode
 	{
 		protected override void CommonInit( int uniqueId )
@@ -23,15 +23,19 @@ namespace AmplifyShaderEditor
 			m_inputData = new string[ 6 ];
 			m_minimumSize = 2;
 			UpdateConnection( 0 );
+			m_previewShaderGUID = "48faca2f6506fc44c97adb1e2b79c37d";
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
+			if ( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
+
 			GetInputData( ref dataCollector, ignoreLocalvar );
 
 			string result = string.Empty;
-			string localVarName = "layeredBlendVar" + m_uniqueId;
-			dataCollector.AddToLocalVariables( m_uniqueId, m_currentPrecisionType, m_inputPorts[ 0 ].DataType, localVarName, m_inputData[ 0 ] );
+			string localVarName = "layeredBlendVar" + OutputId;
+			dataCollector.AddLocalVariable( UniqueId, CurrentPrecisionType, m_inputPorts[ 0 ].DataType, localVarName, m_inputData[ 0 ] );
 			
 			if ( m_activeCount == 1 )
 			{
@@ -50,7 +54,8 @@ namespace AmplifyShaderEditor
 				}
 			}
 			result = UIUtils.AddBrackets( result );
-			return CreateOutputLocalVariable( 0, result, ref dataCollector );
+			RegisterLocalVariable( 0, result, ref dataCollector, "layeredBlend" + OutputId );
+			return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
 		}
 	}
 }

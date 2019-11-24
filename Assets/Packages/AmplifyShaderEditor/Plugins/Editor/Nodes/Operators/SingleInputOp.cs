@@ -46,22 +46,19 @@ namespace AmplifyShaderEditor
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
+			if ( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
+
 			string result = "0";
 			if ( m_inputPorts[ 0 ].IsConnected )
 			{
 				ParentNode node = m_inputPorts[ 0 ].GetOutputNode();
 				int localOutputId = m_inputPorts[ 0 ].ExternalReferences[ 0 ].PortId;
-
-				//int typeTest = ( ( ( int ) node.OutputPorts[ localOutputId ].DataType ) & m_validTypes );
-				//if ( typeTest > 0 )
-				//{
 				result = m_opName + "( " + node.GenerateShaderForOutput( localOutputId, ref dataCollector, ignoreLocalvar ) + " )";
-				//}
 			}
 			else
 			{
-				m_inputPorts[ 0 ].UpdateInternalData();
-				result = m_opName + "( " + m_inputPorts[ 0 ].GenerateShaderForOutput( ref dataCollector, m_inputPorts[ 0 ].DataType, ignoreLocalvar ) + " )";
+				result = m_opName + "( " + m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector ) + " )";
 			}
 
 			return CreateOutputLocalVariable( 0, result, ref dataCollector );

@@ -17,5 +17,15 @@ namespace AmplifyShaderEditor
 			ChangeOutputName( 4, "1/Far Plane" );
 			m_value = "_ProjectionParams";
 		}
+
+		public override void RefreshExternalReferences()
+		{
+			base.RefreshExternalReferences();
+			if( !m_outputPorts[ 0 ].IsConnected )
+			{
+				m_outputPorts[ 0 ].Visible = false;
+				m_sizeIsDirty = true;
+			}
+		}
 	}
 }

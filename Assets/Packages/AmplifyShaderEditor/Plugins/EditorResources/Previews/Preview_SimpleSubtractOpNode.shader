@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SimpleSubtractOpNode"
+Shader "Hidden/SimpleSubtractOpNode"
 {
 	Properties
 	{

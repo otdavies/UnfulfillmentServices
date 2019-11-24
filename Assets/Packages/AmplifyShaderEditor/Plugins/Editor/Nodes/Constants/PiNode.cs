@@ -8,7 +8,7 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "PI", "Constants", "PI constant : 3.14159265359" )]
+	[NodeAttributes( "PI", "Constants And Properties", "PI constant : 3.14159265359" )]
 	public sealed class PiNode : ParentNode
 	{
 		public PiNode() : base() { }
@@ -28,19 +28,20 @@ namespace AmplifyShaderEditor
 		{
 			base.GenerateShaderForOutput( outputId, ref dataCollector, ignoreLocalvar );
 			string finalValue = string.Empty;
+			string piString = dataCollector.IsSRP ? "PI" : "UNITY_PI";
 			if( !InputPorts[ 0 ].IsConnected && InputPorts[ 0 ].FloatInternalData == 1 )
 			{
-				finalValue = "UNITY_PI";
+				finalValue = piString;
 			} else
 			{
 				string multiplier = InputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
-				finalValue = multiplier + " * UNITY_PI";
+				finalValue = "( " + multiplier + " * " + piString + " )";
 			}
 
 
 			if ( finalValue.Equals( string.Empty ) )
 			{
-				UIUtils.ShowMessage( "PINode generating empty code", MessageSeverity.Warning );
+				UIUtils.ShowMessage( UniqueId, "PINode generating empty code", MessageSeverity.Warning );
 			}
 			return finalValue;
 		}

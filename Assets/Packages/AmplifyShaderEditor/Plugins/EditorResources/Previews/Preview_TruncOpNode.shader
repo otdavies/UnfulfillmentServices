@@ -1,4 +1,4 @@
-﻿Shader "Hidden/TruncOpNode"
+Shader "Hidden/TruncOpNode"
 {
 	Properties
 	{

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/TauNode"
+Shader "Hidden/TauNode"
 {
 	SubShader
 	{

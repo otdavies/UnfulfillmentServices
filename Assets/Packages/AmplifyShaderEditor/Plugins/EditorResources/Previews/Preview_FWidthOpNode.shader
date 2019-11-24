@@ -1,4 +1,4 @@
-﻿Shader "Hidden/FWidthOpNode"
+Shader "Hidden/FWidthOpNode"
 {
 	Properties
 	{

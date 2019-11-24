@@ -4,16 +4,15 @@
 // Custom Node Vertex Binormal World
 // Donated by Community Member Kebrus
 
+using UnityEngine;
 using System;
 
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "World Bitangent", "Surface Standard Inputs", "Per pixel world bitangent vector" )]
+	[NodeAttributes( "World Bitangent", "Surface Data", "Per pixel world bitangent vector", null, KeyCode.None, true, false, null, null, "kebrus" )]
 	public sealed class VertexBinormalNode : ParentNode
 	{
-		//private const string WorldBiTangentDefFrag = "WorldNormalVector( {0}, float3(0,1,0) )";
-		//private const string WorldBiTangentDefVert = "UnityObjectToWorldDir( {0}.tangent.xyz )";
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
@@ -22,20 +21,26 @@ namespace AmplifyShaderEditor
 			m_previewShaderGUID = "76873532ab67d2947beaf07151383cbe";
 		}
 
-		public override void PropagateNodeData( NodeData nodeData )
+		public override void PropagateNodeData( NodeData nodeData, ref MasterNodeDataCollector dataCollector )
 		{
-			base.PropagateNodeData( nodeData );
-			UIUtils.CurrentDataCollector.DirtyNormal = true;
+			base.PropagateNodeData( nodeData, ref dataCollector );
+			dataCollector.DirtyNormal = true;
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
-			dataCollector.ForceNormal = true;
+			if ( dataCollector.IsTemplate )
+				return GetOutputVectorItem( 0, outputId, dataCollector.TemplateDataCollectorInstance.GetWorldBinormal( CurrentPrecisionType ) );
 
-			dataCollector.AddToInput( m_uniqueId, UIUtils.GetInputDeclarationFromType( m_currentPrecisionType, AvailableSurfaceInputs.WORLD_NORMAL ), true );
-			dataCollector.AddToInput( m_uniqueId, Constants.InternalData, false );
+			if( dataCollector.PortCategory == MasterNodePortCategory.Fragment || dataCollector.PortCategory == MasterNodePortCategory.Debug )
+			{
+				dataCollector.ForceNormal = true;
 
-			string worldBitangent = GeneratorUtils.GenerateWorldBitangent( ref dataCollector, m_uniqueId );
+				dataCollector.AddToInput( UniqueId, SurfaceInputs.WORLD_NORMAL, CurrentPrecisionType );
+				dataCollector.AddToInput( UniqueId, SurfaceInputs.INTERNALDATA, addSemiColon: false );
+			}
+
+			string worldBitangent = GeneratorUtils.GenerateWorldBitangent( ref dataCollector, UniqueId );
 
 			return GetOutputVectorItem( 0, outputId, worldBitangent );
 		}

@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ClampOpNode"
+Shader "Hidden/ClampOpNode"
 {
 	Properties
 	{

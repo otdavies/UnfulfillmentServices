@@ -5,34 +5,39 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Object Space Light Dir", "Forward Render", "Computes object space direction (not normalized) to light, given object space vertex position" )]
+	[NodeAttributes( "Object Space Light Dir", "Light", "Computes object space light direction (not normalized)" )]
 	public sealed class ObjSpaceLightDirHlpNode : HelperParentNode
 	{
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
 			m_funcType = "ObjSpaceLightDir";
-			//m_inputPorts[ 0 ].ChangeType( WirePortDataType.FLOAT4, false );
 			m_inputPorts[ 0 ].Visible = false;
 			m_outputPorts[ 0 ].ChangeType( WirePortDataType.FLOAT3, false );
 			m_outputPorts[ 0 ].Name = "XYZ";
+
+			AddOutputPort( WirePortDataType.FLOAT, "X" );
+			AddOutputPort( WirePortDataType.FLOAT, "Y" );
+			AddOutputPort( WirePortDataType.FLOAT, "Z" );
+
 			m_useInternalPortData = false;
+			m_previewShaderGUID = "c7852de24cec4a744b5358921e23feee";
+			m_drawPreviewAsSphere = true;
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
-			//return base.GenerateShaderForOutput( outputId, inputPortType, ref dataCollector, ignoreLocalvar );
+			if( dataCollector.IsTemplate )
+			{
+				//Template must have its Light Mode correctly configured on tags to work as intended
+				return GetOutputVectorItem( 0, outputId, dataCollector.TemplateDataCollectorInstance.GetObjectSpaceLightDir( CurrentPrecisionType ) );
+			}
 
-			dataCollector.AddToInput( m_uniqueId, UIUtils.GetInputDeclarationFromType( m_currentPrecisionType, AvailableSurfaceInputs.WORLD_POS ), true );
-			dataCollector.AddToIncludes( m_uniqueId, Constants.UnityShaderVariables );
+			dataCollector.AddToIncludes( UniqueId, Constants.UnityCgLibFuncs );
+			dataCollector.AddToInput( UniqueId, SurfaceInputs.WORLD_POS );
 
-#if UNITY_5_4_OR_NEWER
-			string matrix = "unity_WorldToObject";
-#else
-				string matrix = "_World2Object";
-#endif
-
-			return m_funcType + "( mul( " + matrix + ", float4( " + Constants.InputVarStr + ".worldPos , 1 ) ) )";
+			string vertexPos = GeneratorUtils.GenerateVertexPosition( ref dataCollector, UniqueId, WirePortDataType.FLOAT4 );
+			return GetOutputVectorItem( 0, outputId, GeneratorUtils.GenerateObjectLightDirection( ref dataCollector, UniqueId, CurrentPrecisionType, vertexPos ) );
 		}
 	}
 }

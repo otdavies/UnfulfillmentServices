@@ -1,4 +1,4 @@
-﻿Shader "Hidden/DdyOpNode"
+Shader "Hidden/DdyOpNode"
 {
 	Properties
 	{

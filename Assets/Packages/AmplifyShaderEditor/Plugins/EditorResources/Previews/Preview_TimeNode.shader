@@ -1,4 +1,4 @@
-﻿Shader "Hidden/TimeNode"
+Shader "Hidden/TimeNode"
 {
 	SubShader
 	{

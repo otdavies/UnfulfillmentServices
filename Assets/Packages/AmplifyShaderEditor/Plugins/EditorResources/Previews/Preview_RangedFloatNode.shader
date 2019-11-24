@@ -1,4 +1,4 @@
-﻿Shader "Hidden/RangedFloatNode"
+Shader "Hidden/RangedFloatNode"
 {
 	Properties {
 		_InputFloat ("_InputFloat", Float) = 0

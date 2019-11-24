@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SimpleMaxOp"
+Shader "Hidden/SimpleMaxOp"
 {
 	Properties
 	{

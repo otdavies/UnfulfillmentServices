@@ -10,7 +10,7 @@ using System;
 namespace AmplifyShaderEditor
 {
     [Serializable]
-	[NodeAttributes("Compare (A > B)", "Logical Operators", "Check if A is greater than B. If true return value of True else return value of False", null, KeyCode.None, true, false, null, null, true )]
+	[NodeAttributes("Compare (A > B)", "Logical Operators", "Check if A is greater than B. If true return value of True else return value of False", null, KeyCode.None, true, false, null, null, "The Four Headed Cat - @fourheadedcat" )]
     public sealed class TFHCCompareGreater : TFHCStub
 	{
 		protected override void CommonInit( int uniqueId )
@@ -22,6 +22,7 @@ namespace AmplifyShaderEditor
 			AddInputPort( WirePortDataType.FLOAT, false, "False" );
 			m_textLabelWidth = 100;
 			m_useInternalPortData = true;
+			m_previewShaderGUID = "363192dbd019ad2478f2fe6c277b7e48";
 		}
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )

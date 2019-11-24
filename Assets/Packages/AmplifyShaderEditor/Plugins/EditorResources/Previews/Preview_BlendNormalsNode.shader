@@ -1,4 +1,4 @@
-﻿Shader "Hidden/BlendNormalsNode"
+Shader "Hidden/BlendNormalsNode"
 {
 	Properties
 	{

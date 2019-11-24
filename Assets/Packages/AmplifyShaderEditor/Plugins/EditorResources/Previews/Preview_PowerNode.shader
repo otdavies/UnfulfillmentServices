@@ -1,4 +1,4 @@
-﻿Shader "Hidden/PowerNode"
+Shader "Hidden/PowerNode"
 {
 	Properties
 	{

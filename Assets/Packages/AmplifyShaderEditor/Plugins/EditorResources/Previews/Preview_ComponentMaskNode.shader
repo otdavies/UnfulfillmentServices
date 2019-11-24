@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ComponentMaskNode"
+Shader "Hidden/ComponentMaskNode"
 {
 	Properties
 	{

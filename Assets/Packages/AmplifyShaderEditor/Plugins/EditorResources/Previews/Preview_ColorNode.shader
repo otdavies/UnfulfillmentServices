@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ColorNode"
+Shader "Hidden/ColorNode"
 {
 	Properties {
 		_InputColor ("_InputColor", Color) = (0,0,0,0)

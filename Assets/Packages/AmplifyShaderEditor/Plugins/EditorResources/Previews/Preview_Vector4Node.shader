@@ -1,4 +1,4 @@
-﻿Shader "Hidden/Vector4Node"
+Shader "Hidden/Vector4Node"
 {
 	Properties {
 		_InputVector ("_InputVector", Vector) = (0,0,0,0)

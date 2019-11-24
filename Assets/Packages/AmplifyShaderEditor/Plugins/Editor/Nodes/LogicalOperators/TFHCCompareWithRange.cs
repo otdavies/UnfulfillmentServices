@@ -10,7 +10,7 @@ using System;
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Compare With Range", "Logical Operators", "Check if A is in the range between Range Min and Range Max. If true return value of True else return value of False", null, KeyCode.None, true, false, null, null, true )]
+	[NodeAttributes( "Compare With Range", "Logical Operators", "Check if A is in the range between Range Min and Range Max. If true return value of True else return value of False", null, KeyCode.None, true, false, null, null, "The Four Headed Cat - @fourheadedcat" )]
 	public sealed class TFHCCompareWithRange : DynamicTypeNode
 	{
 		private WirePortDataType m_mainInputType = WirePortDataType.FLOAT;
@@ -26,6 +26,7 @@ namespace AmplifyShaderEditor
 			AddInputPort( WirePortDataType.FLOAT, false, "False" );
 			m_textLabelWidth = 100;
 			m_useInternalPortData = true;
+			m_previewShaderGUID = "127d114eed178d7409f900134a6c00d1";
 		}
 
 		public override void OnInputPortConnected( int portId, int otherNodeId, int otherPortId, bool activateNode = true )

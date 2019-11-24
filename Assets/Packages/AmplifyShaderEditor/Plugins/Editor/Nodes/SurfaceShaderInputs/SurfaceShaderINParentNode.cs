@@ -10,7 +10,7 @@ namespace AmplifyShaderEditor
 	public class SurfaceShaderINParentNode : ParentNode
 	{
 		[SerializeField]
-		protected AvailableSurfaceInputs m_currentInput;
+		protected SurfaceInputs m_currentInput;
 
 		[SerializeField]
 		protected string m_currentInputValueStr;
@@ -21,8 +21,9 @@ namespace AmplifyShaderEditor
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
-			m_currentInput = AvailableSurfaceInputs.UV_COORDS;
+			m_currentInput = SurfaceInputs.UV_COORDS;
 			m_textLabelWidth = 65;
+			m_customPrecision = true;
 		}
 
 		public override void DrawProperties()
@@ -38,54 +39,54 @@ namespace AmplifyShaderEditor
 			string outputName = "Out";
 			switch ( m_currentInput )
 			{
-				case AvailableSurfaceInputs.DEPTH:
+				case SurfaceInputs.DEPTH:
 				{
 					AddOutputPort( WirePortDataType.FLOAT, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.UV_COORDS:
+				case SurfaceInputs.UV_COORDS:
 				{
 					outputName = "UV";
 					AddOutputVectorPorts( WirePortDataType.FLOAT2, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.UV2_COORDS:
+				case SurfaceInputs.UV2_COORDS:
 				{
 					outputName = "UV";
 					AddOutputVectorPorts( WirePortDataType.FLOAT2, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.VIEW_DIR:
+				case SurfaceInputs.VIEW_DIR:
 				{
 					outputName = "XYZ";
 					AddOutputVectorPorts( WirePortDataType.FLOAT3, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.COLOR:
+				case SurfaceInputs.COLOR:
 				{
 					outputName = "RGBA";
 					AddOutputVectorPorts( WirePortDataType.FLOAT4, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.SCREEN_POS:
+				case SurfaceInputs.SCREEN_POS:
 				{
 					outputName = "XYZW";
 					AddOutputVectorPorts( WirePortDataType.FLOAT4, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.WORLD_POS:
+				case SurfaceInputs.WORLD_POS:
 				{
 					outputName = "XYZ";
 					AddOutputVectorPorts( WirePortDataType.FLOAT3, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.WORLD_REFL:
+				case SurfaceInputs.WORLD_REFL:
 				{
 					outputName = "XYZ";
 					AddOutputVectorPorts( WirePortDataType.FLOAT3, outputName );
 				}
 				break;
-				case AvailableSurfaceInputs.WORLD_NORMAL:
+				case SurfaceInputs.WORLD_NORMAL:
 				{
 					outputName = "XYZ";
 					AddOutputVectorPorts( WirePortDataType.FLOAT3, outputName );
@@ -96,23 +97,22 @@ namespace AmplifyShaderEditor
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalVar )
 		{
-			m_currentInputDecStr = UIUtils.GetInputDeclarationFromType( m_currentPrecisionType, m_currentInput );
-			dataCollector.AddToInput( m_uniqueId, m_currentInputDecStr, true );
+			dataCollector.AddToInput( UniqueId, m_currentInput, CurrentPrecisionType );
 			switch ( m_currentInput )
 			{
-				case AvailableSurfaceInputs.VIEW_DIR:
-				case AvailableSurfaceInputs.WORLD_REFL:
-				case AvailableSurfaceInputs.WORLD_NORMAL:
+				case SurfaceInputs.VIEW_DIR:
+				case SurfaceInputs.WORLD_REFL:
+				case SurfaceInputs.WORLD_NORMAL:
 				{
-					dataCollector.AddToInput( m_uniqueId, Constants.InternalData, false );
+					dataCollector.AddToInput( UniqueId, SurfaceInputs.INTERNALDATA, addSemiColon: false );
 				}
 				break;
-				case AvailableSurfaceInputs.WORLD_POS:
-				case AvailableSurfaceInputs.DEPTH:
-				case AvailableSurfaceInputs.UV_COORDS:
-				case AvailableSurfaceInputs.UV2_COORDS:
-				case AvailableSurfaceInputs.COLOR:
-				case AvailableSurfaceInputs.SCREEN_POS: break;
+				case SurfaceInputs.WORLD_POS:
+				case SurfaceInputs.DEPTH:
+				case SurfaceInputs.UV_COORDS:
+				case SurfaceInputs.UV2_COORDS:
+				case SurfaceInputs.COLOR:
+				case SurfaceInputs.SCREEN_POS: break;
 			};
 
 			return GetOutputVectorItem( 0, outputId, m_currentInputValueStr );

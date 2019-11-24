@@ -1,4 +1,4 @@
-﻿Shader "Hidden/NegateNode"
+Shader "Hidden/NegateNode"
 {
 	Properties
 	{

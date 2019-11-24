@@ -1,4 +1,4 @@
-﻿Shader "Hidden/PiNode"
+Shader "Hidden/PiNode"
 {
 	SubShader
 	{

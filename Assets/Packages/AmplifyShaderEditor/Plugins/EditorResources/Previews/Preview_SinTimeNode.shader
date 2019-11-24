@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SinTimeNode"
+Shader "Hidden/SinTimeNode"
 {
 	SubShader
 	{

@@ -105,7 +105,7 @@ namespace AmplifyShaderEditor
 			{
 				m_editorShortcutsDict.Add( key, new Dictionary<EventModifiers, ShortcutItem>() );
 			}
-			ShortcutItem item = new ShortcutItem( ( modifiers == EventModifiers.None ? key.ToString() : modifiers + " + " + key ), description, myKeyDownFunctionPtr, myKeyUpFunctionPtr );
+			ShortcutItem item = new ShortcutItem( ( ( modifiers == EventModifiers.None || modifiers == EventModifiers.FunctionKey  ) ? key.ToString() : modifiers + " + " + key ), description, myKeyDownFunctionPtr, myKeyUpFunctionPtr );
 			m_editorShortcutsDict[ key ].Add( modifiers, item );
 			if ( showOnList )
 				m_editorShortcutsList.Add( item );
@@ -156,7 +156,7 @@ namespace AmplifyShaderEditor
 				}
 			}
 
-			if ( m_editorNoModifiersShortcutsDict.ContainsKey( key ) )
+			if ( modifiers == EventModifiers.None && m_editorNoModifiersShortcutsDict.ContainsKey( key ) )
 			{
 				if ( isKeyDown )
 				{

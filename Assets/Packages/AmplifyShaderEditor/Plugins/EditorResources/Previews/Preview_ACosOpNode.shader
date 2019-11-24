@@ -1,4 +1,4 @@
-﻿Shader "Hidden/ACosOpNode"
+Shader "Hidden/ACosOpNode"
 {
 	Properties
 	{

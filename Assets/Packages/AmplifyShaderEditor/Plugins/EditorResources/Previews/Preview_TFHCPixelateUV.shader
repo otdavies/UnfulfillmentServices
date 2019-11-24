@@ -1,4 +1,4 @@
-﻿Shader "Hidden/TFHCPixelateUV"
+Shader "Hidden/TFHCPixelateUV"
 {
 	Properties
 	{

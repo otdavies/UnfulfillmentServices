@@ -17,5 +17,21 @@ namespace AmplifyShaderEditor
 			ChangeOutputName( 4, "Projection Mode" );
 			m_value = "unity_OrthoParams";
 		}
+
+		public override void RefreshExternalReferences()
+		{
+			base.RefreshExternalReferences();
+			if( !m_outputPorts[ 0 ].IsConnected )
+			{
+				m_outputPorts[ 0 ].Visible = false;
+				m_sizeIsDirty = true;
+			}
+
+			if( !m_outputPorts[ 3 ].IsConnected )
+			{
+				m_outputPorts[ 3 ].Visible = false;
+				m_sizeIsDirty = true;
+			}
+		}
 	}
 }

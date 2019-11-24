@@ -1,4 +1,4 @@
-﻿Shader "Hidden/RoundOpNode"
+Shader "Hidden/RoundOpNode"
 {
 	Properties
 	{

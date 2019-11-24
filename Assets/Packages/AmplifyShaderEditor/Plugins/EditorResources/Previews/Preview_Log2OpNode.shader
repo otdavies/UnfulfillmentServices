@@ -1,4 +1,4 @@
-﻿Shader "Hidden/Log2OpNode"
+Shader "Hidden/Log2OpNode"
 {
 	Properties
 	{

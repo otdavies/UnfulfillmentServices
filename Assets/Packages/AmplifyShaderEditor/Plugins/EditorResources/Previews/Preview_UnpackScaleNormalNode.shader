@@ -1,4 +1,4 @@
-﻿Shader "Hidden/UnpackScaleNormalNode"
+Shader "Hidden/UnpackScaleNormalNode"
 {
 	Properties
 	{

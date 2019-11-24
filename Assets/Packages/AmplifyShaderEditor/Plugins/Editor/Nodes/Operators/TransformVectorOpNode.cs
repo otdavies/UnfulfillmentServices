@@ -11,10 +11,13 @@ namespace AmplifyShaderEditor
 		Tangent,
 		Local,
 		World,
-		View
+		View,
+		Clip,
+		Screen
 	}
+
 	[Serializable]
-	[NodeAttributes( "Transform Vector", "Operators", "Transforma a vector into another", null, KeyCode.None, false )]
+	[NodeAttributes( "Transform Vector", "Math Operators", "Transforma a vector into another", null, KeyCode.None, false )]
 	public sealed class TransformVectorOpNode : ParentNode
 	{
 		[SerializeField]
@@ -38,16 +41,17 @@ namespace AmplifyShaderEditor
 
 		void AddTangentInfo( ref MasterNodeDataCollector dataCollector )
 		{
-			dataCollector.AddToInput( m_uniqueId, InputTangentrStr, true );
-			dataCollector.AddToInput( m_uniqueId, InputTangentrStr, true );
-			dataCollector.AddToInput( m_uniqueId, InputNormalStr, true );
-			dataCollector.AddToLocalVariables( m_uniqueId, "float3 binormal = cross( normalize( v.normal ), normalize( v.tangent.xyz ) ) * v.tangent.w;" );
-			dataCollector.AddToLocalVariables( m_uniqueId, "float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal );" );
+			dataCollector.AddToInput( UniqueId, InputTangentrStr, true );
+			dataCollector.AddToInput( UniqueId, InputTangentrStr, true );
+			dataCollector.AddToInput( UniqueId, InputNormalStr, true );
+			dataCollector.AddToLocalVariables( UniqueId, "float3 binormal = cross( normalize( v.normal ), normalize( v.tangent.xyz ) ) * v.tangent.w;" );
+			dataCollector.AddToLocalVariables( UniqueId, "float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal );" );
 
 		}
 
 		public override string GenerateShaderForOutput( int outputId,  ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
 		{
+
 			//if ( !InputPorts[ 0 ].IsConnected )
 			//{
 			//	return UIUtils.NoConnection( this );
@@ -55,7 +59,7 @@ namespace AmplifyShaderEditor
 
 			string value = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 			
-			dataCollector.AddToIncludes( m_uniqueId, Constants.UnityShaderVariables );
+			dataCollector.AddToIncludes( UniqueId, Constants.UnityShaderVariables );
 
 
 
@@ -130,7 +134,7 @@ namespace AmplifyShaderEditor
 				break;
 				case CoordinateSpaces.View:
 				{
-					UIUtils.ShowMessage( "View as Source is not supported", MessageSeverity.Warning );
+					UIUtils.ShowMessage( UniqueId, "View as Source is not supported", MessageSeverity.Warning );
 					return value;
 				}
 			}

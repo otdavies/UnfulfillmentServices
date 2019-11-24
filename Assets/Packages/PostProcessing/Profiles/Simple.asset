@@ -65,13 +65,13 @@ MonoBehaviour:
       screenEdgeMask:
         intensity: 0.03
   depthOfField:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
-      focusDistance: 29.99669
-      aperture: 2.2
+      focusDistance: 70
+      aperture: 0.1
       focalLength: 300
-      useCameraFov: 0
-      kernelSize: 1
+      useCameraFov: 1
+      kernelSize: 2
   motionBlur:
     m_Enabled: 0
     m_Settings:
@@ -81,16 +81,16 @@ MonoBehaviour:
   eyeAdaptation:
     m_Enabled: 1
     m_Settings:
-      lowPercent: 65
-      highPercent: 95
+      lowPercent: 18.287338
+      highPercent: 83.24931
       minLuminance: 0.5
       maxLuminance: 1
       exposureCompensation: 0.5
       adaptationType: 0
       speedUp: 2
       speedDown: 1
-      logMin: -7
-      logMax: 4
+      logMin: -8
+      logMax: 6
   bloom:
     m_Enabled: 1
     m_Settings:
@@ -107,7 +107,7 @@ MonoBehaviour:
     m_Enabled: 1
     m_Settings:
       tonemapping:
-        tonemapper: 2
+        tonemapper: 1
         neutralBlackIn: 0.02
         neutralWhiteIn: 10
         neutralBlackOut: 0
@@ -288,7 +288,7 @@ MonoBehaviour:
       size: 1
       luminanceContribution: 0.623
   vignette:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       mode: 0
       color: {r: 0, g: 0, b: 0, a: 1}

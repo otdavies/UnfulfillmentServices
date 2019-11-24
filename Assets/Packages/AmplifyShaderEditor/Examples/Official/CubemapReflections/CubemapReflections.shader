@@ -1,17 +1,15 @@
-// Upgrade NOTE: replaced 'UNITY_INSTANCE_ID' with 'UNITY_VERTEX_INPUT_INSTANCE_ID'
-
 // Made with Amplify Shader Editor
 // Available at the Unity Asset Store - http://u3d.as/y3X 
 Shader "ASESampleShaders/CubemapReflections"
 {
 	Properties
 	{
+		_Albedo("Albedo", 2D) = "white" {}
+		_Normals("Normals", 2D) = "bump" {}
 		_Cubemap("Cubemap", CUBE) = "white" {}
 		_Metallic("Metallic", 2D) = "white" {}
-		[HideInInspector] __dirty( "", Int ) = 1
-		_Normals("Normals", 2D) = "bump" {}
-		_Albedo("Albedo", 2D) = "white" {}
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
+		[HideInInspector] __dirty( "", Int ) = 1
 	}
 
 	SubShader
@@ -49,19 +47,19 @@ Shader "ASESampleShaders/CubemapReflections"
 		void surf( Input i , inout SurfaceOutputStandard o )
 		{
 			float2 uv_Normals = i.uv_texcoord * _Normals_ST.xy + _Normals_ST.zw;
-			o.Normal = UnpackNormal( tex2D( _Normals,uv_Normals) );
+			float3 tex2DNode10 = UnpackNormal( tex2D( _Normals, uv_Normals ) );
+			o.Normal = tex2DNode10;
 			float2 uv_Albedo = i.uv_texcoord * _Albedo_ST.xy + _Albedo_ST.zw;
-			o.Albedo = ( tex2D( _Albedo,uv_Albedo) * 0.5 ).xyz;
-			float3 tex2DNode10 = UnpackNormal( tex2D( _Normals,uv_Normals) );
-			o.Emission = ( ( 1.0 - 0.5 ) * texCUBE( _Cubemap,WorldReflectionVector( i , tex2DNode10 )) ).xyz;
+			o.Albedo = ( tex2D( _Albedo, uv_Albedo ) * 0.5 ).rgb;
+			o.Emission = ( ( 1.0 - 0.5 ) * texCUBE( _Cubemap, WorldReflectionVector( i , tex2DNode10 ) ) ).rgb;
 			float2 uv_Metallic = i.uv_texcoord * _Metallic_ST.xy + _Metallic_ST.zw;
-			o.Metallic = tex2D( _Metallic,uv_Metallic).x;
+			o.Metallic = tex2D( _Metallic, uv_Metallic ).r;
 			o.Alpha = 1;
 		}
 
 		ENDCG
 		CGPROGRAM
-		#pragma surface surf Standard keepalpha 
+		#pragma surface surf Standard keepalpha fullforwardshadows 
 
 		ENDCG
 		Pass
@@ -73,22 +71,19 @@ Shader "ASESampleShaders/CubemapReflections"
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma target 3.0
-			#pragma multi_compile_instancing
 			#pragma multi_compile_shadowcaster
 			#pragma multi_compile UNITY_PASS_SHADOWCASTER
 			#pragma skip_variants FOG_LINEAR FOG_EXP FOG_EXP2
-			# include "HLSLSupport.cginc"
-			#if ( SHADER_API_D3D11 || SHADER_API_GLCORE || SHADER_API_GLES3 )
+			#include "HLSLSupport.cginc"
+			#if ( SHADER_API_D3D11 || SHADER_API_GLCORE || SHADER_API_GLES3 || SHADER_API_METAL || SHADER_API_VULKAN )
 				#define CAN_SKIP_VPOS
 			#endif
 			#include "UnityCG.cginc"
 			#include "Lighting.cginc"
 			#include "UnityPBSLighting.cginc"
-			sampler3D _DitherMaskLOD;
 			struct v2f
 			{
 				V2F_SHADOW_CASTER;
-				float3 worldPos : TEXCOORD6;
 				float4 tSpace0 : TEXCOORD1;
 				float4 tSpace1 : TEXCOORD2;
 				float4 tSpace2 : TEXCOORD3;
@@ -102,7 +97,7 @@ Shader "ASESampleShaders/CubemapReflections"
 				UNITY_INITIALIZE_OUTPUT( v2f, o );
 				UNITY_TRANSFER_INSTANCE_ID( v, o );
 				float3 worldPos = mul( unity_ObjectToWorld, v.vertex ).xyz;
-				half3 worldNormal = UnityObjectToWorldNormal( v.normal );
+				fixed3 worldNormal = UnityObjectToWorldNormal( v.normal );
 				fixed3 worldTangent = UnityObjectToWorldDir( v.tangent.xyz );
 				fixed tangentSign = v.tangent.w * unity_WorldTransformParams.w;
 				fixed3 worldBinormal = cross( worldNormal, worldTangent ) * tangentSign;
@@ -110,7 +105,6 @@ Shader "ASESampleShaders/CubemapReflections"
 				o.tSpace1 = float4( worldTangent.y, worldBinormal.y, worldNormal.y, worldPos.y );
 				o.tSpace2 = float4( worldTangent.z, worldBinormal.z, worldNormal.z, worldPos.z );
 				o.texcoords01 = float4( v.texcoord.xy, v.texcoord1.xy );
-				o.worldPos = worldPos;
 				TRANSFER_SHADOW_CASTER_NORMALOFFSET( o )
 				return o;
 			}
@@ -123,7 +117,7 @@ Shader "ASESampleShaders/CubemapReflections"
 				UNITY_SETUP_INSTANCE_ID( IN );
 				Input surfIN;
 				UNITY_INITIALIZE_OUTPUT( Input, surfIN );
-				surfIN.uv_texcoord = IN.texcoords01.xy;
+				surfIN.uv_texcoord.xy = IN.texcoords01.xy;
 				float3 worldPos = float3( IN.tSpace0.w, IN.tSpace1.w, IN.tSpace2.w );
 				fixed3 worldViewDir = normalize( UnityWorldSpaceViewDir( worldPos ) );
 				surfIN.worldRefl = -worldViewDir;
@@ -136,8 +130,6 @@ Shader "ASESampleShaders/CubemapReflections"
 				#if defined( CAN_SKIP_VPOS )
 				float2 vpos = IN.pos;
 				#endif
-				half alphaRef = tex3D( _DitherMaskLOD, float3( vpos.xy * 0.25, o.Alpha * 0.9375 ) ).a;
-				clip( alphaRef - 0.01 );
 				SHADOW_CASTER_FRAGMENT( IN )
 			}
 			ENDCG
@@ -147,28 +139,28 @@ Shader "ASESampleShaders/CubemapReflections"
 	CustomEditor "ASEMaterialInspector"
 }
 /*ASEBEGIN
-Version=3202
-339;92;1181;607;977.3164;225.4564;1;True;False
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;3;-151.5,-27;Float;FLOAT4;0.0,0,0,0;FLOAT;0.0,0,0,0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;7;-150.5,174;Float;FLOAT;0.0;FLOAT4;0.0
-Node;AmplifyShaderEditor.OneMinusNode;6;-292.5,81;Float;FLOAT;0.0
-Node;AmplifyShaderEditor.RangedFloatNode;4;-466.5,11;Float;Constant;_Float0;Float 0;-1;0.5;0;0
-Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;71,2;Float;True;2;Float;ASEMaterialInspector;Standard;ASESampleShaders/CubemapReflections;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;3;False;0;0;Opaque;0.5;True;True;0;False;Opaque;Geometry;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;False;0;255;255;0;0;0;0;False;0;4;10;25;False;0.5;True;FLOAT3;0,0,0;FLOAT3;0.0;FLOAT3;0.0;FLOAT;0.0;FLOAT;0.0;FLOAT;0.0;FLOAT3;0.0;FLOAT3;0.0;FLOAT;0.0;OBJECT;0,0,0;FLOAT3;0,0,0;OBJECT;0,0,0;OBJECT;0.0;FLOAT4;0,0,0,0;FLOAT3;0,0,0
-Node;AmplifyShaderEditor.WorldReflectionVector;9;-844.6999,324.6002;Float;FLOAT3;0,0,0
-Node;AmplifyShaderEditor.SamplerNode;1;-497.5,242;Float;Property;_Cubemap;Cubemap;-1;None;True;0;False;white;Auto;False;Object;-1;Auto;Cube;SAMPLER2D;0,0;FLOAT2;1.0;FLOAT;1.0;FLOAT2;0,0;FLOAT2;0,0;FLOAT;1.0
-Node;AmplifyShaderEditor.SamplerNode;13;-210.7001,302.3;Float;Property;_Metallic;Metallic;-1;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;SAMPLER2D;0,0;FLOAT2;1.0;FLOAT;1.0;FLOAT2;0,0;FLOAT2;0,0;FLOAT;1.0
-Node;AmplifyShaderEditor.SamplerNode;2;-636.5,-254;Float;Property;_Albedo;Albedo;-1;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;SAMPLER2D;0,0;FLOAT2;1.0;FLOAT;1.0;FLOAT2;0,0;FLOAT2;0,0;FLOAT;1.0
-Node;AmplifyShaderEditor.SamplerNode;10;-1193.5,-7.000012;Float;Property;_Normals;Normals;-1;None;True;0;True;bump;Auto;True;Object;-1;Auto;Texture2D;SAMPLER2D;0,0;FLOAT2;1.0;FLOAT;1.0;FLOAT2;0,0;FLOAT2;0,0;FLOAT;1.0
-WireConnection;3;0;2;0
-WireConnection;3;1;4;0
+Version=13803
+566;511;900;507;1894.669;558.1631;2.459016;True;False
+Node;AmplifyShaderEditor.SamplerNode;10;-1232,16;Float;True;Property;_Normals;Normals;1;0;None;True;0;True;bump;Auto;True;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;0,0;False;1;FLOAT2;0,0;False;2;FLOAT;1.0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1.0;False;5;FLOAT3;FLOAT;FLOAT;FLOAT;FLOAT
+Node;AmplifyShaderEditor.RangedFloatNode;4;-640,-32;Float;False;Constant;_Float0;Float 0;-1;0;0.5;0;0;0;1;FLOAT
+Node;AmplifyShaderEditor.WorldReflectionVector;9;-896,256;Float;False;1;0;FLOAT3;0,0,0;False;4;FLOAT3;FLOAT;FLOAT;FLOAT
+Node;AmplifyShaderEditor.OneMinusNode;6;-432,144;Float;False;1;0;FLOAT;0.0;False;1;FLOAT
+Node;AmplifyShaderEditor.SamplerNode;2;-640,-256;Float;True;Property;_Albedo;Albedo;0;0;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;0,0;False;1;FLOAT2;0,0;False;2;FLOAT;1.0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1.0;False;5;COLOR;FLOAT;FLOAT;FLOAT;FLOAT
+Node;AmplifyShaderEditor.SamplerNode;1;-640,256;Float;True;Property;_Cubemap;Cubemap;2;0;None;True;0;False;white;Auto;False;Object;-1;Auto;Cube;6;0;SAMPLER2D;0,0;False;1;FLOAT3;0,0;False;2;FLOAT;1.0;False;3;FLOAT3;0,0,0;False;4;FLOAT3;0,0,0;False;5;FLOAT;1.0;False;5;COLOR;FLOAT;FLOAT;FLOAT;FLOAT
+Node;AmplifyShaderEditor.SamplerNode;13;-304,304;Float;True;Property;_Metallic;Metallic;3;0;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;0,0;False;1;FLOAT2;0,0;False;2;FLOAT;1.0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1.0;False;5;COLOR;FLOAT;FLOAT;FLOAT;FLOAT
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;7;-240,144;Float;False;2;2;0;FLOAT;0.0;False;1;COLOR;0;False;1;COLOR
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;3;-256,-48;Float;False;2;2;0;COLOR;0.0,0,0,0;False;1;FLOAT;0.0,0,0,0;False;1;COLOR
+Node;AmplifyShaderEditor.StandardSurfaceOutputNode;0;64,0;Float;False;True;2;Float;ASEMaterialInspector;0;0;Standard;ASESampleShaders/CubemapReflections;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;Back;0;3;False;0;0;Opaque;0.5;True;True;0;False;Opaque;Geometry;All;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;True;False;0;255;255;0;0;0;0;0;0;0;0;False;0;4;10;25;False;0.5;True;0;Zero;Zero;0;Zero;Zero;OFF;OFF;0;False;0;0,0,0,0;VertexOffset;False;Cylindrical;False;Relative;0;;-1;-1;-1;-1;0;0;0;False;16;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT3;0,0,0;False;3;FLOAT;0.0;False;4;FLOAT;0.0;False;5;FLOAT;0.0;False;6;FLOAT3;0,0,0;False;7;FLOAT3;0,0,0;False;8;FLOAT;0.0;False;9;FLOAT;0.0;False;10;FLOAT;0;False;13;FLOAT3;0,0,0;False;11;FLOAT3;0,0,0;False;12;FLOAT3;0.0,0,0;False;14;FLOAT4;0,0,0,0;False;15;FLOAT3;0,0,0;False;0
+WireConnection;9;0;10;0
+WireConnection;6;0;4;0
+WireConnection;1;1;9;0
 WireConnection;7;0;6;0
 WireConnection;7;1;1;0
-WireConnection;6;0;4;0
+WireConnection;3;0;2;0
+WireConnection;3;1;4;0
 WireConnection;0;0;3;0
 WireConnection;0;1;10;0
 WireConnection;0;2;7;0
 WireConnection;0;3;13;0
-WireConnection;9;0;10;0
-WireConnection;1;1;9;0
 ASEEND*/
-//CHKSM=079A06AAB78257D513860A85438935214566D7DA
+//CHKSM=FC88F8FF86234414514219923686C8BBBB380421

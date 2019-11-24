@@ -17,5 +17,15 @@ namespace AmplifyShaderEditor
 			ChangeOutputName( 4, "1+1/Height" );
 			m_value = "_ScreenParams";
 		}
+
+		//public override void RefreshExternalReferences()
+		//{
+		//	base.RefreshExternalReferences();
+		//	if( !m_outputPorts[ 0 ].IsConnected )
+		//	{
+		//		m_outputPorts[ 0 ].Visible = false;
+		//		m_sizeIsDirty = true;
+		//	}
+		//}
 	}
 }

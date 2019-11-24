@@ -17,12 +17,17 @@ namespace AmplifyShaderEditor
 			ChangeOutputName( 4, "t" );
 			m_value = "_CosTime";
 			m_previewShaderGUID = "3093999b42c3c0940a71799511d7781c";
+			m_continuousPreviewRefresh = true;
 		}
 
-		//public override void AfterPreviewRefresh()
-		//{
-		//	base.AfterPreviewRefresh();
-		//	MarkForPreviewUpdate();
-		//}
+		public override void RefreshExternalReferences()
+		{
+			base.RefreshExternalReferences();
+			if( !m_outputPorts[ 0 ].IsConnected )
+			{
+				m_outputPorts[ 0 ].Visible = false;
+				m_sizeIsDirty = true;
+			}
+		}
 	}
 }

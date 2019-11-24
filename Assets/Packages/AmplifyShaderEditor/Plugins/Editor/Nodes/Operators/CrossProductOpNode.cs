@@ -2,11 +2,12 @@
 // Copyright (c) Amplify Creations, Lda <info@amplify.pt>
 
 using System;
+using UnityEngine;
 
 namespace AmplifyShaderEditor
 {
 	[Serializable]
-	[NodeAttributes( "Cross", "Vector", "Cross product of two three-component vectors" )]
+	[NodeAttributes( "Cross", "Vector Operators", "Cross product of two three-component vectors ( A x B )", null, KeyCode.X )]
 	public sealed class CrossProductOpNode : ParentNode
 	{
 		protected override void CommonInit( int uniqueId )
@@ -21,6 +22,8 @@ namespace AmplifyShaderEditor
 
 		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalVar )
 		{
+			if ( m_outputPorts[ 0 ].IsLocalValue( dataCollector.PortCategory ) )
+				return m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory );
 			string lhsStr = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
 			string rhsStr = m_inputPorts[ 1 ].GeneratePortInstructions( ref dataCollector );
 

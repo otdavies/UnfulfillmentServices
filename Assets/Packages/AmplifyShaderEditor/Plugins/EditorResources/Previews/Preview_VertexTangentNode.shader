@@ -1,4 +1,4 @@
-﻿Shader "Hidden/VertexTangentNode"
+Shader "Hidden/VertexTangentNode"
 {
 	SubShader
 	{

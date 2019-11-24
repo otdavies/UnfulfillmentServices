@@ -171,6 +171,12 @@ Material:
         m_Texture: {fileID: 2800000, guid: e3a9ce60ba4140c4ab56aecf455c1f69, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - first:
+        name: _texcoord
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - first:
         name: _BumpScale
@@ -225,7 +231,7 @@ Material:
       second: 1
     - first:
         name: __dirty
-      second: 0
+      second: 1
     m_Colors:
     - first:
         name: _Color

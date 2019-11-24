@@ -191,3 +191,6 @@ Material:
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
+    - first:
+        name: _TileSpeed
+      second: {r: -1, g: 0, b: 0, a: 0}
